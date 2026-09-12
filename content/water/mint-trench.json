@@ -1,0 +1,22 @@
+{
+  "id": "mint-trench",
+  "name": "Mint Trench",
+  "topColor": "#0d3a33",
+  "bottomColor": "#04120f",
+  "accent": "#3dffb0",
+  "rays": 0.45,
+  "caustics": 0.65,
+  "bubbles": 0.5,
+  "plantPalette": [
+    "#3dffb0",
+    "#19c6a6",
+    "#baffe0"
+  ],
+  "event": {
+    "name": "Trench Drift",
+    "kind": "current",
+    "durationSec": 30,
+    "note": "A cool mint current nudges everything sideways."
+  },
+  "source": "core"
+}

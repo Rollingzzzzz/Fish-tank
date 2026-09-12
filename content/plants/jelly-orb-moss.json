@@ -1,0 +1,16 @@
+{
+  "id": "jelly-orb-moss",
+  "name": "Jelly Orb Moss",
+  "fronds": 3,
+  "height": 0.16,
+  "width": 1.4,
+  "curve": 0.5,
+  "sway": 0.9,
+  "colors": [
+    "#ff2a8d",
+    "#ff7bb0",
+    "#ffd2e8"
+  ],
+  "glow": 0.9,
+  "source": "core"
+}

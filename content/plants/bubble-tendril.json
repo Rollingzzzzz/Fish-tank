@@ -1,0 +1,16 @@
+{
+  "id": "bubble-tendril",
+  "name": "Bubble Tendril",
+  "fronds": 4,
+  "height": 0.22,
+  "width": 0.9,
+  "curve": 0.85,
+  "sway": 0.65,
+  "colors": [
+    "#7b4dff",
+    "#b28aff",
+    "#ff9af5"
+  ],
+  "glow": 0.75,
+  "source": "core"
+}

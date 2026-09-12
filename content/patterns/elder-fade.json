@@ -1,0 +1,14 @@
+{
+  "id": "elder-fade",
+  "stage": "elder",
+  "name": "Elder Fade",
+  "satMul": 0.45,
+  "alphaMul": 0.7,
+  "glowMul": 0.7,
+  "pattern": {
+    "type": "vein",
+    "density": 0.4,
+    "size": 0.6
+  },
+  "note": "Elders desaturate to faded veins, glowing softly at dusk."
+}

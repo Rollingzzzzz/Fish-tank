@@ -1,0 +1,13 @@
+{
+  "id": "ember-plume-feather",
+  "name": "Ember Plume Feather",
+  "kind": "feather",
+  "fronds": 4,
+  "height": 0.38,
+  "width": 1.25,
+  "curve": 0.5,
+  "sway": 0.75,
+  "colors": ["#5c2430", "#c05a48", "#ffc9a0"],
+  "glow": 0,
+  "source": "core"
+}

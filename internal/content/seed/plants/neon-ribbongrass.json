@@ -1,0 +1,12 @@
+{
+  "id": "neon-ribbongrass",
+  "name": "Neon Ribbongrass",
+  "fronds": 8,
+  "height": 0.5,
+  "width": 1.2,
+  "curve": 0.3,
+  "sway": 0.7,
+  "colors": ["#0d5c3f", "#19c6a6", "#c0ffdd"],
+  "glow": 0.4,
+  "source": "core"
+}

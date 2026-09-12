@@ -1,0 +1,14 @@
+{
+  "id": "juvenile-juvenile-coat",
+  "stage": "juvenile",
+  "name": "Juvenile Coat",
+  "satMul": 1.0256819162341528,
+  "alphaMul": 0.8986211444011634,
+  "glowMul": 1.3639907713418782,
+  "pattern": {
+    "type": "koi",
+    "density": 0.8445756903519014,
+    "size": 0.33918333319850336
+  },
+  "note": "First bold colors coming in while schooling improves."
+}

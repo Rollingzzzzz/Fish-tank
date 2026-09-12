@@ -1,0 +1,31 @@
+{
+  "id": "lime-spotlure",
+  "name": "Lime Spotlure",
+  "latin": "Viridis lucerna",
+  "size": 0.7,
+  "width": 0.8,
+  "fin": 1.5,
+  "tail": 0.8,
+  "palette": {
+    "body": "#39ff88",
+    "belly": "#d0ffd8",
+    "accent": "#c8ff3d",
+    "glow": "#7bffa8"
+  },
+  "pattern": {
+    "type": "spot",
+    "density": 0.7,
+    "size": 0.3
+  },
+  "behavior": {
+    "speed": 1.3,
+    "schooling": 0.4,
+    "curiosity": 0.85,
+    "skittish": 0.7,
+    "depth": 0.8,
+    "nightActive": true
+  },
+  "note": "Darts near the floor at night, luring watchers with lime lure-spots.",
+  "source": "core",
+  "createdAt": "2026-09-11T15:13:40Z"
+}

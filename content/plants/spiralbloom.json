@@ -1,0 +1,16 @@
+{
+  "id": "spiralbloom",
+  "name": "Spiralbloom",
+  "fronds": 7,
+  "height": 0.42990295860154615,
+  "width": 0.8067261830884453,
+  "curve": 0.7326065605763152,
+  "sway": 0.4436249833245281,
+  "colors": [
+    "#269310",
+    "#26f034",
+    "#8efbae"
+  ],
+  "glow": 0.34248580748510205,
+  "source": "water-agent"
+}

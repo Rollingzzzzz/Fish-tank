@@ -1,0 +1,31 @@
+{
+  "id": "aqua-staticveil",
+  "name": "Aqua Staticveil",
+  "latin": "Fulgorus mirus",
+  "size": 0.9870777288423107,
+  "width": 1.2494345495845751,
+  "fin": 0.956531660573195,
+  "tail": 1.1754486955503327,
+  "palette": {
+    "body": "#f1cd13",
+    "belly": "#bcdc87",
+    "accent": "#3c72f5",
+    "glow": "#2c42ff"
+  },
+  "pattern": {
+    "type": "wave",
+    "density": 0.02805753837097884,
+    "size": 0.7314984379054422
+  },
+  "behavior": {
+    "speed": 0.583356644087164,
+    "schooling": 0.1469602534133484,
+    "curiosity": 0.9048050920704671,
+    "skittish": 0.9713940582495568,
+    "depth": 0.18806720204588878,
+    "nightActive": false
+  },
+  "note": "Aqua Staticveil darts between the plants in sudden neon bursts.",
+  "source": "user",
+  "createdAt": "2026-09-11T15:21:02Z"
+}

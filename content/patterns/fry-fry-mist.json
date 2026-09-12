@@ -1,0 +1,14 @@
+{
+  "id": "fry-fry-mist",
+  "stage": "fry",
+  "name": "Fry Mist",
+  "satMul": 0.6796360405675064,
+  "alphaMul": 0.6745448062469024,
+  "glowMul": 0.7912880331842782,
+  "pattern": {
+    "type": "wave",
+    "density": 0.9468647507552239,
+    "size": 0.2422616004090849
+  },
+  "note": "Translucent and soft so the little body glows through."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "juvenile-juvenile-wash",
+  "stage": "juvenile",
+  "name": "Juvenile Wash",
+  "satMul": 1.1124890007413046,
+  "alphaMul": 0.8414215866052417,
+  "glowMul": 1.1962019836018944,
+  "pattern": {
+    "type": "koi",
+    "density": 0.4086081190968317,
+    "size": 0.3457877432168572
+  },
+  "note": "First bold colors coming in while schooling improves."
+}

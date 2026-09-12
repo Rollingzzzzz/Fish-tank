@@ -1,0 +1,14 @@
+# runtime artifacts (stay beside the exe, never in git)
+config.json
+save_minute.json
+save_daily.json
+save_weekly.json
+tank.lock
+*.zip
+*.exe
+
+# go
+*.test
+*.out
+/content/
+.zcode/

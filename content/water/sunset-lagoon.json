@@ -1,0 +1,22 @@
+{
+  "id": "sunset-lagoon",
+  "name": "Sunset Lagoon",
+  "topColor": "#3a1030",
+  "bottomColor": "#12030f",
+  "accent": "#ff9a3d",
+  "rays": 0.7,
+  "caustics": 0.4,
+  "bubbles": 0.25,
+  "plantPalette": [
+    "#ff5a2a",
+    "#ff2a8d",
+    "#ffc36b"
+  ],
+  "event": {
+    "name": "Amber Still",
+    "kind": "calm",
+    "durationSec": 20,
+    "note": "Amber light settles and the lagoon holds its breath."
+  },
+  "source": "core"
+}

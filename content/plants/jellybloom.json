@@ -1,0 +1,17 @@
+{
+  "id": "jellybloom",
+  "name": "Jellybloom",
+  "fronds": 4,
+  "height": 0.3362722429968211,
+  "width": 0.6622415460902707,
+  "curve": 0.47687814190249933,
+  "sway": 0.44517139871888295,
+  "colors": [
+    "#937e10",
+    "#cfde12",
+    "#c0f547",
+    "#c0fc8d"
+  ],
+  "glow": 0.8029466783777146,
+  "source": "water-agent"
+}

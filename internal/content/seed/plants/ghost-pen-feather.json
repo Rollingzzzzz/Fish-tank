@@ -1,0 +1,13 @@
+{
+  "id": "ghost-pen-feather",
+  "name": "Ghost Pen Feather",
+  "kind": "feather",
+  "fronds": 3,
+  "height": 0.46,
+  "width": 1.1,
+  "curve": 0.35,
+  "sway": 0.6,
+  "colors": ["#3a4a78", "#7f9fd8", "#e6f0ff"],
+  "glow": 0,
+  "source": "core"
+}

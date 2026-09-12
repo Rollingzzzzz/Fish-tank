@@ -1,0 +1,31 @@
+{
+  "id": "neon-emberfin",
+  "name": "Neon Emberfin",
+  "latin": "Lampyris ignis",
+  "size": 1,
+  "width": 1,
+  "fin": 1.1,
+  "tail": 1,
+  "palette": {
+    "body": "#ff5a2a",
+    "belly": "#ffb36b",
+    "accent": "#ff2a8d",
+    "glow": "#ff7b4d"
+  },
+  "pattern": {
+    "type": "stripe",
+    "density": 0.55,
+    "size": 0.4
+  },
+  "behavior": {
+    "speed": 1.05,
+    "schooling": 0.6,
+    "curiosity": 0.55,
+    "skittish": 0.4,
+    "depth": 0.45,
+    "nightActive": false
+  },
+  "note": "A molten stripe-runner whose fin tips flicker like rising sparks.",
+  "source": "core",
+  "createdAt": "2026-09-11T15:13:40Z"
+}

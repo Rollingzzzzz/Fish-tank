@@ -1,0 +1,23 @@
+{
+  "id": "neon-lagoon",
+  "name": "Neon Lagoon",
+  "topColor": "#82510f",
+  "bottomColor": "#1e2703",
+  "accent": "#3880fa",
+  "rays": 0.7541755876459556,
+  "caustics": 0.5186618627425839,
+  "bubbles": 0.24775430198356216,
+  "plantPalette": [
+    "#109340",
+    "#12de8b",
+    "#47f5d7",
+    "#8df5fc"
+  ],
+  "event": {
+    "name": "Violet Pulse",
+    "kind": "glowWave",
+    "durationSec": 38.48148312760658,
+    "note": "Deep water with a bright electric signature."
+  },
+  "source": "water-agent"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "ember-staticfin",
+  "name": "Ember Staticfin",
+  "latin": "Miralus aurora",
+  "size": 1.1144525599800608,
+  "width": 0.8587052760541684,
+  "fin": 1.1160232582047356,
+  "tail": 1.3802013464223455,
+  "palette": {
+    "body": "#fadb1e",
+    "belly": "#d3e982",
+    "accent": "#1535f6",
+    "glow": "#5940ff"
+  },
+  "pattern": {
+    "type": "spot",
+    "density": 0.6559612454130921,
+    "size": 0.1831015070354031
+  },
+  "behavior": {
+    "speed": 0.9640803343909365,
+    "schooling": 0.25963668565374465,
+    "curiosity": 0.5260336034161814,
+    "skittish": 0.7131932524156398,
+    "depth": 0.18801684600133312,
+    "nightActive": true
+  },
+  "note": "Ember Staticfin pulses brighter whenever the school changes course.",
+  "source": "user",
+  "createdAt": "2026-09-11T15:18:42Z"
+}

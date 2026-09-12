@@ -1,0 +1,14 @@
+{
+  "id": "cyan-candlebranch",
+  "name": "Cyan Candlebranch",
+  "kind": "branch",
+  "fronds": 6,
+  "height": 0.22,
+  "width": 0.9,
+  "curve": 0.4,
+  "sway": 0.3,
+  "colors": ["#0a3d5c", "#18c5ff", "#b8f4ff"],
+  "glow": 0.65,
+  "source": "core",
+  "createdAt": ""
+}

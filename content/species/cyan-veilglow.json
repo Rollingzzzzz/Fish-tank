@@ -1,0 +1,31 @@
+{
+  "id": "cyan-veilglow",
+  "name": "Cyan Veilglow",
+  "latin": "Cyanogaster velum",
+  "size": 0.85,
+  "width": 0.9,
+  "fin": 1.4,
+  "tail": 1.2,
+  "palette": {
+    "body": "#18c5ff",
+    "belly": "#b8f4ff",
+    "accent": "#7b4dff",
+    "glow": "#4df2ff"
+  },
+  "pattern": {
+    "type": "wave",
+    "density": 0.45,
+    "size": 0.55
+  },
+  "behavior": {
+    "speed": 0.9,
+    "schooling": 0.8,
+    "curiosity": 0.7,
+    "skittish": 0.5,
+    "depth": 0.3,
+    "nightActive": true
+  },
+  "note": "Trails a veil of cold cyan light that ripples when the school turns.",
+  "source": "core",
+  "createdAt": "2026-09-11T15:13:40Z"
+}

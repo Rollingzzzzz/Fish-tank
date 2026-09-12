@@ -1,0 +1,18 @@
+{
+  "id": "abyss-bloom",
+  "name": "Abyss Bloom",
+  "topColor": "#0b1e3a",
+  "bottomColor": "#03060f",
+  "accent": "#7b4dff",
+  "rays": 0.25,
+  "caustics": 0.5,
+  "bubbles": 0.3,
+  "plantPalette": ["#19c6a6", "#7b4dff", "#ff5aa0"],
+  "event": {
+    "name": "Pulse Bloom",
+    "kind": "glowWave",
+    "durationSec": 24,
+    "note": "A slow violet pulse rolls through the deep water."
+  },
+  "source": "core"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "violetpalm",
+  "name": "Violetpalm",
+  "fronds": 5,
+  "height": 0.4745745898656918,
+  "width": 1.183172142798146,
+  "curve": 0.844797599873847,
+  "sway": 0.11286085895192234,
+  "colors": [
+    "#841093",
+    "#f026d8",
+    "#fb8ed5"
+  ],
+  "glow": 0.7976485466033706,
+  "source": "water-agent"
+}

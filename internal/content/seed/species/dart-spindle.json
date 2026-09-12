@@ -1,0 +1,33 @@
+{
+  "id": "dart-spindle",
+  "name": "Dart Spindle",
+  "latin": "Spiculum celer",
+  "role": "normal",
+  "size": 0.62,
+  "width": 0.75,
+  "fin": 1.0,
+  "tail": 1.1,
+  "palette": {
+    "body": "#3fae7f",
+    "belly": "#c8f0dc",
+    "accent": "#8fd0ff",
+    "glow": "#4fc99b"
+  },
+  "pattern": {
+    "type": "stripe",
+    "density": 0.65,
+    "size": 0.45
+  },
+  "behavior": {
+    "speed": 1.30,
+    "schooling": 0.5,
+    "curiosity": 0.4,
+    "skittish": 0.75,
+    "depth": 0.55,
+    "attachment": 0,
+    "nightActive": true
+  },
+  "note": "A jade needle of a fish that flickers across the glass in bursts too quick to follow.",
+  "source": "core",
+  "createdAt": ""
+}

@@ -1,0 +1,31 @@
+{
+  "id": "volt-ghostwing",
+  "name": "Volt Ghostwing",
+  "latin": "Cyanogaster profundus",
+  "size": 1.269152207624559,
+  "width": 1.2849718941520951,
+  "fin": 1.374132569731775,
+  "tail": 0.7003818595494177,
+  "palette": {
+    "body": "#0bf5d2",
+    "belly": "#96b9f2",
+    "accent": "#fc5128",
+    "glow": "#ff9839"
+  },
+  "pattern": {
+    "type": "koi",
+    "density": 0.6626623322785654,
+    "size": 0.3630667408062694
+  },
+  "behavior": {
+    "speed": 1.0180153196967745,
+    "schooling": 0.6555944450018395,
+    "curiosity": 0.36047284890748527,
+    "skittish": 0.67326490152767,
+    "depth": 0.8897279125213587,
+    "nightActive": false
+  },
+  "note": "Volt Ghostwing pulses brighter whenever the school changes course.",
+  "source": "user",
+  "createdAt": "2026-09-11T15:16:03Z"
+}

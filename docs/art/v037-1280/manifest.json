@@ -1,0 +1,1001 @@
+[
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "01-closed.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "01-closed.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1704,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "01-closed.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1642,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "01-closed.png"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "02-tab-agents.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "03-tab-species.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "04-tab-plants.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "05-tab-log.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "06-tab-setup.png",
+    "kind": "scene"
+  },
+  {
+    "name": "settings-Auto feed",
+    "x": 1250,
+    "y": 274,
+    "w": 460,
+    "h": 24,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "settings-Music",
+    "x": 1250,
+    "y": 322,
+    "w": 460,
+    "h": 24,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "settings-Start fullscreen",
+    "x": 1250,
+    "y": 346,
+    "w": 460,
+    "h": 24,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "07-tray-open.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-panel",
+    "x": 1558,
+    "y": 72,
+    "w": 150,
+    "h": 166,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-0",
+    "x": 1566,
+    "y": 80,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-1",
+    "x": 1566,
+    "y": 118,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-2",
+    "x": 1566,
+    "y": 156,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-3",
+    "x": 1566,
+    "y": 194,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "08-held-worm.png",
+    "kind": "scene"
+  },
+  {
+    "name": "held-treat",
+    "x": 836,
+    "y": 336,
+    "w": 48,
+    "h": 48,
+    "image": "08-held-worm.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1224,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1162,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 1250,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 1342,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 1434,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 1526,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 1618,
+    "y": 82,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 1250,
+    "y": 122,
+    "w": 460,
+    "h": 588,
+    "image": "09-frenzy.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "10-carry-menu-closed.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "10-carry-menu-closed.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1704,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "10-carry-menu-closed.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1642,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "10-carry-menu-closed.png"
+  },
+  {
+    "name": "held-treat",
+    "x": 716,
+    "y": 396,
+    "w": 48,
+    "h": 48,
+    "image": "10-carry-menu-closed.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "11-transit-enter.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "11-transit-enter.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1704,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "11-transit-enter.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1642,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "11-transit-enter.png"
+  },
+  {
+    "name": "crag-left",
+    "x": 30,
+    "y": 280,
+    "w": 380,
+    "h": 440,
+    "image": "11-transit-enter.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "12-transit-inside.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "12-transit-inside.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1704,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "12-transit-inside.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1642,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "12-transit-inside.png"
+  },
+  {
+    "name": "crag-left",
+    "x": 30,
+    "y": 280,
+    "w": 380,
+    "h": 440,
+    "image": "12-transit-inside.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "13-transit-exit.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "13-transit-exit.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1704,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "13-transit-exit.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1642,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "13-transit-exit.png"
+  },
+  {
+    "name": "crag-left",
+    "x": 30,
+    "y": 280,
+    "w": 380,
+    "h": 440,
+    "image": "13-transit-exit.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "14-flora.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "14-flora.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1704,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "14-flora.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1642,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "14-flora.png"
+  },
+  {
+    "name": "flora-band",
+    "x": 120,
+    "y": 380,
+    "w": 1480,
+    "h": 320,
+    "image": "14-flora.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 1628,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "15-crowd.png"
+  },
+  {
+    "name": "close-button",
+    "x": 1680,
+    "y": 8,
+    "w": 32,
+    "h": 26,
+    "image": "15-crowd.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1704,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "15-crowd.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1642,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "15-crowd.png"
+  },
+  {
+    "name": "water-column",
+    "x": 120,
+    "y": 80,
+    "w": 1480,
+    "h": 460,
+    "image": "15-crowd.png",
+    "kind": "scene"
+  }
+]

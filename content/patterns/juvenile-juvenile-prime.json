@@ -1,0 +1,14 @@
+{
+  "id": "juvenile-juvenile-prime",
+  "stage": "juvenile",
+  "name": "Juvenile Prime",
+  "satMul": 1.0209776796213552,
+  "alphaMul": 0.8281880643557002,
+  "glowMul": 1.3868010675051654,
+  "pattern": {
+    "type": "wave",
+    "density": 0.19782522226056673,
+    "size": 0.09122103392195159
+  },
+  "note": "First bold colors coming in while schooling improves."
+}

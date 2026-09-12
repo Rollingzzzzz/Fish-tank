@@ -1,0 +1,14 @@
+{
+  "id": "rose-veilfan",
+  "name": "Rose Veilfan",
+  "kind": "fan",
+  "fronds": 8,
+  "height": 0.16,
+  "width": 1.2,
+  "curve": 0.7,
+  "sway": 0.6,
+  "colors": ["#8a1d4f", "#ff3d8f", "#ffd2e8"],
+  "glow": 0.8,
+  "source": "core",
+  "createdAt": ""
+}
