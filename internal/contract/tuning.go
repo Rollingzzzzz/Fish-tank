@@ -198,6 +198,7 @@ const (
 	AvoidBigRadius  = 0.55 // × body length small fish keep clear of big bodies
 	TitanHeadFlat   = 0.25 // wander's vertical share — headings hug the sand line
 	TitanUpperBand  = 0.78 // the pod favors the upper 80% of the water column
+	TitanAltMax     = 0.66 // G69: deepest personal altitude — visiting the nest level, not living there
 	TitanCruiseDamp = 0.22 // pod cruise slows as members grow (×(1.12−d·sizeMul))
 	TitanBurstFloor = 0.70 // capture burst grows with size (×(floor+boost·sizeMul))
 	TitanBurstBoost = 0.30

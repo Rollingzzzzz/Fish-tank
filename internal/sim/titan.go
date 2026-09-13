@@ -162,9 +162,27 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// heading follows the velocity, so the fish always faces forward
 	des := v2(f.cruise*0.8*maxSp, sin(f.wanderA)*0.06*maxSp)
 	addForce(des, 0.7)
-	// level swimming: vertical drift is damped hard -- the body tracks the
-	// sand line and steep climbs or dives stay rare
-	addForce(v2(0, -f.Vel.Y*1.2), 1.2)
+	// G69: the sweep is a slow wandering glide, not a rail -- each elder
+	// draws a personal altitude every ~20-40 s, anywhere from the surface
+	// light down to just above the nest level, and eases toward it. The
+	// members draw independently (small phase drift), so the pod breathes
+	// instead of marching in lockstep.
+	f.altT -= dt
+	if f.altT <= 0 {
+		lo := (f.bodyLen*0.30+6)/w.H + 0.03
+		// biased to the ends: a third of the draws ride high under the
+		// surface light, the rest glide the broad lower water — the sweep
+		// visits both worlds instead of parking mid-tank
+		if f.rng.Float64() < 0.34 {
+			f.altY = lo + f.rng.Float64()*(0.30-lo)
+		} else {
+			f.altY = 0.30 + f.rng.Float64()*(contract.TitanAltMax-0.30)
+		}
+		f.altT = 18 + f.rng.Float64()*22
+	}
+	// level swimming stays gentle: vertical drift is softly damped -- the
+	// body may glide up or down along its sweep, but not ballistically
+	addForce(v2(0, -f.Vel.Y*0.75), 0.75)
 	// the pod favors the upper 80% -- the sand line is not their water
 	if f.Pos.Y > w.H*contract.TitanUpperBand {
 		addForce(v2(0, -maxSp), 1.1)
@@ -174,15 +192,16 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	if f.Pos.Y < f.bodyLen*0.42+20 {
 		addForce(v2(0, maxSp), 1.1)
 	}
-	// the altitude pull always runs (G67): each down-curled arc dips the
-	// pod a body lower, and only a live pull walks it back up between turns
-	if off := w.H*0.36 - f.Pos.Y; off > 0 {
-		addForce(v2(0, off*0.25), 0.35)
+	// the altitude pull always runs (G69): toward the personal drawn
+	// altitude, both up and down, at a soft weight -- the dive toward the
+	// nest level and the climb to the surface light are the same gentle law
+	if off := w.H*f.altY - f.Pos.Y; absF(off) > 8 {
+		addForce(v2(0, clampF(off*0.22, -maxSp*0.4, maxSp*0.4)), 1.0)
 	}
-	// right after a turn the climb home is deliberate (G67): the settle
-	// window carries the pod back to cruise height before the next glass
-	if f.turning <= 0 && f.turnT > 0 && f.Pos.Y > w.H*0.36+40 {
-		addForce(v2(0, -maxSp), 0.8)
+	// overshoot brake: drifting well past the drawn altitude turns the
+	// glide around before it can settle into the bottom band
+	if f.Pos.Y > w.H*f.altY+80 {
+		addForce(v2(0, -maxSp*0.5), 0.9)
 	}
 	f.formationSteer(w, maxSp, addForce)
 	f.lungeSteer(w, dt, maxSp, addForce)

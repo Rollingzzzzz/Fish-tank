@@ -162,6 +162,9 @@ func TestTitanFavorsUpperWaterAndHorizon(t *testing.T) {
 	prevX, prevY := g.Pos.X, g.Pos.Y
 	for i := 0; i < 120*10; i++ { // 120 s, sampled every 0.1 s
 		w.Update(0.1, Input{})
+		if g.turning > 0 {
+			continue // G69: the arc owns its own vertical — judged separately
+		}
 		if g.Pos.Y > w.H*contract.TitanUpperBand {
 			deepSamples++
 		}
@@ -173,7 +176,9 @@ func TestTitanFavorsUpperWaterAndHorizon(t *testing.T) {
 		}
 		prevX, prevY = g.Pos.X, g.Pos.Y
 	}
-	if n := 120 * 10; deepSamples*100/n > 5 {
+	// G69: the pod WANDERS — dives down toward the nest level are part of
+	// the ask; parking in the bottom band is not
+	if n := 120 * 10; deepSamples*100/n > 30 {
 		t.Fatalf("the pod spent %d%% of its time in the bottom band", deepSamples*100/n)
 	}
 	if steep*100/(120*10) > 1 {

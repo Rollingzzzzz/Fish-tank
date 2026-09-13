@@ -14944,5 +14944,65 @@
     "kind": "species",
     "id": "cryo-ghostdart",
     "at": "2026-09-13T23:21:09Z"
+  },
+  {
+    "hash": "bfea6a46e64768e6",
+    "kind": "species",
+    "id": "astra-ghosttail",
+    "at": "2026-09-13T23:28:32Z"
+  },
+  {
+    "hash": "f33d83f1a7fe8fe6",
+    "kind": "water",
+    "id": "lunar-trench-37",
+    "at": "2026-09-13T23:28:35Z"
+  },
+  {
+    "hash": "f85794338345215b",
+    "kind": "coral",
+    "id": "ember-crest-41",
+    "at": "2026-09-13T23:28:35Z"
+  },
+  {
+    "hash": "cb1cc6c27cbfdf83",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-spark-39",
+    "at": "2026-09-13T23:28:38Z"
+  },
+  {
+    "hash": "20b4f6bfded7b8cd",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-wash-47",
+    "at": "2026-09-13T23:28:38Z"
+  },
+  {
+    "hash": "e45cf9ae9cb82e41",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-spark-40",
+    "at": "2026-09-13T23:29:58Z"
+  },
+  {
+    "hash": "b21f1bc206e676ac",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-fade-53",
+    "at": "2026-09-13T23:29:58Z"
+  },
+  {
+    "hash": "1f62ac22e71219ac",
+    "kind": "water",
+    "id": "twilight-cove-39",
+    "at": "2026-09-13T23:30:25Z"
+  },
+  {
+    "hash": "55f8dc58669d1ada",
+    "kind": "coral",
+    "id": "glimmer-seafan-38",
+    "at": "2026-09-13T23:30:25Z"
+  },
+  {
+    "hash": "26274d22701d50fa",
+    "kind": "species",
+    "id": "aqua-halogleam",
+    "at": "2026-09-13T23:30:52Z"
   }
 ]

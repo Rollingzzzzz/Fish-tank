@@ -398,3 +398,37 @@ func TestTitanConvoyTurn(t *testing.T) {
 		t.Fatalf("pod scattered %.0f px across the turn — the cluster must hold", spread)
 	}
 }
+
+// G69: the sweep is a wandering glide, not a rail — across a long run the
+// pod spends real time BOTH near the surface light and down near the nest
+// level, and the vertical pace stays gentle (no robotic hops).
+func TestTitanSoftVerticalWander(t *testing.T) {
+	w := titanWorld(t, 4)
+	w.spawnPod()
+	g := w.titanGiant()
+	const dt = 0.05
+	high, deep, worstVy := 0, 0, 0.0
+	for i := 0; i < 60*120; i++ { // 120 s
+		g.Satiety = 1 // fed: hunger lunges are a separate, welcome behavior
+		w.Update(dt, Input{})
+		if i%10 != 0 || g.turning > 0 {
+			continue // judge straight sweeps; the arc owns its own vertical
+		}
+		switch {
+		case g.Pos.Y < w.H*0.35:
+			high++
+		case g.Pos.Y > w.H*0.55:
+			deep++
+		}
+		if vy := mathAbs(g.Vel.Y); vy > worstVy {
+			worstVy = vy
+		}
+	}
+	t.Logf("wander: %d samples high, %d deep, worst |vy| %.1f", high, deep, worstVy)
+	if high < 40 || deep < 40 {
+		t.Fatalf("the sweep is a rail: %d high / %d deep samples in 120 s", high, deep)
+	}
+	if worstVy > 35 {
+		t.Fatalf("vertical pace %.1f px/s — not the gentle glide asked for", worstVy)
+	}
+}
