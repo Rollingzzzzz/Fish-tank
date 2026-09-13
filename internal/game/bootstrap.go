@@ -37,6 +37,12 @@ func Bootstrap(root string) (*Game, error) {
 	}
 	touchLock()
 
+	// v1.1 evidence switch: TANK_EXTRAS=0 turns the ambient features (titan
+	// pod + floor critters) off — the OFF arm of the interleaved A/B runs
+	if os.Getenv("TANK_EXTRAS") == "0" {
+		contract.ExtrasEnabled = false
+	}
+
 	// config
 	cfgPath := filepath.Join(root, "config.json")
 	cfg, err := config.Load(cfgPath)

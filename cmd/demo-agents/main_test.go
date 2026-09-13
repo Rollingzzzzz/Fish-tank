@@ -35,9 +35,9 @@ func TestDemoAgentsIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// N9: 9 seed species (6 core + 3 v0.3 additions) + Demo Emberfin + 1 simulated.
-	if n := len(store.Species()); n != 11 {
-		t.Fatalf("species = %d, want 11 (9 seed + live + simulated)", n)
+	// N9: 11 seed species (6 core + 3 v0.3 additions + v1.1 titan & shark) + Demo Emberfin + 1 simulated.
+	if n := len(store.Species()); n != 13 {
+		t.Fatalf("species = %d, want 13 (11 seed + live + simulated)", n)
 	}
 	// Seed: 3 water presets + the water agent's preset.
 	if n := len(store.Waters()); n != 4 {

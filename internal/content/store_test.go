@@ -145,21 +145,21 @@ func TestEnsureSeedIdempotent(t *testing.T) {
 		KindPlant: len(s.Plants()), KindPattern: len(s.Recipes()),
 		KindCoral: len(s.Corals()),
 	}
-	want := map[string]int{KindSpecies: 9, KindWater: 3, KindPlant: 10, KindPattern: 4, KindCoral: 4} // v0.3.7 F30: +6 silky flora
+	want := map[string]int{KindSpecies: 11, KindWater: 3, KindPlant: 10, KindPattern: 4, KindCoral: 4} // v0.3.7 F30 flora, v1.1: +titan & shark
 	for k, n := range want {
 		if first[k] != n {
 			t.Fatalf("seed %s = %d, want %d", k, first[k], n)
 		}
 	}
 	regAfterFirst := s.reg.Len()
-	if regAfterFirst != 30 { // v0.3.7 F30: 24 + the six silky flora
+	if regAfterFirst != 32 { // v0.3.7 F30: 30 + the v1.1 titan & shark
 		t.Fatalf("registry entries after seed = %d, want 30", regAfterFirst)
 	}
 	// Second run must be a no-op.
 	if err := s.EnsureSeed(); err != nil {
 		t.Fatalf("EnsureSeed 2: %v", err)
 	}
-	if len(s.Species()) != 9 || s.reg.Len() != regAfterFirst {
+	if len(s.Species()) != 11 || s.reg.Len() != regAfterFirst {
 		t.Fatalf("EnsureSeed not idempotent: species=%d registry=%d", len(s.Species()), s.reg.Len())
 	}
 	for _, sp := range s.Species() {
@@ -203,7 +203,7 @@ func TestExportImportRoundTrip(t *testing.T) {
 	if err := dst.ImportPack(zipPath); err != nil {
 		t.Fatalf("ImportPack: %v", err)
 	}
-	if len(dst.Species()) != 10 || len(dst.Waters()) != 3 || len(dst.Plants()) != 10 || len(dst.Recipes()) != 4 || len(dst.Corals()) != 4 {
+	if len(dst.Species()) != 12 || len(dst.Waters()) != 3 || len(dst.Plants()) != 10 || len(dst.Recipes()) != 4 || len(dst.Corals()) != 4 {
 		t.Fatalf("import file set mismatch: sp=%d wa=%d pl=%d rc=%d co=%d",
 			len(dst.Species()), len(dst.Waters()), len(dst.Plants()), len(dst.Recipes()), len(dst.Corals()))
 	}

@@ -76,6 +76,14 @@ func (w *World) SpawnEgg(speciesID string) {
 		w.logf("life", "the eternal one cannot be created")
 		return
 	}
+	if sp.Role == contract.RoleTitan { // v1.1: visits cannot be summoned
+		w.logf("nature", "the deep wanderer answers no egg")
+		return
+	}
+	if sp.Role == contract.RoleShark { // v1.1: the resident pair answers no egg
+		w.logf("nature", "the hunter answers no egg")
+		return
+	}
 	w.eggs = append(w.eggs, Egg{
 		SpeciesID: speciesID,
 		Pos:       v2(w.W*(0.2+w.rng.Float64()*0.6), w.H*(0.15+w.rng.Float64()*0.25)),
@@ -185,4 +193,15 @@ func (w *World) ChosenNestDist() float64 {
 		}
 	}
 	return best
+}
+
+// DebugSetNight pins the clock to mid-night — evidence harness only
+// (-probe): the night-state captures need the real dimming, not a mock.
+func (w *World) DebugSetNight() {
+	w.Clock = 1.5 * maxF(w.cfg.DaySeconds, 5)
+}
+
+// DebugSetDay pins the clock to mid-day — evidence harness only (-probe).
+func (w *World) DebugSetDay() {
+	w.Clock = 0.25 * maxF(w.cfg.DaySeconds, 5)
 }

@@ -37,7 +37,7 @@ func TestTreatTrayGrabRow(t *testing.T) {
 	tr := NewTreatTray()
 	bx, by := trayCenter(tr.buttonRect())
 	tr.Update(bx, by, true, false)
-	tr.Update(bx, by, false, true) // open (release frame = level up)
+	tr.Update(bx, by, false, true)      // open (release frame = level up)
 	rx, ry := trayCenter(tr.rowRect(1)) // row 1 = worm
 	// F26: the FIRST press inside a row selects the treat — no release needed
 	if got := tr.Update(rx, ry, true, false); got != "grab:worm" {

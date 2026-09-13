@@ -152,10 +152,18 @@ func (g *Game) manifestRects(name string) []shotRect {
 	return out
 }
 
-// finishShot writes the manifest and reports (F19 exit path).
+// finishShot writes the manifest and reports (F19 exit path). The -probe
+// evidence run (v1.1) skips the manifest — uiaudit audits -shot output only.
 func (g *Game) finishShot() {
 	s := g.shot
 	if s == nil {
+		return
+	}
+	if s.probe {
+		fmt.Printf("PROBE RATE: fish=%d titan=%d critters=%d TPS=%.0f FPS=%.0f\n",
+			len(g.world.Fishes()), g.world.TitanCount(), len(g.world.Critters()),
+			ebiten.ActualTPS(), ebiten.ActualFPS())
+		fmt.Printf("PROBE OK: %d pngs in %s\n", s.captured, s.dir)
 		return
 	}
 	b, err := json.MarshalIndent(s.manifest, "", "  ")

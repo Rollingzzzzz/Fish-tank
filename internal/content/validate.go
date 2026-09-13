@@ -37,7 +37,7 @@ var (
 	stageNames   = map[string]bool{"fry": true, "juvenile": true, "adult": true, "elder": true}
 	coralKinds   = map[string]bool{"fan": true, "branch": true, "brain": true}
 	plantKinds   = map[string]bool{"ribbon": true, "feather": true, "silk": true} // v0.3.7 F30
-	speciesRoles = map[string]bool{contract.RoleNormal: true, contract.RoleChosen: true}
+	speciesRoles = map[string]bool{contract.RoleNormal: true, contract.RoleChosen: true, contract.RoleTitan: true, contract.RoleShark: true}
 )
 
 // validID reports whether id matches ^[a-z0-9-]{3,32}$.
@@ -78,19 +78,32 @@ func clampSpecies(sp *contract.Species) {
 	if sp.Role == "" {
 		sp.Role = contract.RoleNormal // legacy v1 files have no role field
 	}
-	sizeMax, finMax, tailMax, speedMax := spSizeMax, spFinMax, spTailMax, spSpeedMax
-	if sp.Role != contract.RoleChosen || sp.Source != "core" {
+	sizeMin, sizeMax := spSizeMin, spSizeMax
+	finMax, tailMax, speedMax := spFinMax, spTailMax, spSpeedMax
+	speedMin := spSpeedMin
+	switch {
+	case sp.Role == contract.RoleTitan:
+		// v1.1: giants own a scale class of their own (core seed only —
+		// validateSpecies rejects anyone else wearing the role). The Chosen
+		// stays the fastest thing in the water; the titan the largest.
+		sizeMin, sizeMax = contract.TitanSizeMin, contract.TitanSizeMax
+		speedMin, speedMax = contract.TitanSpeedMin, contract.TitanSpeedMax
+	case sp.Role == contract.RoleShark:
+		// v1.1: the hunter is big and quick but never quicker than her.
+		sizeMin, sizeMax = contract.SharkSizeMin, contract.SharkSizeMax
+		speedMin, speedMax = contract.SharkSpeedMin, contract.SharkSpeedMax
+	case sp.Role != contract.RoleChosen || sp.Source != "core":
 		sizeMax, finMax, tailMax = contract.NormalSizeMax, contract.NormalFinMax, contract.NormalTailMax
 		speedMax = contract.NormalSpeedMax
 	}
-	sp.Size = contract.Clamp(sp.Size, spSizeMin, sizeMax)
+	sp.Size = contract.Clamp(sp.Size, sizeMin, sizeMax)
 	sp.Width = contract.Clamp(sp.Width, spWidthMin, spWidthMax)
 	sp.Fin = contract.Clamp(sp.Fin, spFinMin, finMax)
 	sp.Tail = contract.Clamp(sp.Tail, spTailMin, tailMax)
 	sp.Pattern.Density = contract.Clamp(sp.Pattern.Density, unitMin, unitMax)
 	sp.Pattern.Size = contract.Clamp(sp.Pattern.Size, unitMin, unitMax)
 	b := &sp.Behavior
-	b.Speed = contract.Clamp(b.Speed, spSpeedMin, speedMax)
+	b.Speed = contract.Clamp(b.Speed, speedMin, speedMax)
 	b.Schooling = contract.Clamp(b.Schooling, unitMin, unitMax)
 	b.Curiosity = contract.Clamp(b.Curiosity, unitMin, unitMax)
 	b.Skittish = contract.Clamp(b.Skittish, unitMin, unitMax)
@@ -163,6 +176,11 @@ func validateSpecies(sp *contract.Species) error {
 	}
 	if !speciesRoles[sp.Role] {
 		return fmt.Errorf("species %s: unknown role %q", sp.ID, sp.Role)
+	}
+	if (sp.Role == contract.RoleTitan || sp.Role == contract.RoleShark) && sp.Source != "core" {
+		// v1.1: the giants are ambient visitors and the shark is a fixed
+		// resident — no agent, pack or user file may mint another one.
+		return fmt.Errorf("species %s: role %q is reserved for core seeds", sp.ID, sp.Role)
 	}
 	if err := validatePalette(sp.Palette, "species "+sp.ID); err != nil {
 		return err

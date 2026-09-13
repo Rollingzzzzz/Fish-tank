@@ -23,11 +23,11 @@ func TestSeedSpeciesSupremacy(t *testing.T) {
 		t.Fatalf("EnsureSeed: %v", err)
 	}
 	list := s.Species()
-	if len(list) != 9 {
-		t.Fatalf("seed species = %d, want 9", len(list))
+	if len(list) != 11 {
+		t.Fatalf("seed species = %d, want 11", len(list))
 	}
 	seen := map[string]bool{}
-	chosen := 0
+	chosen, titan, shark := 0, 0, 0
 	for _, sp := range list {
 		key := strings.ToLower(sp.Name)
 		if seen[key] {
@@ -39,6 +39,33 @@ func TestSeedSpeciesSupremacy(t *testing.T) {
 			if sp.Size != spSizeMax || sp.Fin != spFinMax || sp.Tail != spTailMax {
 				t.Fatalf("chosen %s must keep the full range, got size=%v fin=%v tail=%v",
 					sp.ID, sp.Size, sp.Fin, sp.Tail)
+			}
+			continue
+		}
+		if sp.Role == contract.RoleTitan {
+			// v1.1: scale supremacy belongs to the titan, pace supremacy to
+			// the Chosen — the giant lives in its own size class at a crawl.
+			titan++
+			if sp.Size < contract.TitanSizeMin || sp.Size > contract.TitanSizeMax {
+				t.Fatalf("titan %s size %v outside [%v,%v]", sp.ID, sp.Size,
+					contract.TitanSizeMin, contract.TitanSizeMax)
+			}
+			if sp.Behavior.Speed < contract.TitanSpeedMin || sp.Behavior.Speed > contract.TitanSpeedMax {
+				t.Fatalf("titan %s speed %v outside [%v,%v]", sp.ID, sp.Behavior.Speed,
+					contract.TitanSpeedMin, contract.TitanSpeedMax)
+			}
+			continue
+		}
+		if sp.Role == contract.RoleShark {
+			// v1.1: the hammerhead pair — big and quick, never quicker than her.
+			shark++
+			if sp.Size < contract.SharkSizeMin || sp.Size > contract.SharkSizeMax {
+				t.Fatalf("shark %s size %v outside [%v,%v]", sp.ID, sp.Size,
+					contract.SharkSizeMin, contract.SharkSizeMax)
+			}
+			if sp.Behavior.Speed < contract.SharkSpeedMin || sp.Behavior.Speed > contract.SharkSpeedMax {
+				t.Fatalf("shark %s speed %v outside [%v,%v]", sp.ID, sp.Behavior.Speed,
+					contract.SharkSpeedMin, contract.SharkSpeedMax)
 			}
 			continue
 		}
@@ -62,6 +89,12 @@ func TestSeedSpeciesSupremacy(t *testing.T) {
 	}
 	if chosen != 1 {
 		t.Fatalf("seed must contain exactly one chosen species, got %d", chosen)
+	}
+	if titan != 1 {
+		t.Fatalf("seed must contain exactly one titan species, got %d", titan)
+	}
+	if shark != 1 {
+		t.Fatalf("seed must contain exactly one shark species, got %d", shark)
 	}
 }
 
@@ -134,5 +167,41 @@ func TestClampRoleAware(t *testing.T) {
 	}
 	if got := s.SpeciesByID("chosen-lilastar"); got.Size != spSizeMax || got.Fin != spFinMax {
 		t.Fatalf("core chosen must keep full range on rewrite: %+v", got)
+	}
+}
+
+// TestTitanRoleCoreOnly (v1.1): the titan role is reserved for core seeds —
+// agents, packs and user files cannot mint another giant, and the seeded
+// titan clamps into its own scale class.
+func TestTitanRoleCoreOnly(t *testing.T) {
+	s := newTestStore(t)
+	if err := s.EnsureSeed(); err != nil {
+		t.Fatalf("EnsureSeed: %v", err)
+	}
+	pal := contract.Palette{Body: "#101010", Belly: "#202020", Accent: "#303030", Glow: "#404040"}
+	pat := contract.Pattern{Type: "wave", Density: 0.5, Size: 0.5}
+	fake := &contract.Species{ID: "fake-titan", Name: "Fake Titan", Role: contract.RoleTitan,
+		Size: 7, Palette: pal, Pattern: pat, Source: "species-agent"}
+	if err := s.ValidateSpecies(fake); err == nil {
+		t.Fatal("non-core titan accepted — the role must stay core-only")
+	}
+	seeded := s.SpeciesByID("titan-abyssdrifter")
+	if seeded == nil {
+		t.Fatal("titan-abyssdrifter seed missing")
+	}
+	if err := s.ValidateSpecies(seeded); err != nil {
+		t.Fatalf("core titan invalid: %v", err)
+	}
+	if seeded.Size != 6.5 || seeded.Behavior.Speed != 0.3 {
+		t.Fatalf("titan seed drifted outside its class: size=%v speed=%v", seeded.Size, seeded.Behavior.Speed)
+	}
+	// v1.1 vivid pass: the frozen cerulean/gold palette stays, and it never
+	// wears the Chosen's lilac
+	want := contract.Palette{Body: "#d9e2ea", Belly: "#f6f9fc", Accent: "#37475a", Glow: "#9fb4c4"}
+	if seeded.Palette != want {
+		t.Fatalf("titan palette drifted: %+v", seeded.Palette)
+	}
+	if lilacReserved(seeded.Palette) {
+		t.Fatalf("titan palette %v wears the reserved lilac band", seeded.Palette)
 	}
 }

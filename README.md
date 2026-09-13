@@ -823,3 +823,89 @@ Evidence: `TestNestFloorLineAndMouthPlane`, `TestNestSceneryScale`, `nestFloorPi
 ## v1 known issues
 
 - Fish tails over-curl on sharp turns — looks unrealistic. Planned: spine curvature clamp.
+
+## v1.1 — Titans & floor critters (ambient life)
+
+Two ambient features, measured per docs/TRACEABILITY.md rows 56–64 (goals G39–G47).
+
+**Titan pod (G39–G43, G48–G49).** Every 3–6 minutes a pack of 2–5 deep-water
+giants (`titan-abyssdrifter`, one vast leader + escorts) slides in from a
+side edge, roams the tank for 2–4 minutes at a ponderous cruise, then swims
+off. They are SCALARE (angelfish) like the reference photo: a five-fish
+group with one biggest leader, silver-pearl bodies with dark slate stripes,
+tall dorsal and anal fins and trailing ventral streamers. The pod sweeps
+the tank left-to-right and right-to-left, moving only toward its head; at
+the glass each member curls 180° gracefully around its own axis — carved
+forward (the speed never stalls mid-turn, so no tail-first drifting) with
+the spine bend tightened during the curl so the tail stays clear of the
+body. The pod holds staggered slots behind the leader and drifts the far
+depth lane, so the small school reads in front of them. A hungry scalare still darts at ≥6× its cruise
+speed, and only the guarded rare hunt of G42 remains above that. A hungry giant lunges at
+flakes at ≥6× its cruise speed; a right-click scare bolts the whole pod away
+from the point at the same burst, decaying over the startle window; and only
+after starving 20 s straight — with a 300 s tank-wide cooldown, a population
+floor and the lilac fish forever immune — may the leader take one small fish
+(fast fade, no corpse, one log line). The pod is not selectable anywhere:
+catalog filter, SpawnEgg guard, and the `titan` role is core-seed-only in
+content validation. It never counts toward popCap, breeding, aging or
+snapshots.
+
+**Hammerhead pair (G50).** A resident hunter in dark blue-black with a
+white belly — always on the move, sweeping the whole tank on roam waypoints,
+at most two of them, and never faster than the lilac fish at any hour (the
+same-hour supremacy test covers even a food-frenzy double). The hammer
+rostrum renders as a crossbar with tip eyes. The pair persists in snapshots
+(cap enforced on restore), sits outside popCap, breeding and aging, and is
+off the menu and eggs like everything else that is not catalog stock.
+
+**Her circle is absolute (G55).** "No creature enters the lilac fish's
+circle" now means the whole body: the projection is spine-aware, so even a
+640 px giant cannot lie across the nest — the head clears instantly and the
+rest of the body drains out within frames, while body-aware early repulsion
+turns long fish away half a body-length before the line. Critters and mites
+keep a wider shell margin.
+
+**Depth lanes & crosswise turns (G51).** The water has near and far lanes:
+small fish drift slowly between them, so they sometimes cross the big bodies
+in front and sometimes slip behind them — painter's-order rendering plus a
+small lane-based size and alpha cue sells the depth. Nobody swims through a
+big body: small fish steer around titan and shark silhouettes. And the
+giants no longer cruise straight forever — every ~25 s a giant re-aims its
+heading by up to ≈180°, bending into a wide turn (the curvature clamp draws
+the arc).
+
+**Staging & realism (G52).** Giants never linger off the frame — anything
+roaming past the margin steers back into view within seconds (a scare bolt
+cannot strand one there; the two forces never cancel). The pod favors the
+upper 80% of the water column and hugs the sand line: headings stay near
+horizontal, steep pitches are rare, and crosswise turns bend into the
+posture clamp instead. Growth weights the bodies: a bigger pod member
+cruises heavier but lunges farther — one tail whip covers real distance —
+and every tail beat slows with size.
+
+**Vivid school (G56).** The seed school wears vivid palettes only: the old
+slate-gray glass-sucker is now rose with a cream belly and gold accents, and
+the depth-lane dimming floor was raised so even far-water fish stay lively.
+
+**Sand bed (G54, G57, G60).** A solid yellowish-white sand layer fills the
+floor from the water line down to the bottom edge, full width — the nest
+pedestal sits on it, so nothing floats.
+Fish skimming the floor scatter the grains (they lift and push sideways,
+stronger with speed), and the bed eases back to perfectly flat on its own
+within about half a minute. Purely visual state; never persisted.
+
+**Floor critters (G44–G46).** Crabs and shrimp emerge from the sand
+(cap 8 × area density, ≤14), walk the floor band, and in the last 25 s of
+their 90–150 s cycle they struggle in the open: hungry fish feel the pull
+from 260 px and the first to arrive eats one. An uneaten critter burrows back
+— no corpse. The lilac fish's circle stays absolute: spawn check + per-tick
+projection, zero intrusions measured. The shells are vivid coral-orange, and
+visibility is measured, not assumed: 1.81–1.89× floor luminance by day and
+1.76–1.90× by night — the v0.3.8 "dark clutter" failure class is absent.
+
+**Performance (G47).** Interleaved A/B on the same save (`TANK_EXTRAS=0` vs
+default): capture TPS OFF 55–60 vs ON 58–60, exit rates OFF 54/55 vs ON
+57/57 — parity within machine noise on this GPU-bound box. Tuning constants
+live in `internal/contract/tuning.go` (no config keys, no menu entries).
+Evidence frames: `go run ./cmd/tank -probe <dir>` (writes PNG + TPS lines,
+no manifest).

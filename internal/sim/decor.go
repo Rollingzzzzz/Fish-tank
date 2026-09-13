@@ -130,12 +130,82 @@ func (w *World) enforceZones(pos *contract.Vec2, vel *contract.Vec2, isChosen bo
 	}
 }
 
-// enforceZonesPos is the velocityless variant for creatures and mites.
-func (w *World) enforceZonesPos(pos *contract.Vec2) { w.enforceZones(pos, nil, false) }
+// enforceZonesPos is the velocityless variant for creatures and mites —
+// with a slightly wider margin, since a critter's whole shell must clear.
+func (w *World) enforceZonesPos(pos *contract.Vec2) {
+	for _, z := range w.zones {
+		if z.Owner != "chosen" {
+			continue
+		}
+		d := sub(*pos, z.Center)
+		if l := hyp2(d); l < z.Radius+12 {
+			*pos = add(z.Center, mulS(norm2(d), z.Radius+12))
+		}
+	}
+}
 
-// tickDecor advances the mites.
+// enforceFishZones is the body-aware projection (v1.1): the keep-clear
+// margin grows with the fish's own body, so no part of any fish — head,
+// belly or tail — crosses into her circle. A head found inside snaps out at
+// once (N3's own guarantee); a sagging body drains out at a capped pace.
+func (w *World) enforceFishZones(f *Fish) {
+	for _, z := range w.zones {
+		if z.Owner != "chosen" || f.Sp.Role == contract.RoleChosen {
+			continue
+		}
+		need := z.Radius + 16 + f.bodyLen*0.5
+		dmin := hyp2(sub(f.Pos, z.Center))
+		for i := 1; i < len(f.Spine); i++ {
+			if d := hyp2(sub(f.Spine[i], z.Center)); d < dmin {
+				dmin = d
+			}
+		}
+		if dmin >= need {
+			continue
+		}
+		out := norm2(sub(f.Pos, z.Center))
+		hd := hyp2(sub(f.Pos, z.Center))
+		if hd < z.Radius {
+			// the head crossed her line: out at once
+			f.Pos = add(z.Center, mulS(out, need))
+		} else {
+			// the body sags inside: drain outward, capped per frame
+			push := need - dmin
+			if push > 12 {
+				push = 12
+			}
+			f.Pos = add(f.Pos, mulS(out, push))
+		}
+		if vn := f.Vel.X*out.X + f.Vel.Y*out.Y; vn < 0 {
+			f.Vel.X -= vn * out.X
+			f.Vel.Y -= vn * out.Y
+		}
+	}
+}
+
+// dragSpineOut runs after followSpine re-lays the chain: any spine point
+// that ended up inside her circle is pulled back over the line. followSpine
+// re-normalizes segment lengths next frame, so this reads as one smooth
+// pull — the tail can never lie across the nest boundary.
+func (w *World) dragSpineOut(f *Fish) {
+	for _, z := range w.zones {
+		if z.Owner != "chosen" || f.Sp.Role == contract.RoleChosen {
+			continue
+		}
+		for i := 1; i < len(f.Spine); i++ {
+			p := f.Spine[i]
+			d := hyp2(sub(p, z.Center))
+			if d < z.Radius+8 && d > 0.5 {
+				f.Spine[i] = add(z.Center, mulS(norm2(sub(p, z.Center)), z.Radius+8))
+			}
+		}
+	}
+}
+
+// tickDecor advances the mites and the floor sand bed.
 func (w *World) tickDecor(dt float64) {
 	w.tickMites(dt)
+	w.tickSand(dt)
 }
 
 func (w *World) tickMites(dt float64) {

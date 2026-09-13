@@ -346,7 +346,7 @@ func TestHeldTreatScentGrowsWithCarryTime(t *testing.T) {
 	w.miteT = 1e9
 	f := w.fishes[0]
 	f.Satiety = 0.5
-	f.Pos = v2(400 + contract.HeldTreatRadius + 40, 300) // 300 px out
+	f.Pos = v2(400+contract.HeldTreatRadius+40, 300) // 300 px out
 	f.Vel = v2(0, 0)
 	cursor := v2(400, 300)
 

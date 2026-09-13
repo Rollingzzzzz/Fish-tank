@@ -132,10 +132,12 @@ func catalogList(s *content.Store) []*contract.Species {
 	if s != nil {
 		l := s.Species()
 		// v0.3.5: the lilac Chosen is one of a kind, never spawnable from the
-		// menu — she must not appear in the species catalog at all
+		// menu — she must not appear in the species catalog at all.
+		// v1.1: the same holds for the titan and shark roles — the deep
+		// wanderers and the resident hunter are not catalog stock.
 		out := make([]*contract.Species, 0, len(l))
 		for _, sp := range l {
-			if sp.Role == contract.RoleChosen {
+			if sp.Role != contract.RoleNormal {
 				continue
 			}
 			out = append(out, sp)

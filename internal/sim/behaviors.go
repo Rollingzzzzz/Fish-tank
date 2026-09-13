@@ -139,3 +139,18 @@ func (w *World) doNudge() {
 		}
 	}
 }
+
+// flee applies a skittish impulse away from (x, y).
+func (f *Fish) flee(x, y, strength float64) {
+	d := sub(f.Pos, v2(x, y))
+	l := maxF(hyp2(d), 1)
+	f.fleeImp.X += d.X / l * strength
+	f.fleeImp.Y += d.Y / l * strength
+	f.scareT = contract.ScareShelterSec // v0.3.8: keep seeking cover after the impulse fades
+	f.scarePt = v2(x, y)                // v1.1: the pod bolts from the exact point
+	f.Resting = false
+	f.restTarget = nil
+	f.attachT = 0    // a startled pleco lets go of the glass (N5)
+	f.loungeT = 0    // fear shatters the cave calm (F15)
+	f.abortTransit() // F25: a scared fish abandons the approach
+}

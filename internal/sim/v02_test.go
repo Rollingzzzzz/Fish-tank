@@ -58,7 +58,9 @@ func TestNoBreedingWithoutCare(t *testing.T) {
 	cfg := contract.Config{MaxFish: 30, DaySeconds: 60}
 	w := NewWorld(800, 600, cfg, []*contract.Species{sp}, nil, nil)
 	w.SeedRng(99)
-	w.miteT = 1e9 // wild mite meals grant free care — disarm for a pure soak
+	w.miteT = 1e9                  // wild mite meals grant free care — disarm for a pure soak
+	contract.ExtrasEnabled = false // v1.1: critter meals grant care too
+	defer func() { contract.ExtrasEnabled = true }()
 	w.fishes = w.fishes[:0]
 	for i := 0; i < contract.MinPopulation; i++ {
 		p := v2(200+w.rng.Float64()*400, 200+w.rng.Float64()*200)

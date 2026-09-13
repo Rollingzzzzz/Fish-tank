@@ -14152,5 +14152,245 @@
     "kind": "coral",
     "id": "aurora-veil-39",
     "at": "2026-09-12T20:37:22Z"
+  },
+  {
+    "hash": "80d7b7abdd06e344",
+    "kind": "species",
+    "id": "titan-abyssdrifter",
+    "at": "2026-09-13T15:17:24Z"
+  },
+  {
+    "hash": "c01424d1511f6f2e",
+    "kind": "species",
+    "id": "nova-mirrortail",
+    "at": "2026-09-13T15:17:27Z"
+  },
+  {
+    "hash": "7b1e9a01d77d868e",
+    "kind": "water",
+    "id": "prism-reef-40",
+    "at": "2026-09-13T15:17:30Z"
+  },
+  {
+    "hash": "a06a8316b414c47a",
+    "kind": "coral",
+    "id": "glimmer-boulder-40",
+    "at": "2026-09-13T15:17:30Z"
+  },
+  {
+    "hash": "12518abb767d0595",
+    "kind": "pattern",
+    "id": "elder-elder-spark-29",
+    "at": "2026-09-13T15:17:33Z"
+  },
+  {
+    "hash": "2803f58fec6f0bc9",
+    "kind": "species",
+    "id": "neon-mirrorflare",
+    "at": "2026-09-13T15:47:49Z"
+  },
+  {
+    "hash": "c428a8c349218f80",
+    "kind": "species",
+    "id": "glass-sucker",
+    "at": "2026-09-13T20:00:52Z"
+  },
+  {
+    "hash": "ff0b75ca1554f759",
+    "kind": "species",
+    "id": "shark-hammerhead",
+    "at": "2026-09-13T20:00:52Z"
+  },
+  {
+    "hash": "60ae0d11f7272433",
+    "kind": "species",
+    "id": "titan-abyssdrifter",
+    "at": "2026-09-13T20:00:52Z"
+  },
+  {
+    "hash": "df86748feec6a9e2",
+    "kind": "species",
+    "id": "aqua-emberfin",
+    "at": "2026-09-13T20:00:55Z"
+  },
+  {
+    "hash": "1478dcdcec64cd60",
+    "kind": "water",
+    "id": "neon-current-39",
+    "at": "2026-09-13T20:00:58Z"
+  },
+  {
+    "hash": "80892ec4c42e8e91",
+    "kind": "coral",
+    "id": "glimmer-bubble-36",
+    "at": "2026-09-13T20:00:58Z"
+  },
+  {
+    "hash": "267ef826c0d820ea",
+    "kind": "pattern",
+    "id": "elder-elder-coat-30",
+    "at": "2026-09-13T20:01:01Z"
+  },
+  {
+    "hash": "14f8469b12e576ab",
+    "kind": "species",
+    "id": "echo-staticflare",
+    "at": "2026-09-13T20:41:06Z"
+  },
+  {
+    "hash": "49c7e42000071e81",
+    "kind": "water",
+    "id": "aurora-current-38",
+    "at": "2026-09-13T20:41:09Z"
+  },
+  {
+    "hash": "8ca3a1499f55f3f0",
+    "kind": "coral",
+    "id": "rose-candle-41",
+    "at": "2026-09-13T20:41:09Z"
+  },
+  {
+    "hash": "153b0c1dd8f130b8",
+    "kind": "pattern",
+    "id": "fry-fry-prime-3",
+    "at": "2026-09-13T20:41:12Z"
+  },
+  {
+    "hash": "3bf0f06a1b4d552b",
+    "kind": "species",
+    "id": "cryo-coraldart",
+    "at": "2026-09-13T20:46:33Z"
+  },
+  {
+    "hash": "da17113f34fff372",
+    "kind": "water",
+    "id": "prism-reef-39",
+    "at": "2026-09-13T20:46:36Z"
+  },
+  {
+    "hash": "1765a2f066007020",
+    "kind": "coral",
+    "id": "violet-torch-40",
+    "at": "2026-09-13T20:46:36Z"
+  },
+  {
+    "hash": "864517f3edcf6aa9",
+    "kind": "pattern",
+    "id": "fry-fry-prime-4",
+    "at": "2026-09-13T20:46:39Z"
+  },
+  {
+    "hash": "7eaa20613859f4f6",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-fade-52",
+    "at": "2026-09-13T20:47:59Z"
+  },
+  {
+    "hash": "3dccc333bb798860",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-mist-40",
+    "at": "2026-09-13T20:47:59Z"
+  },
+  {
+    "hash": "564046d7eb51f834",
+    "kind": "water",
+    "id": "solar-basin-40",
+    "at": "2026-09-13T20:48:26Z"
+  },
+  {
+    "hash": "018d590cc7303133",
+    "kind": "coral",
+    "id": "ember-torch-41",
+    "at": "2026-09-13T20:48:26Z"
+  },
+  {
+    "hash": "703eb350c8d2d4c1",
+    "kind": "species",
+    "id": "zephyr-auroraveil",
+    "at": "2026-09-13T20:48:53Z"
+  },
+  {
+    "hash": "7ad479dd9bdadcb2",
+    "kind": "species",
+    "id": "prism-embershade",
+    "at": "2026-09-13T20:50:37Z"
+  },
+  {
+    "hash": "de46ae5bd5a5a006",
+    "kind": "water",
+    "id": "crystal-shallows-38",
+    "at": "2026-09-13T20:50:40Z"
+  },
+  {
+    "hash": "88de9fa6145fb6de",
+    "kind": "coral",
+    "id": "onyx-boulder-34",
+    "at": "2026-09-13T20:50:40Z"
+  },
+  {
+    "hash": "57b0adf2dc59b06f",
+    "kind": "pattern",
+    "id": "elder-elder-veil-42",
+    "at": "2026-09-13T20:50:43Z"
+  },
+  {
+    "hash": "353fd0b0906ce3fa",
+    "kind": "pattern",
+    "id": "elder-elder-mist-52",
+    "at": "2026-09-13T20:52:03Z"
+  },
+  {
+    "hash": "ab5cfac58853ffdd",
+    "kind": "pattern",
+    "id": "elder-elder-spark-30",
+    "at": "2026-09-13T20:52:03Z"
+  },
+  {
+    "hash": "1a2a05399879226f",
+    "kind": "water",
+    "id": "emerald-lagoon-36",
+    "at": "2026-09-13T20:52:30Z"
+  },
+  {
+    "hash": "3a7e7a1a50576ebc",
+    "kind": "coral",
+    "id": "cyan-bubble-40",
+    "at": "2026-09-13T20:52:30Z"
+  },
+  {
+    "hash": "0ea6c0bfb1bdfbc0",
+    "kind": "species",
+    "id": "prism-solardrift",
+    "at": "2026-09-13T20:52:57Z"
+  },
+  {
+    "hash": "cd5eb33ef25157d0",
+    "kind": "species",
+    "id": "astra-mirrorflare",
+    "at": "2026-09-13T20:55:07Z"
+  },
+  {
+    "hash": "d0e98da4f345ac3b",
+    "kind": "water",
+    "id": "solar-lagoon-40",
+    "at": "2026-09-13T20:55:10Z"
+  },
+  {
+    "hash": "7086e2e54a33763f",
+    "kind": "coral",
+    "id": "glimmer-veil-39",
+    "at": "2026-09-13T20:55:10Z"
+  },
+  {
+    "hash": "714283d4b2acadb3",
+    "kind": "pattern",
+    "id": "adult-adult-veil-44",
+    "at": "2026-09-13T20:55:13Z"
+  },
+  {
+    "hash": "be4e34570acda66d",
+    "kind": "pattern",
+    "id": "adult-adult-wash-36",
+    "at": "2026-09-13T20:55:13Z"
   }
 ]

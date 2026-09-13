@@ -91,6 +91,17 @@ type World struct {
 	lounges                             int     // F15 cave-lounge count (soak evidence)
 	miteT                               float64 // N7 spawn cadence
 
+	// v1.1 ambient features (ExtrasEnabled off for A/B evidence runs)
+	titanPhase int     // 0 absent, 1 entering, 2 roaming, 3 exiting
+	titanT     float64 // countdown of the current phase
+	predCD     float64 // tank-wide predation cooldown
+	predHunger float64 // sustained starving seconds on the current giant
+	predTgtID  string  // pursued fish ("" = none)
+	predT      float64 // pursuit seconds left before breaking off
+	creatures  []*Creature
+	creatureT  float64
+	sand       []float64 // v1.1: floor disturbance offsets, 0 = level bed
+
 	WaterCur WaterLive
 	WaterTgt WaterLive
 	WaterID  string
@@ -127,8 +138,8 @@ func NewWorld(w, h float64, cfg contract.Config, species []*contract.Species,
 	per := max(1, target/4)
 	count, kinds := 0, 0
 	for _, sp := range species {
-		if sp.Role == contract.RoleChosen {
-			continue // the Chosen is placed alone, once (FD9)
+		if sp.Role == contract.RoleChosen || sp.Role == contract.RoleTitan || sp.Role == contract.RoleShark {
+			continue // the Chosen alone (FD9); titans visit, sharks arrive via ensureSharks
 		}
 		if kinds >= 4 {
 			break
@@ -166,6 +177,10 @@ func NewWorld(w, h float64, cfg contract.Config, species []*contract.Species,
 		world.WaterCur = world.WaterTgt // no fade on boot
 	}
 	world.logf("tank", "the tank wakes up")
+	// v1.1: the first titan visit comes early enough to be discovered, the
+	// rest keep the full gap cadence
+	world.titanT = 45 + world.rng.Float64()*45
+	world.creatureT = 2 + world.rng.Float64()*4
 	return world
 }
 
@@ -217,7 +232,9 @@ func (w *World) Update(dt float64, in Input) {
 		// band, scale with population, never carpet the floor with flakes.
 		sum, n := 0.0, 0
 		for _, f := range w.fishes {
-			if !f.Dying {
+			if !f.Dying && f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
+				// v1.1: the pod's hunger is its own drama — giants never drag
+				// the maintenance average down
 				sum += f.Satiety
 				n++
 			}
@@ -248,6 +265,7 @@ func (w *World) Update(dt float64, in Input) {
 	}
 	w.sweepCorpses() // logs departures, then re-asserts the F14 plant majority
 	w.ensureChosen() // F23: if the eternal one was ever swept, she returns
+	w.ensureSharks() // v1.1: the resident pair stays whole
 	for _, f := range w.fishes {
 		// fast mouse swipes scatter nearby fish
 		if in.MouseActive && in.MouseSpeed > 900 {
@@ -269,6 +287,10 @@ func (w *World) Update(dt float64, in Input) {
 	w.tickParticles(dt)
 	w.tickDecor(dt)
 	w.tickBehaviors(dt)
+	if contract.ExtrasEnabled { // v1.1 ambient features; TANK_EXTRAS=0 = A/B off
+		w.tickTitans(dt)
+		w.tickCreatures(dt)
+	}
 
 	// day counter (F8/F9): a full DaySeconds elapse = one tank day
 	if d := int(w.Clock / maxF(w.cfg.DaySeconds, 1)); d > w.Day {

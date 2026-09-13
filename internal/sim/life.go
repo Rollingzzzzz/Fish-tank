@@ -52,7 +52,9 @@ func StageScale(stage string) float64 {
 // tickLife advances aging, stage transitions, death and care for one fish.
 func (w *World) tickLife(f *Fish, dt float64) {
 	chosen := f.Sp.Role == contract.RoleChosen // FD9: the eternal one
-	if !chosen {
+	titan := f.Sp.Role == contract.RoleTitan   // v1.1: ambient visitor
+	shark := f.Sp.Role == contract.RoleShark   // v1.1: resident hunter
+	if !chosen && !titan && !shark {
 		f.AgeDays += dt / maxF(w.cfg.DaySeconds, 1)
 		stage := StageFor(f.AgeDays)
 		if stage != f.Stage {
@@ -81,7 +83,7 @@ func (w *World) tickLife(f *Fish, dt float64) {
 		}
 	}
 	if f.Dying {
-		f.Fade -= dt / contract.DeathFadeSec
+		f.Fade -= dt / f.deathFadeRate()
 	}
 	// eat flash decay
 	if f.EatFlash > 0 {

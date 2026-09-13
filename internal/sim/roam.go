@@ -25,7 +25,11 @@ func (f *Fish) tourSteer(w *World, dt, maxSp float64) (contract.Vec2, bool) {
 	}
 	f.tourT -= dt
 	if f.tourT <= 0 || hyp2(sub(f.tourC, f.Pos)) < 60 {
-		f.tourC = v2(w.W*(0.08+w.rng.Float64()*0.84), w.H*(0.15+w.rng.Float64()*0.65))
+		yLo, yHi := 0.15, 0.80
+		if f.Sp.Role == contract.RoleShark {
+			yLo, yHi = 0.15, 0.62 // v1.1: the hunter roams the upper water
+		}
+		f.tourC = v2(w.W*(0.08+w.rng.Float64()*0.84), w.H*(yLo+w.rng.Float64()*(yHi-yLo)))
 		f.tourT = contract.RoamMeanSec * (0.6 + w.rng.Float64()*0.8)
 	}
 	d := sub(f.tourC, f.Pos)
@@ -53,6 +57,9 @@ func (f *Fish) inNest(w *World) bool {
 // REACHES cover, and the pure energy bar sits at 0.15 — caves are for the
 // truly weary, not a pit stop at the first yawn.
 func (f *Fish) shelterSteer(w *World, maxSp float64) (contract.Vec2, bool) {
+	if f.Sp.Role == contract.RoleShark {
+		return v2(0, 0), false // v1.1: the hunter does not hide
+	}
 	if f.CourtID != "" || (hyp2(f.fleeImp) <= 40 && f.Energy >= 0.15 && f.scareT <= 0) {
 		return v2(0, 0), false
 	}

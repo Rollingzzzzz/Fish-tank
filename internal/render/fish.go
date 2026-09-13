@@ -17,6 +17,7 @@ type FishAnim struct {
 	Attached   bool    // F18: suctioned to the glass (flat sucker pose)
 	AttachSide int     // F18: -1 left wall, +1 right wall (0 when free)
 	Hide01     float64 // F25: binary (v0.3.8): 0 visible .. 1 inside a crag
+	Z          float64 // v1.1 depth lane 0 far .. 1 near (0 treated as mid)
 }
 
 // stageAlpha tunes body opacity per life stage (fry are translucent).
@@ -94,7 +95,23 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 		s := segs[min(i, n-2)]
 		norms[i] = v2(-s.Y, s.X)
 	}
+	// v1.1 G58: the scalare read — a TALL, laterally flat diamond whose
+	// height rivals its length; the dorsal and anal fins tower above it
 	peakW := bodyLen * 0.16 * contract.Clamp(spec.Width, 0.5, 1.6)
+	finK := 1.0
+	if spec.Role == contract.RoleTitan {
+		peakW = bodyLen * contract.TitanTallPeak
+		finK = contract.TitanFinScale
+	}
+
+	// v1.1: depth lanes — far fish sit slightly smaller and dimmer, near
+	// fish full size and alpha (the 3D read; Z 0 counts as mid lane)
+	z := anim.Z
+	if z == 0 {
+		z = 0.5
+	}
+	peakW *= contract.DepthFarScale + (1-contract.DepthFarScale)*z
+	aDepth := contract.DepthNearAlpha + (1-contract.DepthNearAlpha)*z
 
 	// width profile: rounded head, max at ~30%, needle tail
 	widths := make([]float64, n)
@@ -117,6 +134,7 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 		aMul = uint8(float64(aMul) * (1 - 0.31*p))
 	}
 	aMul = uint8(float64(aMul) * (1 - hide)) // F25: transit fade
+	aMul = uint8(float64(aMul) * aDepth)     // v1.1: depth lane dimming
 
 	// ---- fins (behind the body, translucent, gently swaying) ----
 	var fins mesh
@@ -125,12 +143,29 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 	d1 := spinePoint(spine, norms, widths, 0.52, 1)
 	peak := spinePoint(spine, norms, widths, 0.40, 1)
 	dSway := sin(anim.Time*3.1+1) * bodyLen * 0.012
-	fins.triT(add(d0, v2(0, -bodyLen*0.09*spec.Fin+dSway)), d1, add(peak, v2(0, -bodyLen*0.16*spec.Fin-dSway)), finC)
+	fins.triT(add(d0, v2(0, -bodyLen*0.09*spec.Fin*finK+dSway)), d1, add(peak, v2(0, -bodyLen*0.16*spec.Fin*finK-dSway)), finC)
 	p0 := spinePoint(spine, norms, widths, 0.20, -1)
 	flap := sin(anim.Time*5.2) * bodyLen * 0.02
 	pDir := segs[min(1, n-2)]
-	fins.triT(p0, add(p0, v2(pDir.X*bodyLen*0.10, bodyLen*0.055*spec.Fin+flap)),
-		add(p0, v2(-pDir.Y*bodyLen*0.05, pDir.X*bodyLen*0.08*spec.Fin+flap)), finC)
+	fins.triT(p0, add(p0, v2(pDir.X*bodyLen*0.10, bodyLen*0.055*spec.Fin*finK+flap)),
+		add(p0, v2(-pDir.Y*bodyLen*0.05, pDir.X*bodyLen*0.08*spec.Fin*finK+flap)), finC)
+	// G58: the anal fin mirrors the dorsal below the belly
+	a0 := spinePoint(spine, norms, widths, 0.42, -1)
+	a1 := spinePoint(spine, norms, widths, 0.60, -1)
+	ap := spinePoint(spine, norms, widths, 0.50, -1)
+	fins.triT(add(a0, v2(0, bodyLen*0.05*spec.Fin*finK+dSway)), a1,
+		add(ap, v2(0, bodyLen*0.11*spec.Fin*finK-dSway)), finC)
+	// G58: the scalare's trailing ventral streamers — two long filaments
+	// sweep down and back off the belly, swaying slower than the fins
+	if spec.Role == contract.RoleTitan {
+		strC := withA(scaleRGBA(bellyC, 0.98), uint8(165*(1-hide)))
+		for k, u := range [2]float64{0.24, 0.34} {
+			root := spinePoint(spine, norms, widths, u, -1)
+			swayS := sin(anim.Time*2.1+float64(k)*1.3) * bodyLen * 0.045
+			end := add(root, add(mul(pDir, bodyLen*0.13), v2(swayS, bodyLen*0.30)))
+			strokeQuads(&fins, []contract.Vec2{root, end}, 1.6, strC)
+		}
+	}
 	tip := spine[n-1]
 	td := segs[n-2]
 	swish := sin(anim.Time*(4+7*clampF(anim.Speed01, 0, 1))) * (0.28 + 0.22*anim.Speed01)
@@ -177,11 +212,23 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 	// ---- pattern overlay (built along the spine, stays inside the body) ----
 	drawPattern(b, spine, segs, norms, widths, bodyLen, spec, pal, stage, night, anim, aMul)
 
-	// eye on the head, slightly above the midline
+	// v1.1: the hammerhead — a crossbar rostrum ahead of the head with an
+	// eye at each tip, instead of the round head eye
+	if spec.Role == contract.RoleShark {
+		drawHammer(b, spine, segs, norms, peakW, aMul, bodyC)
+		return
+	}
+
+	// eye on the head, slightly above the midline — a tall scalare caps the
+	// eye at a proportional size (G58)
 	eyePos := add(spine[0], add(mul(segs[0], bodyLen*0.045), mul(norms[0], widths[0]*0.18)))
+	eyeR := maxF(peakW*0.24, 1.6)
+	if spec.Role == contract.RoleTitan {
+		eyeR = min(eyeR, bodyLen*0.05)
+	}
 	var eye mesh
-	eye.fan(eyePos, maxF(peakW*0.24, 1.6), color.RGBA{R: 235, G: 250, B: 255, A: aMul}, 10)
-	eye.fan(add(eyePos, mul(segs[0], peakW*0.06)), maxF(peakW*0.12, 0.9), color.RGBA{R: 8, G: 10, B: 22, A: aMul}, 8)
+	eye.fan(eyePos, eyeR, color.RGBA{R: 235, G: 250, B: 255, A: aMul}, 10)
+	eye.fan(add(eyePos, mul(segs[0], peakW*0.06)), maxF(eyeR*0.5, 0.9), color.RGBA{R: 8, G: 10, B: 22, A: aMul}, 8)
 	b.opaque.merge(&eye)
 	b.n++
 }

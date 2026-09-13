@@ -24,6 +24,9 @@ func newFish(sp *contract.Species, seed int64, pos contract.Vec2, ageDays float6
 	f.Pal = sp.Palette
 	f.Pat = sp.Pattern
 	f.wanderA = f.rng.Float64() * 6.283
+	f.zPhase = f.rng.Float64() * 6.283
+	f.zSpeed = 0.05 + f.rng.Float64()*0.08
+	f.z = 0.5
 	f.loungeNext = contract.LoungeMeanSec * (0.5 + f.rng.Float64()) // F15 stagger
 	f.bodyLen = f.targetLen()
 	f.segLen = f.bodyLen / (contract.SpineSegments - 1)

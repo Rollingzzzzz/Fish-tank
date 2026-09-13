@@ -195,8 +195,8 @@ func TestSeedCoralsAndSpeciesLoad(t *testing.T) {
 		}
 	}
 	sps := s2.Species()
-	if len(sps) != 9 { // N9: 6 original + ribbon-streamer, puff-orbit, dart-spindle
-		t.Fatalf("species seeds = %d, want 9", len(sps))
+	if len(sps) != 11 { // N9: 6 original + ribbon-streamer, puff-orbit, dart-spindle + v1.1 titan & shark
+		t.Fatalf("species seeds = %d, want 11", len(sps))
 	}
 	glass := s2.SpeciesByID("glass-sucker")
 	if glass == nil || glass.Role != contract.RoleNormal || glass.Behavior.Attachment != 0.9 {

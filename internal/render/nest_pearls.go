@@ -10,7 +10,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-
 // drawNestPearls paints exactly three pearls inside the gape — bobbing,
 // blazing when she visits (contact) — plus her rising lilac motes.
 func drawNestPearls(dst *ebiten.Image, cx, mouthY, hw, oh, time, contact float64) {

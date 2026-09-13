@@ -82,11 +82,13 @@ func (w *World) storeSpecies(id string) *contract.Species {
 	return nil
 }
 
-// aliveFishes counts fish that are not dying.
+// aliveFishes lists fish that are not dying AND not titans (v1.1): the pod
+// is an ambient visit, never part of the population the caps, breeding,
+// behavior picks and the population floor govern.
 func (w *World) aliveFishes() []*Fish {
 	out := w.fishes[:0:0]
 	for _, f := range w.fishes {
-		if !f.Dying {
+		if !f.Dying && f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
 			out = append(out, f)
 		}
 	}

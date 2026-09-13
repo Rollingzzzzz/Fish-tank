@@ -155,4 +155,3 @@ func bakeCracks(m *mesh, cx, baseY, rx, ry float64, rng *rand.Rand, n int) {
 		}
 	}
 }
-

@@ -146,6 +146,9 @@ func (w *World) Snapshot() contract.Save {
 		if f.Dying {
 			continue // v0.3.8: dissolving fish are not tank history
 		}
+		if f.Sp.Role == contract.RoleTitan {
+			continue // v1.1: the pod is a visit, never tank history
+		}
 		s.Fish = append(s.Fish, contract.SavedFish{
 			SpeciesID: f.Sp.ID, Seed: f.Seed, AgeDays: f.AgeDays,
 			Pos: f.Pos, Vel: f.Vel, Satiety: f.Satiety, Energy: f.Energy,
@@ -173,10 +176,22 @@ func (w *World) Restore(s contract.Save) error {
 	}
 	w.fishes = w.fishes[:0]
 	chosenSeen := false
+	sharkSeen := 0
 	for _, sf := range s.Fish {
 		sp := w.storeSpecies(sf.SpeciesID)
 		if sp == nil {
 			continue
+		}
+		if sp.Role == contract.RoleTitan {
+			// v1.1: a hand-edited save cannot summon the deep — visits only
+			continue
+		}
+		if sp.Role == contract.RoleShark {
+			// v1.1: residents persist, but never beyond the pair cap
+			if sharkSeen >= contract.SharkMax {
+				continue
+			}
+			sharkSeen++
 		}
 		// F23: the eternal one is ONE — legacy/edited saves carrying several
 		// chosen entries keep only the first; the rest dissolve (logged).

@@ -263,3 +263,30 @@ func TestCatalogExcludesChosen(t *testing.T) {
 		t.Fatal("catalog should list the normal seeds")
 	}
 }
+
+// v1.1: the titan role never appears in the species catalog either — the
+// deep wanderers are ambient visits, not stock the menu can hand out.
+func TestCatalogExcludesTitan(t *testing.T) {
+	dir := t.TempDir()
+	store, err := content.Load(filepath.Join(dir, "content"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := store.EnsureSeed(); err != nil {
+		t.Fatal(err)
+	}
+	if store.SpeciesByID("titan-abyssdrifter") == nil {
+		t.Fatal("titan seed missing from the store")
+	}
+	list := catalogList(store)
+	for _, sp := range list {
+		if sp.Role == contract.RoleTitan {
+			t.Fatalf("catalog must exclude the titan role, found %s", sp.ID)
+		}
+	}
+	for _, sp := range list {
+		if sp.ID == "titan-abyssdrifter" {
+			t.Fatal("titan-abyssdrifter must not be listed in the catalog")
+		}
+	}
+}

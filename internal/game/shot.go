@@ -29,6 +29,7 @@ type shotRect struct {
 
 type shotRun struct {
 	dir      string
+	probe    bool // v1.1: -probe evidence run — no manifest.json is written
 	frame    int
 	prevDown bool
 	prevR    bool

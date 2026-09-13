@@ -30,10 +30,12 @@ type Behavior struct {
 	NightActive bool    `json:"nightActive"`
 }
 
-// Species role constants (v2).
+// Species role constants (v2, v1.1).
 const (
 	RoleNormal = "normal"
 	RoleChosen = "chosen" // the one immortal lilac fish (FD8/FD9)
+	RoleTitan  = "titan"  // v1.1: deep-water giants on visit cycles (core-only)
+	RoleShark  = "shark"  // v1.1: resident hammerhead pair, never faster than her
 )
 
 // Live-treat kinds for the Treat Store (N8).
@@ -159,6 +161,11 @@ type Config struct {
 
 	FullscreenOnStart bool `json:"fullscreenOnStart"` // v3 (F13): borderless fullscreen launch
 }
+
+// ExtrasEnabled is the evidence kill-switch for the v1.1 ambient features
+// (titan pod + floor critters). Bootstrap pins it from TANK_EXTRAS=0 so the
+// interleaved A/B perf runs can turn both features off on the same save.
+var ExtrasEnabled = true
 
 // SavedFish is the full live state of one fish (crash-safe snapshot, G2.5).
 type SavedFish struct {

@@ -22,8 +22,8 @@ func (w *World) Holes() []contract.Hole { return w.holes }
 // tickTransit advances the transit state machine for one fish and schedules
 // new transits for idle cruisers near a mouth.
 func (w *World) tickTransit(f *Fish, dt float64) {
-	if len(w.holes) == 0 {
-		return
+	if len(w.holes) == 0 || f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
+		return // v1.1: giants and sharks do not fit through the doors
 	}
 	if !f.transiting {
 		w.maybeStartTransit(f, dt)

@@ -2,6 +2,8 @@
 package render
 
 import (
+	"image/color"
+
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
 )
 
@@ -122,4 +124,34 @@ func desat(c colorRGBA, k float64) colorRGBA {
 		return uint8(float64(v)*k + lum*(1-k) + 0.5)
 	}
 	return colorRGBA{R: mix(c.R), G: mix(c.G), B: mix(c.B), A: c.A}
+}
+
+// drawHammer paints the shark's crossbar rostrum ahead of the head with an
+// eye at each tip (v1.1 G50; split from fish.go for the line ceiling).
+func drawHammer(b *FishBatch, spine, segs, norms []contract.Vec2, peakW float64, aMul uint8, bodyC color.RGBA) {
+	hw := peakW * 1.55 // hammer half-width
+	th := peakW * 0.40 // bar thickness
+	// the bar overlaps the head tip: the body strip runs needle-thin at
+	// spine[0], so a forward gap would read as a detached stick
+	c0 := add(spine[0], mul(segs[0], th*0.35))
+	pr := norms[0]
+	corner := func(side, along float64) contract.Vec2 {
+		return add(c0, add(mul(pr, side*hw), mul(segs[0], along)))
+	}
+	var hammer mesh
+	barC := withA(scaleRGBA(bodyC, 1.15), aMul)
+	hammer.quad(
+		corner(-1, -th), corner(1, -th), corner(1, th), corner(-1, th),
+		barC, barC, barC, barC)
+	hammer.fan(corner(-1, 0), th*1.05, barC, 8)
+	hammer.fan(corner(1, 0), th*1.05, barC, 8)
+	b.opaque.merge(&hammer)
+	// eyes sit at the tips of the hammer, hammerhead-style
+	var eyes mesh
+	for _, side := range [2]float64{-1, 1} {
+		tip := corner(side, 0)
+		eyes.fan(tip, maxF(peakW*0.18, 1.5), color.RGBA{R: 235, G: 250, B: 255, A: uint8(aMul)}, 8)
+		eyes.fan(add(tip, mul(pr, side*peakW*0.05)), maxF(peakW*0.09, 0.8), color.RGBA{R: 8, G: 10, B: 22, A: uint8(aMul)}, 6)
+	}
+	b.opaque.merge(&eyes)
 }

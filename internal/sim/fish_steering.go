@@ -2,14 +2,8 @@
 package sim
 
 import (
-	"math"
-
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
 )
-
-func mathSqrt(x float64) float64 { return math.Sqrt(x) }
-func mathCos(a float64) float64  { return math.Cos(a) }
-func mathSin(a float64) float64  { return math.Sin(a) }
 
 // steer accumulates the behavior acceleration vector.
 func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
@@ -18,6 +12,11 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	addForce := func(desired contract.Vec2, weight float64) {
 		acc.X += (desired.X - f.Vel.X) * weight
 		acc.Y += (desired.Y - f.Vel.Y) * weight
+	}
+
+	// v1.1: pod members run their own ponderous mix entirely
+	if f.Sp.Role == contract.RoleTitan {
+		return f.steerTitan(dt, maxSp, w)
 	}
 
 	// F15: lounging replaces the whole steering mix with the cave hold —
@@ -32,7 +31,11 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	}
 	// wander (smooth random heading) — quiet neighbors let schooling win
 	f.wanderA += (f.rng.Float64() - 0.5) * 2.4 * dt
-	addForce(v2(cos(f.wanderA)*0.6*maxSp, sin(f.wanderA)*0.6*maxSp), 0.55)
+	wx, wy := cos(f.wanderA)*0.6*maxSp, sin(f.wanderA)*0.6*maxSp
+	if f.Sp.Role == contract.RoleShark {
+		wy *= contract.TitanHeadFlat // the hunter hugs the sand line too
+	}
+	addForce(v2(wx, wy), 0.55)
 
 	// schooling (boids, same species)
 	if f.Sp.Behavior.Schooling > 0.05 {
@@ -85,6 +88,7 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	foodW, treat := 0.0, (*Treat)(nil)
 	var best *Food
 	var tgtMite *Mite
+	var tgtCrit *Creature // v1.1: a struggling floor critter (G45)
 	if f.Satiety < 0.9 {
 		hunger := clampF(1-f.Satiety, 0, 1)
 		// F3: perception widens with curiosity and hunger — a starving fish
@@ -113,6 +117,18 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 				tgtMite = m
 			}
 		}
+		// v1.1 (G45): a struggling floor critter is living bait — hungry fish
+		// feel it from CreatureLureRadius and it outranks mites and treats
+		for _, c := range w.creatures {
+			if !c.Vulnerable() {
+				continue
+			}
+			if cd := hyp2(sub(c.Pos, f.Pos)); cd < tBestD && cd < contract.CreatureLureRadius {
+				tBestD, treat = cd, (*Treat)(nil)
+				best, tgtMite = nil, nil
+				tgtCrit = c
+			}
+		}
 		if treat != nil {
 			best = nil
 		} else if tgtMite == nil {
@@ -128,9 +144,11 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	if held && tgtMite == nil {
 		best, treat = nil, nil
 	}
-	if best != nil || treat != nil || tgtMite != nil || held {
+	if best != nil || treat != nil || tgtMite != nil || tgtCrit != nil || held {
 		tgt := f.Pos
 		switch {
+		case tgtCrit != nil:
+			tgt = tgtCrit.Pos
 		case tgtMite != nil:
 			tgt = tgtMite.Pos
 		case held:
@@ -144,7 +162,7 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 		foodW = 3.0 + 1.5*hunger
 		d := sub(tgt, f.Pos)
 		l := maxF(hyp2(d), 1)
-		if treat != nil || held {
+		if treat != nil || held || tgtCrit != nil {
 			foodW += 1.0 // live food triggers a mad dash
 		}
 		addForce(mulS(d, maxSp*2.0/l), foodW)
@@ -230,13 +248,8 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 		}
 	}
 
-	// depth band preference (shifts up at night for night-active species)
-	band := contract.Clamp(f.Sp.Behavior.Depth, 0, 1)
-	if f.Sp.Behavior.NightActive {
-		band = clampF(band-0.25*night, 0, 1)
-	}
-	prefY := w.H * (0.18 + 0.62*band)
-	addForce(v2(0, (prefY-f.Pos.Y)*0.25), 0.25)
+	// depth band preference + the shark's upper-80% preference (depth.go)
+	f.depthBandSteer(w, night, maxSp, addForce)
 
 	// N2: scared or tired fish shelter in the nearest cave (roam.go)
 	if d, ok := f.shelterSteer(w, maxSp); ok {
@@ -244,16 +257,23 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	}
 
 	// N3 aura repulsion. F27: the Chosen is exempt — her own nest never
-	// pushes her out.
+	// pushes her out. v1.1: the radius grows with the fish's own body, so a
+	// long fish turns away early enough that no part of it crosses the line.
 	for _, z := range w.zones {
 		if z.Owner != "chosen" || f.Sp.Role == contract.RoleChosen {
 			continue
 		}
 		d := sub(f.Pos, z.Center)
-		if l := hyp2(d); l < z.Radius+40 && l > 1 {
-			addForce(mulS(d, maxSp/l), 1.5)
+		r := z.Radius + 40 + f.bodyLen*0.45
+		if l := hyp2(d); l < r && l > 1 {
+			urgency := 1 + 2*(1-l/r)
+			addForce(mulS(d, maxSp*urgency/l), 1.8)
 		}
 	}
+
+	// v1.1: flow around the big bodies — through a titan or the shark
+	// nobody swims; the silhouette is gone around, never crossed
+	f.avoidBigBodies(w, maxSp, addForce)
 
 	// wall margins
 	const mgn = 60.0
@@ -277,24 +297,4 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 		acc = mulS(acc, cap/l)
 	}
 	return acc
-}
-
-// followSpine keeps segment lengths exactly and adds the swimming wave.
-func (f *Fish) followSpine(dt float64) {
-	f.Spine[0] = f.Pos
-	maxSp := f.maxSpeed(f.curNight)
-	speed01 := clampF(hyp2(f.Vel)/maxSp, 0, 1)
-	for i := 1; i < len(f.Spine); i++ {
-		d := sub(f.Spine[i], f.Spine[i-1])
-		l := maxF(hyp2(d), 1e-6)
-		// constrained base vector
-		dx, dy := d.X/l*f.segLen, d.Y/l*f.segLen
-		// swimming wave displacement (perpendicular to the segment)
-		amp := f.segLen * 0.35 * (0.25 + 0.75*speed01)
-		wave := sin(f.phase-float64(i)*0.55) * amp * (float64(i) / float64(len(f.Spine)-1))
-		nx, ny := -dy/f.segLen, dx/f.segLen
-		vx, vy := dx+nx*wave, dy+ny*wave
-		vl := maxF(sqrt(vx*vx+vy*vy), 1e-6)
-		f.Spine[i] = v2(f.Spine[i-1].X+vx/vl*f.segLen, f.Spine[i-1].Y+vy/vl*f.segLen)
-	}
 }

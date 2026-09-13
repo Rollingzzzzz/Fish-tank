@@ -22,9 +22,10 @@ var iconPNG []byte
 
 // cliArgs is the parsed launch line.
 type cliArgs struct {
-	smoke   bool
-	shotDir string
-	w, h    int // logical size override (F13 aspect matrix), 0 = auto
+	smoke    bool
+	shotDir  string
+	probeDir string // v1.1: -probe evidence pass (ambient features)
+	w, h     int    // logical size override (F13 aspect matrix), 0 = auto
 }
 
 func parseArgs(args []string) cliArgs {
@@ -36,6 +37,10 @@ func parseArgs(args []string) cliArgs {
 		case "-shot", "--shot":
 			if i+1 < len(args) {
 				c.shotDir = args[i+1]
+			}
+		case "-probe", "--probe":
+			if i+1 < len(args) {
+				c.probeDir = args[i+1]
 			}
 		case "-winsize", "--winsize":
 			if i+1 < len(args) {
@@ -81,6 +86,9 @@ func main() {
 	}
 	if cli.shotDir != "" {
 		g.StartShot(cli.shotDir) // F19: evidence capture harness
+	}
+	if cli.probeDir != "" {
+		g.StartProbe(cli.probeDir) // v1.1: titan + critter evidence pass
 	}
 	ebiten.SetWindowTitle("NEON TANK")
 	ebiten.SetWindowSize(winW, winH)

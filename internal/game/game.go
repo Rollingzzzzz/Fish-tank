@@ -51,6 +51,7 @@ type Game struct {
 	grabSec   float64                 // seconds since the grab — scent growth (F26)
 	smoke     *smokeRun               // -menu-smoke scripted acceptance run
 	shot      *shotRun                // -shot scripted evidence capture (F19)
+	fishOrder []*sim.Fish             // v1.1: reused depth-sorted draw order
 	feedHeld  bool                    // left-button level state (F5 feed edge)
 	scareHeld bool                    // right-button level state (N10 scare edge)
 	closeBtn  ui.ButtonState          // v0.3.3: the always-visible X button

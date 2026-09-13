@@ -140,6 +140,76 @@ const (
 	HeldScentGrowCap = 140.0 // F26: max extra scent radius
 )
 
+// v1.1: titan pod (G39–G43) and floor critters (G44–G47). Everything the two
+// ambient features need lives here — no config keys, no menu entries.
+const (
+	// Visit cycle: the pod is absent for the gap, present for the dwell.
+	TitanVisitGapMin   = 180.0 // s between visits (absent stretch)
+	TitanVisitGapMax   = 360.0
+	TitanVisitMin      = 120.0 // shortest roaming dwell
+	TitanVisitMax      = 240.0
+	TitanPodMin        = 5 // scalare travel as a five (1 leader + 4 escorts)
+	TitanPodMax        = 5
+	TitanSizeMin       = 6.0 // species size range (core seed only; 64 px × Size)
+	TitanSizeMax       = 7.0
+	TitanFlatness      = 0.62 // superseded by TitanTallPeak (G58 angelfish read)
+	TitanTallPeak      = 0.42 // v1.1 G58: the scalare body is a TALL flat diamond
+	TitanFinScale      = 1.6  // dorsal/anal fins tower over the diamond
+	TitanSpineBendTurn = 0.18 // bend allowance while curling a 180° turn
+	TitanTurnWindow    = 2.6  // seconds a curl takes
+	TitanEdgeTurn      = 0.12 // fraction of the width where the curl triggers
+	TitanSpeedMin      = 0.25 // behavior speed clamp — the ponderous cruise
+	TitanSpeedMax      = 0.60
+	TitanLungeMul      = 10.0  // seekBonus while lunging (≥6× cruise burst, G41)
+	TitanSpineBend     = 0.085 // rad per segment — ≈63° total arc: the giant sweeps wide and never folds
+	TitanLungeSec      = 1.2   // burst duration
+	TitanLungeCD       = 240.0 // per-fish seconds between lunges (rare shock)
+	TitanSatietySec    = 12.0  // a giant belly drains this fast (normals: 40 s)
+
+	// Rare predation (G42): giant only, starved long enough, never the Chosen.
+	PredationSatiety = 0.15  // starving threshold
+	PredationSustain = 20.0  // s the giant must stay starving
+	PredationCD      = 300.0 // tank-wide cooldown after a feeding
+	PredationPursuit = 6.0   // max chase seconds before breaking off
+	// PredationPopFloor: never hunt below this live-fish count (FD11 margin).
+	PredationPopFloor = MinPopulation + 2
+
+	// Hammerhead pair (G50): a resident hunter, always on the move, and
+	// never faster than the Chosen at any hour (F23 holds for the shark).
+	SharkMax      = 2
+	SharkSizeMin  = 1.5 // species size range (core seed only; 64 px × Size)
+	SharkSizeMax  = 2.0
+	SharkSpeedMin = 0.7
+	SharkSpeedMax = 1.1 // ≤ her worst hour even at full chase (supremacy test)
+
+	// Depth lanes + pod turns (G51): the 3D read.
+	DepthSwing      = 0.35 // fish drift ±this around the mid lane (0 far .. 1 near)
+	DepthNearAlpha  = 0.88 // far-lane alpha floor (near lane = full)
+	DepthFarScale   = 0.90 // far-lane width scale (near lane = 1.10)
+	AvoidBigRadius  = 0.55 // × body length small fish keep clear of big bodies
+	TitanHeadFlat   = 0.25 // wander's vertical share — headings hug the sand line
+	TitanUpperBand  = 0.78 // the pod favors the upper 80% of the water column
+	TitanCruiseDamp = 0.22 // pod cruise slows as members grow (×(1.12−d·sizeMul))
+	TitanBurstFloor = 0.70 // capture burst grows with size (×(floor+boost·sizeMul))
+	TitanBurstBoost = 0.30
+	BeatBodyDamp    = 0.35  // big bodies beat their tails slower (64px reference)
+	FloorLineFrac   = 0.925 // the sand line, as a fraction of tank height
+	SandCellPx      = 8.0   // one disturbance cell per this many floor pixels
+	SandSettleRate  = 0.25  // per-second return to the flat baseline
+	SandDiffuse     = 1.2   // sideways flattening speed of the bed
+
+	// Floor critters (G44–G45): crabs and shrimp walking the tank bottom.
+	CreatureCapBase    = 8.0  // × area density, hard-capped below
+	CreatureCapMax     = 14   //
+	CreatureSpawnMean  = 20.0 // mean seconds between emergences
+	CreatureLifeMin    = 90.0 // s of walking before the vulnerable turn
+	CreatureLifeMax    = 150.0
+	CreatureVulnSec    = 25.0  // final phase: struggling, luring, edible
+	CreatureLureRadius = 260.0 // hungry fish notice the struggling critter
+	CreatureWalkSpeed  = 14.0  // px/s along the floor
+	CreatureBurrowSec  = 2.0   // an uneaten critter sinks back into the floor
+)
+
 // GLM output guard.
 const MaxOutputTokens = 1600
 

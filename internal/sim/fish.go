@@ -33,6 +33,7 @@ type Fish struct {
 	DieReason  string
 	SparedOnce bool
 	ElderP     float64 // F7: 0..1 elder fade progress (drives render desat)
+	fadeFast   bool    // v1.1: swallowed prey dissolves almost at once
 
 	seekBonus float64 // F3: >1 while chasing food — velocity + force allowance
 
@@ -56,6 +57,12 @@ type Fish struct {
 	tourC contract.Vec2
 	tourT float64
 
+	// v1.1 titan pod state (only ever set on Role == titan fish)
+	sizeMul float64       // body scale relative to the species seed (giant = 1)
+	lungeT  float64       // remaining hunger-lunge seconds
+	lungeCD float64       // seconds until the next lunge is allowed
+	lungePt contract.Vec2 // point the current lunge dives toward
+
 	// F25 door-to-door transit state (driven by world tickTransit)
 	transiting bool
 	inHole     contract.Hole // mouth we are swimming into
@@ -66,15 +73,27 @@ type Fish struct {
 	Hide01     float64 // binary (v0.3.8): 0 visible .. 1 swallowed by a door
 
 	// courtship (managed by the world)
-	CourtID    string        // partner fish id, "" when free
-	CourtT     float64       // remaining seconds
-	CourtTime  float64       // elapsed seconds
-	CourtC     contract.Vec2 // circle center
-	CourtAng   float64
-	EatFlash   float64 // >0 → draw a sparkle bite
-	bites      int     // N8: lifetime bites (flake/treat/mite — scramble evidence)
-	fleeImp    contract.Vec2
-	scareT     float64 // v0.3.8: shelter-seek seconds left after a scare
+	CourtID   string        // partner fish id, "" when free
+	CourtT    float64       // remaining seconds
+	CourtTime float64       // elapsed seconds
+	CourtC    contract.Vec2 // circle center
+	CourtAng  float64
+	EatFlash  float64 // >0 → draw a sparkle bite
+	bites     int     // N8: lifetime bites (flake/treat/mite — scramble evidence)
+	fleeImp   contract.Vec2
+	scareT    float64       // v0.3.8: shelter-seek seconds left after a scare
+	scarePt   contract.Vec2 // v1.1: where the startle came from (pod bolts away)
+
+	// v1.1 depth lanes + pod turns
+	zPhase     float64 // where the fish sits in the near/far drift cycle
+	zSpeed     float64 // rad/s of that drift
+	z          float64 // current lane 0 = far .. 1 = near (0.5 = the big fish)
+	turnT      float64 // titan: seconds left in the current 180° curl
+	cruise     float64 // titan: +1 sweeping right, -1 sweeping left
+	turning    float64 // titan: seconds left of the curl's relaxed bend
+	headingA   float64 // titan: sweep heading (0 = right, π = left)
+	slotBack   float64 // v1.1: formation distance behind the leader (px)
+	slotY      float64 // v1.1: formation vertical offset from the leader (px)
 	bodyLen    float64
 	segLen     float64
 	curNight   float64 // night factor cache for the spine pass
@@ -84,6 +103,15 @@ type Fish struct {
 
 // targetLen is the desired spine length for the current stage (px).
 func (f *Fish) targetLen() float64 {
+	if f.Sp.Role == contract.RoleTitan {
+		// v1.1: giants own their scale class — Size 6..9 (≈384..576 px spine),
+		// escorts scaled below it via sizeMul, always adult-sized.
+		return 64 * contract.Clamp(f.Sp.Size, contract.TitanSizeMin, contract.TitanSizeMax) * f.sizeMul
+	}
+	if f.Sp.Role == contract.RoleShark {
+		// v1.1: the hunter is big but sleek — Size 2.5..4, adult forever.
+		return 64 * contract.Clamp(f.Sp.Size, contract.SharkSizeMin, contract.SharkSizeMax)
+	}
 	return 64 * contract.Clamp(f.Sp.Size, 0.5, 1.6) * StageScale(f.Stage)
 }
 
@@ -94,6 +122,19 @@ func (f *Fish) maxSpeed(night float64) float64 {
 		nMul = 0.82 + 0.36*night
 	} else {
 		nMul = 1.18 - 0.36*night
+	}
+	if f.Sp.Role == contract.RoleTitan {
+		// v1.1: the ponderous cruise — no stage or fade multipliers, and the
+		// daily pace HEAVIES as a member grows (G52 growth-weight rule).
+		return contract.BaseSpeed * contract.Clamp(f.Sp.Behavior.Speed,
+			contract.TitanSpeedMin, contract.TitanSpeedMax) * nMul *
+			(1.12 - contract.TitanCruiseDamp*f.sizeMul)
+	}
+	if f.Sp.Role == contract.RoleShark {
+		// v1.1: the hunter patrols at full pace, yet never outswims her —
+		// the same-hour supremacy test pins that (F23 holds for the shark).
+		return contract.BaseSpeed * contract.Clamp(f.Sp.Behavior.Speed,
+			contract.SharkSpeedMin, contract.SharkSpeedMax) * nMul
 	}
 	stage := StageSpeed(f.Stage)
 	if f.Sp.Role == contract.RoleChosen {
@@ -112,7 +153,7 @@ func (f *Fish) maxSpeed(night float64) float64 {
 // ctx carries world lookups (kept as params to keep Fish free of World).
 func (f *Fish) advance(dt, night float64, w *World) {
 	if f.Dying {
-		f.Fade = maxF(0, f.Fade-dt/contract.DeathFadeSec)
+		f.Fade = maxF(0, f.Fade-dt/f.deathFadeRate())
 		f.Pos.X += f.Vel.X * dt * 0.3
 		f.Pos.Y += (f.Vel.Y*dt*0.3 + 8*dt) // slowly sink while fading
 		f.followSpine(dt)
@@ -147,6 +188,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	}
 	maxSp := f.maxSpeed(night)
 	f.curNight = night
+	f.driftDepth(w)
 	speed01 := clampF(hyp2(f.Vel)/maxSp, 0, 1)
 
 	// energy economy
@@ -159,7 +201,8 @@ func (f *Fish) advance(dt, night float64, w *World) {
 		// of constantly filing into the caves to recharge
 		f.Energy = clampF(f.Energy-dt*(0.006+0.012*speed01), 0, 1)
 	}
-	f.Satiety = clampF(f.Satiety-dt/40, 0, 1)
+	// hunger: a giant belly drains ~3× faster — hunger fires the lunge (G41)
+	f.Satiety = clampF(f.Satiety-dt/f.satietyDecay(), 0, 1)
 
 	acc := f.steer(dt, maxSp, night, w)
 
@@ -176,20 +219,37 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	f.fleeImp = mulS(f.fleeImp, maxF(0, 1-1.2*dt))
 	f.scareT = maxF(0, f.scareT-dt) // v0.3.8: shelter-seek window ticks down
 
+	// v1.1 G58: a curling scalare never stalls or backs up — it carves the
+	// 180° turn forward, tail trailing, like a real fish
+	if f.turning > 0 && f.Sp.Role == contract.RoleTitan {
+		if sp := hyp2(f.Vel); sp < maxSp*0.5 {
+			dir := f.Vel
+			if sp < 0.01 {
+				dir = v2(f.cruise, 0)
+			}
+			f.Vel = mulS(norm2(dir), maxSp*0.5)
+		}
+	}
+
 	f.Pos.X += f.Vel.X * dt
 	f.Pos.Y += f.Vel.Y * dt
 
+	// v1.1: titans cross the tank edges — the visit machine owns containment
+	freeEdge := f.Sp.Role == contract.RoleTitan
+
 	// impenetrable tank bounds — a fish can never leave the water
-	if f.Pos.X < 8 {
-		f.Pos.X = 8
-		if f.Vel.X < 0 {
-			f.Vel.X = 0
+	if !freeEdge {
+		if f.Pos.X < 8 {
+			f.Pos.X = 8
+			if f.Vel.X < 0 {
+				f.Vel.X = 0
+			}
 		}
-	}
-	if f.Pos.X > w.W-8 {
-		f.Pos.X = w.W - 8
-		if f.Vel.X > 0 {
-			f.Vel.X = 0
+		if f.Pos.X > w.W-8 {
+			f.Pos.X = w.W - 8
+			if f.Vel.X > 0 {
+				f.Vel.X = 0
+			}
 		}
 	}
 	if f.Pos.Y < 8 {
@@ -205,24 +265,12 @@ func (f *Fish) advance(dt, night float64, w *World) {
 		}
 	}
 
-	// N3: nothing alive but the Chosen may enter the aura
-	w.enforceZones(&f.Pos, &f.Vel, f.Sp.Role == contract.RoleChosen)
+	// N3/G52: nothing alive but the Chosen may enter the aura — and for a
+	// big body "enter" means ANY spine segment, head to tail
+	w.enforceFishZones(f)
 
 	// N5: occasional glass attach for high-Attachment species
-	if f.Sp.Behavior.Attachment > 0.5 && f.attachT <= 0 && !f.Resting &&
-		f.loungeT <= 0 && f.CourtID == "" && f.chaseT <= 0 && f.zoomT <= 0 &&
-		f.rng.Float64() < 0.05*f.Sp.Behavior.Attachment*dt {
-		x := 14.0
-		if f.Pos.X >= w.W/2 {
-			x = w.W - 14
-		}
-		f.attachPo = v2(x, clampF(f.Pos.Y, 70, w.H-90))
-		f.attachT = 30 + f.rng.Float64()*60
-		f.Vel = v2(0, 0)
-		if f.rng.Float64() < 0.4 {
-			w.logf("behavior", "the "+f.Sp.Name+" clamps onto the glass")
-		}
-	}
+	f.maybeAttach(w, dt)
 
 	// growth toward the stage target length
 	f.bodyLen += (f.targetLen() - f.bodyLen) * minF(1, dt*0.5)
@@ -233,8 +281,12 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	if f.loungeT > 0 {
 		phaseMul = 0.3
 	}
-	f.phase += dt * (3.2 + 7.5*speed01) * (1 - 0.25*f.ElderP) * phaseMul
+	// v1.1: big bodies beat their tails slower — the heavy, real read
+	// (64 px reference fish; a 576 px giant beats at ~a quarter the rate)
+	f.phase += dt * (3.2 + 7.5*speed01) * (1 - 0.25*f.ElderP) * phaseMul *
+		64 / (64 + contract.BeatBodyDamp*f.bodyLen)
 	f.followSpine(dt)
+	w.dragSpineOut(f)
 }
 
 // eat applies a successful bite.
@@ -243,34 +295,4 @@ func (f *Fish) eat() {
 	f.EatFlash = 0.6
 	f.Energy = minF(1, f.Energy+0.08)
 	f.bites++
-}
-
-// Attached reports whether the fish is currently suctioned to the glass
-// (F18: the renderer gives attached suckers their flat mouth-on look).
-func (f *Fish) Attached() bool { return f.attachT > 0 && !f.Dying }
-
-// AttachWall returns the wall the sucker clings to: -1 left edge, +1 right
-// edge (0 when not attached).
-func (f *Fish) AttachWall() int {
-	if f.attachT <= 0 || f.Dying {
-		return 0
-	}
-	if f.attachPo.X < 30 {
-		return -1
-	}
-	return 1
-}
-
-// flee applies a skittish impulse away from (x, y).
-func (f *Fish) flee(x, y, strength float64) {
-	d := sub(f.Pos, v2(x, y))
-	l := maxF(hyp2(d), 1)
-	f.fleeImp.X += d.X / l * strength
-	f.fleeImp.Y += d.Y / l * strength
-	f.scareT = contract.ScareShelterSec // v0.3.8: keep seeking cover after the impulse fades
-	f.Resting = false
-	f.restTarget = nil
-	f.attachT = 0    // a startled pleco lets go of the glass (N5)
-	f.loungeT = 0    // fear shatters the cave calm (F15)
-	f.abortTransit() // F25: a scared fish abandons the approach
 }

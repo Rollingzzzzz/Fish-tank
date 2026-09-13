@@ -16,8 +16,8 @@ import (
 // towers must not vacuum the tank. The Chosen is exempt: she may always
 // join and never counts against either cap.
 func (w *World) tickLounge(f *Fish, dt float64) {
-	if f.Dying {
-		return
+	if f.Dying || f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
+		return // v1.1: no cave is big enough for a giant — or a shark
 	}
 	if f.loungeT > 0 {
 		f.loungeT -= dt
