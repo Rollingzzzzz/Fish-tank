@@ -78,6 +78,20 @@ func (f *ForegroundStage) bake(sp *fgSpot, h float64) {
 	sp.img = img
 }
 
+// breatheOptions composites one baked frond: the ±0.7° whole-plant
+// breathing rotation around its base. G64: the rotation resamples the
+// raster every frame — with the default nearest filter the corner fronds
+// stepped texel by texel, reading as pixelated low-fps sway next to the
+// live anti-aliased vector plants. Linear filtering interpolates it.
+func breatheOptions(sp *fgSpot, angle, x, y float64) *ebiten.DrawImageOptions {
+	op := &ebiten.DrawImageOptions{}
+	op.Filter = ebiten.FilterLinear
+	op.GeoM.Translate(-sp.bx, -sp.by)
+	op.GeoM.Rotate(angle)
+	op.GeoM.Translate(x, y)
+	return op
+}
+
 // Draw composites the near-glass fronds — one DrawImage each, the whole
 // plant breathing around its base.
 func (f *ForegroundStage) Draw(dst *ebiten.Image, t, w, h float64) {
@@ -89,10 +103,7 @@ func (f *ForegroundStage) Draw(dst *ebiten.Image, t, w, h float64) {
 		if sp.img == nil {
 			f.bake(sp, h)
 		}
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(-sp.bx, -sp.by)
-		op.GeoM.Rotate(sin(t*0.55+sp.ph) * 0.012) // ±0.7° whole-plant breathing
-		op.GeoM.Translate(w*sp.xf, h*0.998)
-		dst.DrawImage(sp.img, op)
+		angle := sin(t*0.55+sp.ph) * 0.012 // ±0.7° whole-plant breathing
+		dst.DrawImage(sp.img, breatheOptions(sp, angle, w*sp.xf, h*0.998))
 	}
 }

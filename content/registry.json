@@ -14614,5 +14614,53 @@
     "kind": "species",
     "id": "astra-rippleveil",
     "at": "2026-09-13T21:45:47Z"
+  },
+  {
+    "hash": "7eb5e040ffc388d8",
+    "kind": "species",
+    "id": "zephyr-haloglow",
+    "at": "2026-09-13T21:58:34Z"
+  },
+  {
+    "hash": "b17fb4a34987eb03",
+    "kind": "water",
+    "id": "midnight-basin-40",
+    "at": "2026-09-13T21:58:37Z"
+  },
+  {
+    "hash": "5d784d57c287314e",
+    "kind": "coral",
+    "id": "ember-crown-40",
+    "at": "2026-09-13T21:58:37Z"
+  },
+  {
+    "hash": "4904536cb6796ba2",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-coat-47",
+    "at": "2026-09-13T21:58:40Z"
+  },
+  {
+    "hash": "a3492daddc52fbb7",
+    "kind": "pattern",
+    "id": "adult-adult-prime-44",
+    "at": "2026-09-13T22:00:01Z"
+  },
+  {
+    "hash": "3bc48e996a3ee873",
+    "kind": "water",
+    "id": "solar-depths-38",
+    "at": "2026-09-13T22:00:27Z"
+  },
+  {
+    "hash": "97e4c6bd0ef15d05",
+    "kind": "coral",
+    "id": "ember-seafan-41",
+    "at": "2026-09-13T22:00:27Z"
+  },
+  {
+    "hash": "f047ec5dcb4017f4",
+    "kind": "species",
+    "id": "pyro-haloshade",
+    "at": "2026-09-13T22:00:54Z"
   }
 ]
