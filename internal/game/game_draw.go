@@ -76,6 +76,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			Hide01: f.Hide01, // v0.3.8: binary 0/1
 			Z:      f.Z(),    // v1.1 depth lane
 		}
+		if chosen {
+			// G73: the wormhole pass — her body fades into the door and
+			// the door itself breathes under her
+			anim.PortalFade = f.PortalFade01()
+			if p := f.PortalFrom(); p != nil {
+				grow := 1.0
+				if f.PortalPhase() == 1 {
+					grow = clamp01(f.PortalClock() / 0.9)
+				}
+				render.DrawPortal(screen, p.X, p.Y, grow, wl.Time)
+			}
+			if f.PortalPhase() == 3 {
+				render.DrawPortal(screen, f.Pos.X, f.Pos.Y, 1-clamp01(f.PortalClock()/0.6), wl.Time)
+			}
+		}
 		if chosen || f.Attached() {
 			// F16: her rim/shimmer/bioluminescence stay on the immediate path
 			render.DrawFish(screen, g.trail.Image(), f.Spine, f.Sp, &f.Pal, f.Stage, night, anim)

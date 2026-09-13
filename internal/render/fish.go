@@ -18,6 +18,7 @@ type FishAnim struct {
 	AttachSide int     // F18: -1 left wall, +1 right wall (0 when free)
 	Hide01     float64 // F25: binary (v0.3.8): 0 visible .. 1 inside a crag
 	Z          float64 // v1.1 depth lane 0 far .. 1 near (0 treated as mid)
+	PortalFade float64 // v1.1 G73: 0 solid .. 1 fully inside a wormhole
 }
 
 // stageAlpha tunes body opacity per life stage (fry are translucent).
@@ -133,8 +134,9 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 		accentC = desat(accentC, k)
 		aMul = uint8(float64(aMul) * (1 - 0.31*p))
 	}
-	aMul = uint8(float64(aMul) * (1 - hide)) // F25: transit fade
-	aMul = uint8(float64(aMul) * aDepth)     // v1.1: depth lane dimming
+	aMul = uint8(float64(aMul) * (1 - hide))            // F25: transit fade
+	aMul = uint8(float64(aMul) * (1 - anim.PortalFade)) // G73: wormhole pass
+	aMul = uint8(float64(aMul) * aDepth)                // v1.1: depth lane dimming
 
 	// ---- fins (behind the body, translucent, gently swaying) ----
 	var fins mesh
@@ -168,16 +170,18 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 	}
 	tip := spine[n-1]
 	td := segs[n-2]
-	swish := sin(anim.Time*(4+7*clampF(anim.Speed01, 0, 1))) * (0.28 + 0.22*anim.Speed01)
+	// G72: the caudal fin is bone-mounted — the sweep stays a narrow wag
+	// around the last vertebra, never a circular propeller swing
+	swish := sin(anim.Time*(4+7*clampF(anim.Speed01, 0, 1))) * (0.20 + 0.14*anim.Speed01)
 	tailLen := bodyLen * 0.24 * contract.Clamp(spec.Tail, 0.5, 1.6)
 	tailC := withA(scaleRGBA(accentC, 1.0), uint8(150*(1-hide)))
 	rot := func(v contract.Vec2, a float64) contract.Vec2 {
 		return v2(v.X*cos(a)-v.Y*sin(a), v.X*sin(a)+v.Y*cos(a))
 	}
 	back := v2(-td.X, -td.Y)
-	l1 := add(tip, v2(rot(back, swish-0.38).X*tailLen, rot(back, swish-0.38).Y*tailLen))
+	l1 := add(tip, v2(rot(back, swish-0.30).X*tailLen, rot(back, swish-0.30).Y*tailLen))
 	l2 := add(tip, v2(rot(back, swish).X*tailLen*1.12, rot(back, swish).Y*tailLen*1.12))
-	l3 := add(tip, v2(rot(back, swish+0.38).X*tailLen, rot(back, swish+0.38).Y*tailLen))
+	l3 := add(tip, v2(rot(back, swish+0.30).X*tailLen, rot(back, swish+0.30).Y*tailLen))
 	fins.triT(tip, l1, l2, tailC)
 	fins.triT(tip, l2, l3, tailC)
 	b.opaque.merge(&fins)
@@ -213,9 +217,10 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 	drawPattern(b, spine, segs, norms, widths, bodyLen, spec, pal, stage, night, anim, aMul)
 
 	// v1.1: the hammerhead — a crossbar rostrum ahead of the head with an
-	// eye at each tip, instead of the round head eye
+	// eye at each tip, plus the wild dress: predator dorsal, breathing
+	// gill slits, hunter's eyes (G71)
 	if spec.Role == contract.RoleShark {
-		drawHammer(b, spine, segs, norms, peakW, aMul, bodyC)
+		drawSharkWild(b, spine, segs, norms, widths, peakW, bodyLen, aMul, bodyC, anim)
 		return
 	}
 

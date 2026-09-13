@@ -113,7 +113,7 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// true half circle at constant pace while the head keeps travelling
 	// forward. A force-fought turn stalls the nose around a pivot and reads
 	// like clock hands; the path cannot.
-	if f.turning > 0 {
+	if f.turning > 0 && f.lungeT <= 0 && f.seekBonus <= 1.01 {
 		p := 1 - f.turning/contract.TitanTurnWindow
 		ang := f.turnH0 + f.turnS*math.Pi*p
 		// the arc is a true wide U (G67): radius scaled to the body, pace
@@ -152,8 +152,10 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// G66: the turn needs room for its whole arc — the trigger scales with
 	// the body, so the sweeping tail never runs past the view edge. The
 	// LEADER owns the clock: one call flips the whole caravan together.
+	// a striking elder does not start the glass turn — the burst owns her
+	// until it closes (the next sweep will still reach the glass in time)
 	edge := f.bodyLen*(contract.TitanTurnRadiusFrac+0.85) + 30
-	if (f.cruise > 0 && f.Pos.X > w.W-edge) || (f.cruise < 0 && f.Pos.X < edge) {
+	if f.seekBonus <= 1.01 && ((f.cruise > 0 && f.Pos.X > w.W-edge) || (f.cruise < 0 && f.Pos.X < edge)) {
 		if f.turnT <= 0 {
 			w.titanStartConvoyTurn()
 		}
@@ -181,8 +183,14 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 		f.altT = 18 + f.rng.Float64()*22
 	}
 	// level swimming stays gentle: vertical drift is softly damped -- the
-	// body may glide up or down along its sweep, but not ballistically
-	addForce(v2(0, -f.Vel.Y*0.75), 0.75)
+	// body may glide up or down along its sweep, but not ballistically.
+	// Through a strike the damper stands aside: the lunge keeps its full
+	// 6x+ burst (G41) on both axes
+	dampW := 0.75
+	if f.seekBonus > 1.01 {
+		dampW = 0.12
+	}
+	addForce(v2(0, -f.Vel.Y*dampW), dampW)
 	// the pod favors the upper 80% -- the sand line is not their water
 	if f.Pos.Y > w.H*contract.TitanUpperBand {
 		addForce(v2(0, -maxSp), 1.1)
@@ -195,8 +203,12 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// the altitude pull always runs (G69): toward the personal drawn
 	// altitude, both up and down, at a soft weight -- the dive toward the
 	// nest level and the climb to the surface light are the same gentle law
-	if off := w.H*f.altY - f.Pos.Y; absF(off) > 8 {
-		addForce(v2(0, clampF(off*0.22, -maxSp*0.4, maxSp*0.4)), 1.0)
+	// through a strike the altitude hunt stands aside (one frame's notice
+	// is enough — the lunge lasts 1.2 s) so the burst keeps its full budget
+	if f.seekBonus <= 1.01 {
+		if off := w.H*f.altY - f.Pos.Y; absF(off) > 8 {
+			addForce(v2(0, clampF(off*0.22, -maxSp*0.4, maxSp*0.4)), 1.0)
+		}
 	}
 	// overshoot brake: drifting well past the drawn altitude turns the
 	// glide around before it can settle into the bottom band

@@ -41,6 +41,9 @@ func TestTimeLapseEveryEyeLeadsItsMotion(t *testing.T) {
 				if f.Dying || f.attachT > 0 || f.transiting || f.Hide01 > 0 {
 					continue
 				}
+				if f.Sp.Role == contract.RoleChosen && f.portalPh != 0 {
+					continue // G73: the wormhole pass steps her across the tank
+				}
 				snap[f] = f.Pos
 				a := sub(f.Spine[0], f.Spine[1])
 				if l := hyp2(a); l > 1e-3 {
@@ -78,6 +81,9 @@ func TestTimeLapseEveryEyeLeadsItsMotion(t *testing.T) {
 						f.Spine[j-1].X, f.Spine[j-1].Y, f.Spine[j].X, f.Spine[j].Y,
 						f.Spine[j+1].X, f.Spine[j+1].Y, f.segLen)
 				}
+			}
+			if f.Sp.Role == contract.RoleChosen && f.portalPh != 0 {
+				continue // mid-pass she is nowhere and everywhere
 			}
 			// the swim law every frame: the velocity never opposes the eye
 			// (zone projections shove POSITION, not the swim — they are not

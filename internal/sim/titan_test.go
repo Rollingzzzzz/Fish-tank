@@ -95,11 +95,12 @@ func TestTitanHungerLungeBurst(t *testing.T) {
 		if g.lungeT > 0 {
 			lunged = true
 			// the start tick aims the dive; every mid-burst tick carries the
-			// frozen multiplier and the ≥6× speed cap
+			// frozen multiplier and the ≥6× speed cap (judged against the
+			// cruise of THAT hour — night slows the base pace too)
 			if g.lungeT < contract.TitanLungeSec && g.seekBonus < contract.TitanLungeMul {
 				t.Fatalf("lunge seekBonus %v below the frozen multiplier", g.seekBonus)
 			}
-			if s := hyp2(g.Vel); s > maxSeen {
+			if s := hyp2(g.Vel) / maxF(0.82, 1.18-0.36*w.night01()); s > maxSeen {
 				maxSeen = s
 			}
 		}

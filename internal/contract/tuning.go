@@ -192,13 +192,17 @@ const (
 	// back becomes a bounded carve, never a tail-first glide (G62)
 
 	// Depth lanes + pod turns (G51): the 3D read.
-	DepthSwing      = 0.35 // fish drift ±this around the mid lane (0 far .. 1 near)
-	DepthNearAlpha  = 0.88 // far-lane alpha floor (near lane = full)
-	DepthFarScale   = 0.90 // far-lane width scale (near lane = 1.10)
-	AvoidBigRadius  = 0.55 // × body length small fish keep clear of big bodies
-	TitanHeadFlat   = 0.25 // wander's vertical share — headings hug the sand line
-	TitanUpperBand  = 0.78 // the pod favors the upper 80% of the water column
-	TitanAltMax     = 0.66 // G69: deepest personal altitude — visiting the nest level, not living there
+	DepthSwing     = 0.35 // fish drift ±this around the mid lane (0 far .. 1 near)
+	DepthNearAlpha = 0.88 // far-lane alpha floor (near lane = full)
+	DepthFarScale  = 0.90 // far-lane width scale (near lane = 1.10)
+	AvoidBigRadius = 0.55 // × body length small fish keep clear of big bodies
+	TitanHeadFlat  = 0.25 // wander's vertical share — headings hug the sand line
+	TitanUpperBand = 0.78 // the pod favors the upper 80% of the water column
+	TitanAltMax    = 0.66 // G69: deepest personal altitude — visiting the nest level, not living there
+
+	// Chosen wormhole pass (G73): rare by contract — a door every few minutes
+	PortalGapMin    = 200.0
+	PortalGapMax    = 380.0
 	TitanCruiseDamp = 0.22 // pod cruise slows as members grow (×(1.12−d·sizeMul))
 	TitanBurstFloor = 0.70 // capture burst grows with size (×(floor+boost·sizeMul))
 	TitanBurstBoost = 0.30

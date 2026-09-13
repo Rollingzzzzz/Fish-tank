@@ -239,6 +239,14 @@ func (w *World) Update(dt float64, in Input) {
 	w.ensureSharks() // v1.1: the resident pair stays whole
 	w.ensurePod()    // v1.1: the five elders are permanent residents (G39)
 	for _, f := range w.fishes {
+		if f.Sp.Role == contract.RoleChosen && !f.Dying {
+			if f.portalCD == 0 { // a fresh eternal one passes sooner
+				f.portalCD = contract.PortalGapMin * 0.4
+			}
+			w.tickChosenPortal(f, dt) // G73 wormhole
+		}
+	}
+	for _, f := range w.fishes {
 		// fast mouse swipes scatter nearby fish
 		if in.MouseActive && in.MouseSpeed > 900 {
 			d := hyp2(sub(f.Pos, v2(in.MouseX, in.MouseY)))

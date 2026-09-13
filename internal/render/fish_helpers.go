@@ -126,13 +126,13 @@ func desat(c colorRGBA, k float64) colorRGBA {
 	return colorRGBA{R: mix(c.R), G: mix(c.G), B: mix(c.B), A: c.A}
 }
 
-// drawHammer paints the shark's crossbar rostrum ahead of the head with an
-// eye at each tip (v1.1 G50; split from fish.go for the line ceiling).
-func drawHammer(b *FishBatch, spine, segs, norms []contract.Vec2, peakW float64, aMul uint8, bodyC color.RGBA) {
-	hw := peakW * 1.55 // hammer half-width
-	th := peakW * 0.40 // bar thickness
-	// the bar overlaps the head tip: the body strip runs needle-thin at
-	// spine[0], so a forward gap would read as a detached stick
+// drawSharkWild dresses the hammerhead like a predator (G71): the hammer
+// rostrum and its eyes, a swept dorsal fin, and live gill slits that
+// breathe with the swim — the hunter reads wild, not decorative.
+func drawSharkWild(b *FishBatch, spine, segs, norms []contract.Vec2, widths []float64,
+	peakW, bodyLen float64, aMul uint8, bodyC color.RGBA, anim FishAnim) {
+	hw := peakW * 1.55
+	th := peakW * 0.40
 	c0 := add(spine[0], mul(segs[0], th*0.35))
 	pr := norms[0]
 	corner := func(side, along float64) contract.Vec2 {
@@ -146,12 +146,42 @@ func drawHammer(b *FishBatch, spine, segs, norms []contract.Vec2, peakW float64,
 	hammer.fan(corner(-1, 0), th*1.05, barC, 8)
 	hammer.fan(corner(1, 0), th*1.05, barC, 8)
 	b.opaque.merge(&hammer)
-	// eyes sit at the tips of the hammer, hammerhead-style
+	// the swept dorsal fin — the classic predator silhouette, raked back
+	var dorsal mesh
+	finC := withA(scaleRGBA(bodyC, 0.72), uint8(float64(aMul)*0.92))
+	dRoot0 := spinePoint(spine, norms, widths, 0.30, 1)
+	dRoot1 := spinePoint(spine, norms, widths, 0.46, 1)
+	dTip := add(spinePoint(spine, norms, widths, 0.30, 1),
+		add(mul(norms[2], bodyLen*0.15), mul(segs[2], -bodyLen*0.075)))
+	dorsal.triT(dRoot0, dRoot1, dTip, finC)
+	// small secondary ridge behind it — twin-fin read of a hunting shark
+	d2Root0 := spinePoint(spine, norms, widths, 0.48, 1)
+	d2Root1 := spinePoint(spine, norms, widths, 0.55, 1)
+	d2Tip := add(spinePoint(spine, norms, widths, 0.48, 1),
+		add(mul(norms[3], bodyLen*0.055), mul(segs[3], -bodyLen*0.03)))
+	dorsal.triT(d2Root0, d2Root1, d2Tip, finC)
+	b.opaque.merge(&dorsal)
+	// live gill slits — five breathing arcs behind the head, pulsing open
+	// and shut with the swim; dark against the navy, unmissable
+	gillC := withA(scaleRGBA(bodyC, 0.45), uint8(float64(aMul)*0.95))
+	var gills mesh
+	for k := 0; k < 5; k++ {
+		u := 0.13 + float64(k)*0.026
+		root := spinePoint(spine, norms, widths, u, 0)
+		breath := 1 + sin(anim.Time*2.2+float64(k)*0.7)*0.22
+		top := add(root, mul(norms[2], widths[2]*0.82*breath))
+		bot := add(root, mul(norms[2], -widths[2]*0.82*breath))
+		strokeQuads(&gills, []contract.Vec2{top, bot}, maxF(1.1, bodyLen*0.011), gillC)
+	}
+	b.opaque.merge(&gills)
+	// hunter's eyes at the hammer tips — a sharp amber ring around a dark
+	// pupil: awake, tracking, wild
 	var eyes mesh
 	for _, side := range [2]float64{-1, 1} {
 		tip := corner(side, 0)
-		eyes.fan(tip, maxF(peakW*0.18, 1.5), color.RGBA{R: 235, G: 250, B: 255, A: uint8(aMul)}, 8)
-		eyes.fan(add(tip, mul(pr, side*peakW*0.05)), maxF(peakW*0.09, 0.8), color.RGBA{R: 8, G: 10, B: 22, A: uint8(aMul)}, 6)
+		eyes.fan(tip, maxF(peakW*0.20, 1.8), color.RGBA{R: 255, G: 196, B: 64, A: uint8(aMul)}, 8)
+		eyes.fan(tip, maxF(peakW*0.10, 0.9), color.RGBA{R: 10, G: 8, B: 18, A: uint8(aMul)}, 6)
 	}
 	b.opaque.merge(&eyes)
+	_ = widths
 }
