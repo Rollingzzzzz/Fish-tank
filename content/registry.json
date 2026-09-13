@@ -14662,5 +14662,53 @@
     "kind": "species",
     "id": "pyro-haloshade",
     "at": "2026-09-13T22:00:54Z"
+  },
+  {
+    "hash": "b84955dd7c90e706",
+    "kind": "species",
+    "id": "prism-ghostdrift",
+    "at": "2026-09-13T22:11:45Z"
+  },
+  {
+    "hash": "7ea6300ab2d10523",
+    "kind": "water",
+    "id": "aurora-depths-38",
+    "at": "2026-09-13T22:11:48Z"
+  },
+  {
+    "hash": "63777ce8e1ad9aa6",
+    "kind": "coral",
+    "id": "crystal-veil-40",
+    "at": "2026-09-13T22:11:48Z"
+  },
+  {
+    "hash": "d234cb4882252c31",
+    "kind": "pattern",
+    "id": "adult-adult-wash-37",
+    "at": "2026-09-13T22:11:51Z"
+  },
+  {
+    "hash": "94b5476ae1918e22",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-shine-42",
+    "at": "2026-09-13T22:13:11Z"
+  },
+  {
+    "hash": "a9ed9b0678eed523",
+    "kind": "water",
+    "id": "lunar-trench-39",
+    "at": "2026-09-13T22:13:38Z"
+  },
+  {
+    "hash": "d1194baa7613ccc8",
+    "kind": "coral",
+    "id": "crystal-bubble-40",
+    "at": "2026-09-13T22:13:38Z"
+  },
+  {
+    "hash": "5eec9cce15c0e59a",
+    "kind": "species",
+    "id": "umbra-solarveil",
+    "at": "2026-09-13T22:14:05Z"
   }
 ]

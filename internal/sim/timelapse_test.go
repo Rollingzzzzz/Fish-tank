@@ -117,3 +117,57 @@ func TestTimeLapseEveryEyeLeadsItsMotion(t *testing.T) {
 	t.Logf("time-lapse ok: %d windows, worst backward %.2f px, worst spine bend %.2f rad",
 		eyes, worstBack, worstBend)
 }
+
+// G65: no fish ever TELEPORTS. A shark and a normal fish launched straight
+// at the Chosen's circle must skim its rim — per-frame displacement stays
+// within natural travel plus the bounded correction — and the nest still
+// ends up absolute (head never left resting inside).
+func TestNoFishTeleportsAtTheNestRim(t *testing.T) {
+	w := sharkWorld(t)
+	w.Update(0.05, Input{}) // spawn the pair
+	w.SetZones([]contract.Zone{{Owner: "chosen", Center: v2(400, 300), Radius: 80}})
+	sh := w.fishes[0]
+	for _, f := range w.fishes {
+		if f.Sp.Role == contract.RoleShark {
+			sh = f
+		}
+	}
+	neon := newFish(cappedNormalSpecies("tl-neon-rim", false), 42, v2(430, 60), 6, w.nextID())
+	w.fishes = append(w.fishes, neon)
+	// both dive straight at the circle's heart
+	sh.Pos = v2(400, 40)
+	sh.headingA = 1.5708
+	sh.Vel = v2(0, 30)
+	neon.Pos = v2(430, 60)
+	neon.headingA = 1.5708
+	neon.Vel = v2(0, 30)
+
+	const dt = 0.05
+	worst := 0.0
+	worstFish := ""
+	for i := 0; i < 60*8; i++ { // 8 s of rim contact
+		prev := map[*Fish]contract.Vec2{}
+		for _, f := range w.fishes {
+			prev[f] = f.Pos
+		}
+		w.Update(dt, Input{})
+		for _, f := range w.fishes {
+			if f.Dying {
+				continue
+			}
+			// speed-aware bound: bursts scale with the fish's own pace, so
+			// the Chosen's dart triples hers — but the old 73 px rim snap
+			// exceeded every budget and stays caught
+			if j := hyp2(sub(f.Pos, prev[f])); 3*f.maxSpeed(0)*dt+8 < j && j > worst {
+				worst, worstFish = j, f.Sp.ID
+			}
+		}
+		hd := hyp2(sub(sh.Pos, v2(400, 300)))
+		if hd < 78 { // the rim projection must keep her head on/above the ring
+			t.Fatalf("frame %d: shark head rode %.0f px into the circle", i, 80-hd)
+		}
+	}
+	if worst > 0 {
+		t.Fatalf("teleport: %s jumped %.1f px beyond its own speed budget in a single frame", worstFish, worst)
+	}
+}

@@ -4,6 +4,8 @@
 package sim
 
 import (
+	"math"
+
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
 )
 
@@ -144,10 +146,17 @@ func (w *World) enforceZonesPos(pos *contract.Vec2) {
 	}
 }
 
+// zoneFix caps how far any correction may displace a fish in one frame
+// (G65): the pin laws (G62/G63) discard the lateral part of avoidance, so
+// fish now reach her rim still driving forward — an uncapped snap read as
+// a teleport. Bounded, it reads as a quick slide back out.
+const zoneFix = 6.0
+
 // enforceFishZones is the body-aware projection (v1.1): the keep-clear
 // margin grows with the fish's own body, so no part of any fish — head,
-// belly or tail — crosses into her circle. A head found inside snaps out at
-// once (N3's own guarantee); a sagging body drains out at a capped pace.
+// belly or tail — crosses into her circle. A head found inside glides back
+// out at a bounded pace (a snap would read as a teleport, G65); a sagging
+// body drains out at the same capped pace.
 func (w *World) enforceFishZones(f *Fish) {
 	for _, z := range w.zones {
 		if z.Owner != "chosen" || f.Sp.Role == contract.RoleChosen {
@@ -166,19 +175,34 @@ func (w *World) enforceFishZones(f *Fish) {
 		out := norm2(sub(f.Pos, z.Center))
 		hd := hyp2(sub(f.Pos, z.Center))
 		if hd < z.Radius {
-			// the head crossed her line: out at once
-			f.Pos = add(z.Center, mulS(out, need))
+			// the head crossed her line: land it ON the rim — a solid-wall
+			// projection bounded by the frame's own travel. The old snap all
+			// the way out to `need` (up to ~70 px for a shark) was the
+			// teleport the live review caught (G65).
+			f.Pos = add(z.Center, mulS(out, z.Radius+2))
 		} else {
 			// the body sags inside: drain outward, capped per frame
 			push := need - dmin
-			if push > 12 {
-				push = 12
+			if push > zoneFix {
+				push = zoneFix
 			}
 			f.Pos = add(f.Pos, mulS(out, push))
 		}
 		if vn := f.Vel.X*out.X + f.Vel.Y*out.Y; vn < 0 {
 			f.Vel.X -= vn * out.X
 			f.Vel.Y -= vn * out.Y
+		}
+		// G65: the pin laws ride headingA — if it still aims into her
+		// circle, the next frame's rebuild would drive the fish straight
+		// back in. Slide the heading onto the outward hemisphere as well,
+		// so the fish skirts along the rim instead of grinding through it.
+		hx, hy := cos(f.headingA), sin(f.headingA)
+		if vn := hx*out.X + hy*out.Y; vn < 0 {
+			hx -= vn * out.X
+			hy -= vn * out.Y
+			if l := hyp2(v2(hx, hy)); l > 1e-3 {
+				f.headingA = math.Atan2(hy/l, hx/l)
+			}
 		}
 	}
 }
