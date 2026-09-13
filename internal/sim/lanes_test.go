@@ -166,9 +166,9 @@ func TestTitanFavorsUpperWaterAndHorizon(t *testing.T) {
 			deepSamples++
 		}
 		dx, dy := math.Abs(g.Pos.X-prevX), math.Abs(g.Pos.Y-prevY)
-		if dy > 12 && dy > 2*dx {
-			// a STEEP pitch: fast and more vertical than horizontal —
-			// slow diagonal drift is the natural glide, not a violation
+		if g.turning <= 0 && dy > 12 && dy > 2*dx {
+			// a STEEP pitch on straight cruise: fast and more vertical than
+			// horizontal — the convoy arc legitimately sweeps vertically
 			steep++
 		}
 		prevX, prevY = g.Pos.X, g.Pos.Y

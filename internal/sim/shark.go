@@ -72,3 +72,41 @@ func (f *Fish) constrainForward(dt, maxSp float64) {
 	}
 	f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), sp)
 }
+
+// carveCurlTurn floors the speed mid-curl (G59): the 180 degree glass turn
+// is carved forward — the scalare never stalls inside it or backs out.
+func (f *Fish) carveCurlTurn(maxSp float64) {
+	if sp := hyp2(f.Vel); sp < maxSp*0.5 {
+		dir := f.Vel
+		if sp < 0.01 {
+			dir = v2(f.cruise, 0)
+		}
+		f.Vel = mulS(norm2(dir), maxSp*0.5)
+	}
+}
+
+// titanStartConvoyTurn flips the caravan as ONE (G67): the leader's glass
+// call arms every member's arc at the same instant — each fish sweeps its
+// own parallel half circle from where it swims, so the five arrive on the
+// opposite sweep still clustered, never strung out.
+func (w *World) titanStartConvoyTurn() {
+	for _, f := range w.fishes {
+		if f.Sp.Role != contract.RoleTitan || f.Dying {
+			continue
+		}
+		f.turnH0 = f.headingA
+		f.cruise = -f.cruise
+		// the pod turns UP by default (against the surface light, G67): the
+		// radius shrinks to fit the top margin, and only a truly closed top
+		// falls back to a down-curl — repeated down-curls walked the pod
+		// into the bottom band and its tail into the corner
+		f.turnS = f.cruise
+		room := f.Pos.Y - (f.bodyLen*0.30 + 6) - 15
+		if room < f.bodyLen*0.12 {
+			f.turnS = -f.cruise
+		}
+		f.turnT = contract.TitanTurnWindow + 60
+		f.turning = contract.TitanTurnWindow
+	}
+	w.logf("nature", "the silver elders wheel as one -- five shadows, one turn")
+}

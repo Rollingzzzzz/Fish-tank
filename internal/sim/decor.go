@@ -150,7 +150,7 @@ func (w *World) enforceZonesPos(pos *contract.Vec2) {
 // (G65): the pin laws (G62/G63) discard the lateral part of avoidance, so
 // fish now reach her rim still driving forward — an uncapped snap read as
 // a teleport. Bounded, it reads as a quick slide back out.
-const zoneFix = 6.0
+const zoneFix = 12.0
 
 // enforceFishZones is the body-aware projection (v1.1): the keep-clear
 // margin grows with the fish's own body, so no part of any fish — head,
@@ -181,10 +181,11 @@ func (w *World) enforceFishZones(f *Fish) {
 			// teleport the live review caught (G65).
 			f.Pos = add(z.Center, mulS(out, z.Radius+2))
 		} else {
-			// the body sags inside: drain outward, capped per frame
+			// the body sags inside: drain outward, capped per frame (a deep
+			// sag empties briskly, a graze whispers out — neither teleports)
 			push := need - dmin
-			if push > zoneFix {
-				push = zoneFix
+			if push > 12 {
+				push = 12
 			}
 			f.Pos = add(f.Pos, mulS(out, push))
 		}

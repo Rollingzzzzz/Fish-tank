@@ -26,8 +26,10 @@ func titanTestSpecies() *contract.Species {
 
 func titanWorld(t *testing.T, normals int) *World {
 	t.Helper()
+	// G66/G67 lesson: absolute body laws are tested at REAL tank proportions
+	// (1720×720) — in a small tank a 448 px body has no legal geometry
 	cfg := contract.Config{MaxFish: 30, DaySeconds: 60}
-	w := NewWorld(800, 600, cfg, []*contract.Species{titanTestSpecies(), cappedNormalSpecies("test-neon", false)}, nil, nil)
+	w := NewWorld(1720, 720, cfg, []*contract.Species{titanTestSpecies(), cappedNormalSpecies("test-neon", false)}, nil, nil)
 	w.SeedRng(7)
 	w.fishes = w.fishes[:0]
 	for i := 0; i < normals; i++ {
@@ -234,12 +236,19 @@ func TestTitanScareBolt(t *testing.T) {
 // giant's body stays an arc — each segment bends at most TitanSpineBend plus
 // the swimming wave, and the silhouette keeps its length on screen.
 func TestTitanSpineNeverFolds(t *testing.T) {
-	w := titanWorld(t, 4)
+	// real tank proportions (G66 lesson): in an 800 px test tank a 448 px
+	// body pointed across the frame HAS no legal layout — the canvas clamp
+	// pins the tail into an L that this test would misread as a fold
+	cfg := contract.Config{MaxFish: 30, DaySeconds: 60}
+	w := NewWorld(1720, 720, cfg, []*contract.Species{titanTestSpecies(),
+		cappedNormalSpecies("test-neon", false)}, nil, nil)
+	w.SeedRng(7)
+	w.fishes = w.fishes[:0]
 	w.spawnPod()
 	g := w.titanGiant()
-	g.Pos = v2(600, 300)
+	g.Pos = v2(900, 300)
 	if mathAbs(g.headingA-3.14159) < 0.1 {
-		g.Pos = v2(280, 300) // left-facing: the 512 px chain trails rightward
+		g.Pos = v2(600, 300) // left-facing: the 448 px chain trails rightward
 	}
 	// re-lay the chain coherently behind the relocated head (a live head is
 	// never teleported; the trailing body always matches where it swam)
@@ -258,9 +267,11 @@ func TestTitanSpineNeverFolds(t *testing.T) {
 	maxAng := 0.0
 	dir := func(a, b contract.Vec2) float64 { return mathAtan2(b.Y-a.Y, b.X-a.X) }
 	for i := 2; i < len(g.Spine); i++ {
-		// glass-graze pairs (canvas-clamped flat) are contact, not folds
+		// glass-graze pairs (canvas-clamped flat) are contact, not folds —
+		// the contact band scales with the body
+		gband := g.bodyLen*0.15 + 4
 		mid := g.Spine[i-1]
-		if mid.X < 6 || mid.X > w.W-6 || mid.Y < 6 || mid.Y > w.H-6 {
+		if mid.X < gband || mid.X > w.W-gband || mid.Y < gband || mid.Y > w.H-gband {
 			continue
 		}
 		a1, a2 := dir(g.Spine[i-2], g.Spine[i-1]), dir(g.Spine[i-1], g.Spine[i])
@@ -275,15 +286,24 @@ func TestTitanSpineNeverFolds(t *testing.T) {
 	if maxAng > contract.TitanSpineBend+0.45 {
 		t.Fatalf("spine bent %.2f rad between segments (cap %.2f + wave)", maxAng, contract.TitanSpineBend)
 	}
-	x0, x1, y0, y1 := 1e9, -1e9, 1e9, -1e9
-	for _, p := range g.Spine {
-		x0 = min(x0, p.X)
-		x1 = max(x1, p.X)
-		y0 = min(y0, p.Y)
-		y1 = max(y1, p.Y)
-	}
-	if span := max(x1-x0, y1-y0); span < 0.7*g.bodyLen {
-		t.Fatalf("folded silhouette: spine span %.0f < 0.7×bodyLen %.0f", span, g.bodyLen)
+	// a fold is SELF-OVERLAP: non-adjacent segments closer than their own
+	// length. A wide turn's C, a tail grazing the glass (an honest L) and a
+	// short bbox are all legal shapes — only coiling onto itself is not.
+	for a := 0; a < len(g.Spine)-2; a++ {
+		for b := a + 2; b < len(g.Spine); b++ {
+			// glass contact: a tail pressed flat along the canvas edge is a
+			// wall graze, not a coil — skip pairs pinned to a border
+			gband := g.bodyLen*0.15 + 4
+			pa, pb := g.Spine[a], g.Spine[b]
+			if (pa.X < gband || pa.X > w.W-gband || pa.Y < gband || pa.Y > w.H-gband) &&
+				(pb.X < gband || pb.X > w.W-gband || pb.Y < gband || pb.Y > w.H-gband) {
+				continue
+			}
+			if d := hyp2(sub(g.Spine[a], g.Spine[b])); d < g.segLen*0.9 {
+				t.Fatalf("spine folds onto itself: seg %d and %d only %.1f px apart (segLen %.1f)",
+					a, b, d, g.segLen)
+			}
+		}
 	}
 }
 
@@ -302,5 +322,79 @@ func TestPodReturnsOnItsOwn(t *testing.T) {
 	w.Update(dt, Input{})
 	if n := w.titanCount(); n != contract.TitanPodMax {
 		t.Fatalf("restored world reopened with %d titans, want %d", n, contract.TitanPodMax)
+	}
+}
+
+// G67: the glass turn is a CONVOY arc, not a clock hand. The leader's edge
+// call flips all five at once; through every arc frame each head keeps
+// travelling (no pivot-spin), the heading sweeps monotonically, and the
+// pod arrives on the far sweep still clustered.
+func TestTitanConvoyTurn(t *testing.T) {
+	w := titanWorld(t, 4)
+	w.spawnPod()
+	const dt = 0.05
+	flipped, flippedChecked := 0, false
+	pivotMark := map[*Fish]contract.Vec2{}
+	for i := 0; i < 60*60; i++ { // 60 s: at least two convoy turns
+		w.Update(dt, Input{})
+		g := w.titanGiant()
+		if g != nil && g.turning > 7.9 && !flippedChecked {
+			// the call is simultaneous: on the first arc frame EVERY member
+			// must already be turning (one clock, five arcs)
+			for _, f := range w.fishes {
+				if f.Sp.Role != contract.RoleTitan {
+					continue
+				}
+				if f.turning > 7.9 {
+					flipped++
+				}
+			}
+			flippedChecked = true
+		}
+		// mid-arc: every member TRAVELS, nobody spins on a pivot (windowed
+		// net motion — single-frame velocity may legally die at the glass)
+		if w.titanGiant() != nil && w.titanGiant().turning > 0 {
+			for _, f := range w.fishes {
+				if f.Sp.Role != contract.RoleTitan {
+					continue
+				}
+				if i%10 == 0 {
+					pivotMark[f] = f.Pos
+					continue
+				}
+				if mk, ok := pivotMark[f]; ok && i%10 == 9 {
+					// pressed against the glass the bounds legally cut the
+					// velocity — that is contact, not a pivot
+					if f.Pos.X < 20 || f.Pos.X > w.W-20 || f.Pos.Y < 20 || f.Pos.Y > w.H-20 {
+						continue
+					}
+					if moved := hyp2(sub(f.Pos, mk)); moved < 6 {
+						t.Fatalf("t=%.1fs: a titan pivoted in place (%.1f px over a window) — the arc must travel", float64(i)*dt, moved)
+					}
+				}
+			}
+		}
+	}
+	if !flippedChecked {
+		t.Fatal("no convoy turn observed in the run")
+	}
+	var leader *Fish
+	for _, f := range w.fishes {
+		if f.Sp.Role == contract.RoleTitan && f.sizeMul >= 0.99 {
+			leader = f
+		}
+	}
+	if flipped < 5 {
+		t.Fatalf("only %d of the pod flipped together — the convoy broke apart", flipped)
+	}
+	spread := 0.0
+	for _, f := range w.fishes {
+		if f.Sp.Role != contract.RoleTitan || f == leader {
+			continue
+		}
+		spread = maxF(spread, hyp2(sub(f.Pos, leader.Pos)))
+	}
+	if spread > 700 {
+		t.Fatalf("pod scattered %.0f px across the turn — the cluster must hold", spread)
 	}
 }

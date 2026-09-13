@@ -144,19 +144,20 @@ const (
 // ambient features need lives here — no config keys, no menu entries.
 const (
 	// Visit cycle: the pod is absent for the gap, present for the dwell.
-	TitanVisitGapMin   = 180.0 // s between visits (absent stretch)
-	TitanVisitGapMax   = 360.0
-	TitanVisitMin      = 120.0 // shortest roaming dwell
-	TitanVisitMax      = 240.0
-	TitanPodMin        = 5 // scalare travel as a five (1 leader + 4 escorts)
-	TitanPodMax        = 5
-	TitanSizeMin       = 6.0 // species size range (core seed only; 64 px × Size)
-	TitanSizeMax       = 7.0
-	TitanFlatness      = 0.62 // superseded by TitanTallPeak (G58 angelfish read)
-	TitanTallPeak      = 0.42 // v1.1 G58: the scalare body is a TALL flat diamond
-	TitanFinScale      = 1.6  // dorsal/anal fins tower over the diamond
-	TitanSpineBendTurn = 0.18 // bend allowance while curling a 180° turn
-	TitanTurnWindow    = 2.6  // seconds a curl takes
+	TitanVisitGapMin    = 180.0 // s between visits (absent stretch)
+	TitanVisitGapMax    = 360.0
+	TitanVisitMin       = 120.0 // shortest roaming dwell
+	TitanVisitMax       = 240.0
+	TitanPodMin         = 5 // scalare travel as a five (1 leader + 4 escorts)
+	TitanPodMax         = 5
+	TitanSizeMin        = 6.0 // species size range (core seed only; 64 px × Size)
+	TitanSizeMax        = 7.0
+	TitanFlatness       = 0.62 // superseded by TitanTallPeak (G58 angelfish read)
+	TitanTallPeak       = 0.42 // v1.1 G58: the scalare body is a TALL flat diamond
+	TitanFinScale       = 1.6  // dorsal/anal fins tower over the diamond
+	TitanSpineBendTurn  = 0.18 // bend allowance while curling a 180° turn
+	TitanTurnWindow     = 8.0  // seconds the convoy U takes — a true wide arc
+	TitanTurnRadiusFrac = 0.25 // × body length: the arc's radius (G67)
 	// TitanEdgeTurn was superseded by the body-scaled curl trigger of G66:
 	// the turn now starts at half the body length + 24 px from the glass
 	TitanSpeedMin   = 0.25 // behavior speed clamp — the ponderous cruise

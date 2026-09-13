@@ -133,13 +133,14 @@ func TestSharkExclusionsAndPersistence(t *testing.T) {
 // straight across the circle resolves out within seconds — and never leans
 // on it again. The shark pair and the school live under the same law.
 func TestBigBodiesNeverEnterTheCircle(t *testing.T) {
-	cfg := contract.Config{MaxFish: 20, DaySeconds: 60}
-	w := NewWorld(800, 600, cfg, []*contract.Species{
-		titanTestSpecies(), sharkTestSpecies(), cappedNormalSpecies("test-neon", false),
-	}, nil, nil)
+	// G66/G67 lesson: big-body laws are judged at REAL tank proportions —
+	// in a small tank the wide convoy trigger leaves the pod nowhere to be
+	cfg := contract.Config{MaxFish: 30, DaySeconds: 60}
+	w := NewWorld(1720, 720, cfg, []*contract.Species{sharkTestSpecies(), titanTestSpecies(),
+		chosenTestSpecies(), cappedNormalSpecies("test-neon", false)}, nil, nil)
 	w.SeedRng(23)
 	w.fishes = w.fishes[:0]
-	w.Update(0.05, Input{}) // the shark pair arrives
+	w.Update(0.05, Input{}) // the residents arrive
 	w.spawnPod()
 	w.titanPhase = 2 // roaming
 	nest := contract.Zone{Center: v2(w.W*0.5, w.H*contract.FloorLineFrac), Radius: contract.ZoneRadius, Owner: "chosen"}
@@ -173,7 +174,10 @@ func TestBigBodiesNeverEnterTheCircle(t *testing.T) {
 			}
 		}
 	}
-	if worst < nest.Radius {
+	// G65 contract: intrusion is corrected at a BOUNDED pace (12 px/frame),
+	// so a momentary graze up to that budget is legal — leaning or parking
+	// inside is not (the drain must have it out within a second)
+	if worst < nest.Radius-12 {
 		t.Fatalf("a body crossed into her circle by %.0f px (closest approach %.0f < radius %.0f)",
 			nest.Radius-worst, worst, nest.Radius)
 	}

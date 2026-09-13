@@ -94,6 +94,7 @@ func TestCritterLureSteersHungryFish(t *testing.T) {
 func TestCritterIsEatenWhenReached(t *testing.T) {
 	w := critterWorld(t, 2)
 	f := w.fishes[0]
+	f.Pos = v2(w.W*0.5, w.H*0.5) // pinned: independent of the spawn draw
 	f.Satiety = 0.5
 	c := &Creature{Kind: "crab", Pos: f.Pos, Life: 0.5} // vulnerable
 	w.creatures = append(w.creatures, c)

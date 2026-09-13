@@ -91,6 +91,8 @@ type Fish struct {
 	turnT      float64 // titan: seconds left in the current 180° curl
 	cruise     float64 // titan: +1 sweeping right, -1 sweeping left
 	turning    float64 // titan: seconds left of the curl's relaxed bend
+	turnH0     float64 // titan: heading at the start of the convoy U-turn
+	turnS      float64 // titan: arc sweep sign (+1 up-curl, -1 down-curl)
 	headingA   float64 // titan: sweep heading (0 = right, π = left)
 	slotBack   float64 // v1.1: formation distance behind the leader (px)
 	slotY      float64 // v1.1: formation vertical offset from the leader (px)

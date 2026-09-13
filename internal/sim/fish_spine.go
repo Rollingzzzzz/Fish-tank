@@ -28,16 +28,50 @@ func (f *Fish) followSpine(dt float64) {
 	if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
 		bend = contract.TitanSpineBend
 		if f.turning > 0 {
-			bend = contract.TitanSpineBendTurn // G58: the curl may use the full arc
+			// G67: the arc opens wide mid-turn and TIGHTENS as it closes —
+			// the chain relaxes back onto the line by itself instead of
+			// staying wound after the turn
+			p := 1 - f.turning/contract.TitanTurnWindow
+			bend = contract.TitanSpineBendTurn * (1 - 0.75*p)
 		}
 	}
+	// G67: the chain settles onto the line after the convoy arc — a leftover
+	// C would linger for minutes at ponderous pace. Strong through the
+	// arc's last stretch, then a light settle keeps the trailing body on
+	// the axis while the turn clock runs; a few px per frame, never a snap.
+	if f.Sp.Role == contract.RoleTitan && f.turnT > 0 {
+		k := 0.0
+		if f.turning > 0 {
+			// eased in through the whole arc: the C opens gradually and the
+			// convoy lands on its new line FINISHED, not still unwinding
+			p := 1 - f.turning/contract.TitanTurnWindow
+			k = minF(1, 2.2*dt) * (0.3 + 0.7*p)
+		} else {
+			k = minF(1, 4*dt)
+		}
+		if k > 0 {
+			ax, ay := math.Cos(f.headingA), math.Sin(f.headingA)
+			for j := range f.Spine {
+				tx := f.Pos.X - ax*float64(j)*f.segLen
+				ty := f.Pos.Y - ay*float64(j)*f.segLen
+				f.Spine[j].X += (tx - f.Spine[j].X) * k
+				f.Spine[j].Y += (ty - f.Spine[j].Y) * k
+			}
+		}
+	}
+
 	// the TRAILING axis the chain must hang from: opposite the velocity, or
 	// the direction the chain already hangs when the fish is at a standstill.
 	// (Sign matters: referenced against the forward velocity the clamp would
 	// re-lay every segment AHEAD of the head — the end-for-end inversion
 	// that made eyes trail and tail fins lead like clock hands.)
 	px, py := 0.0, 0.0
-	if v := hyp2(f.Vel); v > 1 {
+	if f.Sp.Role == contract.RoleTitan {
+		// the sweep heading owns the titan axis outright (G67): the arc and
+		// the settle after it must not fight a velocity bent by a startle,
+		// and straight-cruise heading follows the velocity anyway
+		px, py = -math.Cos(f.headingA), -math.Sin(f.headingA)
+	} else if v := hyp2(f.Vel); v > 1 {
 		px, py = -f.Vel.X/v, -f.Vel.Y/v
 	} else if d := sub(f.Spine[1], f.Spine[0]); hyp2(d) > 1e-3 {
 		u := 1 / hyp2(d)
@@ -60,8 +94,13 @@ func (f *Fish) followSpine(dt float64) {
 		px, py = bx, by
 		// constrained base vector
 		dx, dy := bx*f.segLen, by*f.segLen
-		// swimming wave displacement (perpendicular to the segment)
+		// swimming wave displacement (perpendicular to the segment); a big
+		// body carries a calmer tail (G67): with the eye glued to the line,
+		// the trailing tip may only shimmer, not wander off it
 		amp := f.segLen * 0.35 * (0.25 + 0.75*speed01)
+		if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
+			amp *= 0.30
+		}
 		wave := sin(f.phase-float64(i)*0.55) * amp * (float64(i) / float64(len(f.Spine)-1))
 		nx, ny := -dy/f.segLen, dx/f.segLen
 		vx, vy := dx+nx*wave, dy+ny*wave
@@ -118,10 +157,11 @@ func (f *Fish) applyFrameBounds(w *World) {
 	if f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
 		return // short chains fit once the head is inside
 	}
-	// the tall scalare diamond + dorsal ride below the top edge, and the
-	// whole trailing chain must fit during a dive: the margin covers the
-	// cone's transient excursion (about 0.42 body lengths, G66)
-	myTop := f.bodyLen*0.42 + 6
+	// the tall frames ride below the top edge; the trailing cone's worst
+	// dive excursion is caught by the final canvas clamp, so the hard
+	// margin keeps only the body proper inside (G66/G67 — leaving room
+	// for the convoy's up-curl to exist at cruise height)
+	myTop := f.bodyLen*0.30 + 6
 	if f.Pos.Y < myTop {
 		f.Pos.Y = myTop
 		if f.Vel.Y < 0 {

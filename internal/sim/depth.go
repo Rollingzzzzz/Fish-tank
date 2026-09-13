@@ -6,6 +6,8 @@
 package sim
 
 import (
+	"math"
+
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
 )
 
@@ -15,6 +17,14 @@ import (
 // brothers cruise behind the school, rarely stepping forward (G59).
 func (f *Fish) driftDepth(w *World) {
 	if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
+		if f.turning > 0 && f.Sp.Role == contract.RoleTitan {
+			// G67: the convoy turn lives in the fake Z — mid-arc every
+			// scalare steps toward the glass (the lane lifts and settles
+			// back), so the 180° reads as a swing THROUGH the water
+			p := 1 - f.turning/contract.TitanTurnWindow
+			f.z = 0.30 + 0.22*sin(p*math.Pi)
+			return
+		}
 		f.z = 0.30 + 0.12*sin(w.time*0.05*0.4+f.zPhase)
 		return
 	}

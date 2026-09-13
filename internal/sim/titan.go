@@ -38,61 +38,6 @@ func (w *World) titanCount() int {
 // TitanCount is the exported overlay/evidence accessor.
 func (w *World) TitanCount() int { return w.titanCount() }
 
-// titanGiant returns the pod leader (sizeMul ~ 1) -- the only hunter.
-func (w *World) titanGiant() *Fish {
-	for _, f := range w.fishes {
-		if f.Sp.Role == contract.RoleTitan && !f.Dying && f.sizeMul >= 0.99 {
-			return f
-		}
-	}
-	return nil
-}
-
-// spawnPod builds the resident pod: 1 leader + 4 escorts, already inside
-// the tank in a loose diagonal, all sweeping the same direction.
-func (w *World) spawnPod() {
-	sp := w.titanSpecies()
-	if sp == nil {
-		return
-	}
-	dir := 1.0
-	if w.rng.Float64() < 0.5 {
-		dir = -1.0
-	}
-	leadX := w.W * (0.30 + w.rng.Float64()*0.40)
-	y := w.H * (0.30 + w.rng.Float64()*0.10)
-	for i := 0; i < contract.TitanPodMax; i++ {
-		mul := 1.0
-		if i > 0 {
-			mul = 0.31 + w.rng.Float64()*0.25 // escorts: ~130-230 px bodies
-		}
-		f := newFish(sp, w.rng.Int63(), v2(leadX+float64(i)*46, y+float64(i%3)*26), 6, w.nextID())
-		f.sizeMul = mul
-		f.cruise = dir
-		f.headingA = 0
-		if dir < 0 {
-			f.headingA = 3.14159
-		}
-		// staggered parallel slots behind the leader (G59) -- a loose
-		// procession whose bodies overlap a little, never a stack
-		f.slotBack = float64(i) * 45
-		f.slotY = float64(i%3-1) * 34
-		f.bodyLen = f.targetLen()
-		f.segLen = f.bodyLen / (contract.SpineSegments - 1)
-		for j := range f.Spine {
-			f.Spine[j] = v2(f.Pos.X-float64(j)*f.segLen*dir, f.Pos.Y)
-		}
-		// layout hygiene: the laid chain stays inside the canvas (G66) --
-		// test tanks are small, and a clamp-folded spawn reads as a glitch
-		for j := range f.Spine {
-			f.Spine[j].X = clampF(f.Spine[j].X, 10, w.W-10)
-			f.Spine[j].Y = clampF(f.Spine[j].Y, 10, w.H-10)
-		}
-		w.fishes = append(w.fishes, f)
-	}
-	w.logf("nature", "the silver elders glide in -- five shadows, one drift")
-}
-
 // ensurePod keeps the pod resident (G39) -- the mirror of ensureChosen and
 // ensureSharks: whatever wipes the five, the next tick brings them back.
 // Nothing in the sim can remove a pod member (no aging, culling, fade or
@@ -155,32 +100,63 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	if sepCnt > 0 {
 		addForce(mulS(sep, maxSp), 1.2)
 	}
-	// the curl: at the glass rotate the heading half a turn across the
-	// window; the spine relaxed bend draws the curl
+	// the convoy U-turn: near the glass the leader calls it, the whole pod
+	// turns as one caravan across the window; the relaxed spine bend draws
+	// the arc
 	if f.turnT > 0 {
 		f.turnT -= dt
 	}
 	if f.turning > 0 {
 		f.turning -= dt
 	}
-	// G66: the curl needs room for its whole arc — the trigger scales with
-	// the body, so the sweeping tail never runs past the view edge
-	edge := f.bodyLen*0.5 + 24
+	// G67: mid-turn the body rides a KINEMATIC arc — the heading sweeps a
+	// true half circle at constant pace while the head keeps travelling
+	// forward. A force-fought turn stalls the nose around a pivot and reads
+	// like clock hands; the path cannot.
+	if f.turning > 0 {
+		p := 1 - f.turning/contract.TitanTurnWindow
+		ang := f.turnH0 + f.turnS*math.Pi*p
+		// the arc is a true wide U (G67): radius scaled to the body, pace
+		// quickening through the turn — v = πR/window ≈ 2× cruise, so the
+		// head TRAVELS a quarter tank while it turns, never spins on a spot
+		r := f.bodyLen * contract.TitanTurnRadiusFrac
+		// the arc fits the room it actually has — an up-curl shrinks to the
+		// top margin, a down-curl to the upper band
+		if f.turnS*f.cruise > 0 {
+			if room := f.Pos.Y - (f.bodyLen*0.30 + 6) - 15; room < r {
+				r = maxF(f.bodyLen*0.12, room)
+			}
+		} else if room := w.H*contract.TitanUpperBand - 40 - f.Pos.Y; room < r {
+			r = maxF(f.bodyLen*0.12, room)
+		}
+		// the pace never sinks below cruise — a shrunken arc must not
+		// become a slow-motion spin (G67 carve)
+		v := maxF(math.Pi*r/contract.TitanTurnWindow, 0.9*maxSp)
+		f.Vel = mulS(v2(math.Cos(ang), math.Sin(ang)), v)
+		// the arc still bows to her circle (G55): the rim bends the sweep
+		// outward while the heading keeps the pure arc — the chain rides
+		// the heading, so nothing tears
+		for _, z := range w.zones {
+			if z.Owner != "chosen" {
+				continue
+			}
+			d := sub(f.Pos, z.Center)
+			r := z.Radius + 40 + f.bodyLen*0.5
+			if l := hyp2(d); l < r && l > 1 {
+				f.Vel = add(f.Vel, mulS(d, (r-l)/r*maxSp*4.5/l))
+			}
+		}
+		f.headingA = ang
+		return v2(0, 0) // forces stand down for the arc
+	}
+	// G66: the turn needs room for its whole arc — the trigger scales with
+	// the body, so the sweeping tail never runs past the view edge. The
+	// LEADER owns the clock: one call flips the whole caravan together.
+	edge := f.bodyLen*(contract.TitanTurnRadiusFrac+0.85) + 30
 	if (f.cruise > 0 && f.Pos.X > w.W-edge) || (f.cruise < 0 && f.Pos.X < edge) {
 		if f.turnT <= 0 {
-			f.turnT = contract.TitanTurnWindow + 60
-			f.turning = contract.TitanTurnWindow
-			f.cruise = -f.cruise
+			w.titanStartConvoyTurn()
 		}
-	}
-	// G59: the body faces where it swims -- the heading eases toward the
-	// velocity direction, so a scalare can never glide tail-first. The
-	// 180 degree curl at the glass emerges from the forces: the formation
-	// pulls the pod around and the heading follows the arc.
-	if v := hyp2(f.Vel); v > 8 {
-		va := math.Atan2(f.Vel.Y, f.Vel.X)
-		da := math.Mod(va-f.headingA+3.14159, 6.28318) - 3.14159
-		f.headingA += clampF(da, -2.5*dt, 2.5*dt)
 	}
 	// the parallel sweep: a steady cruise toward the sweep side -- the
 	// heading follows the velocity, so the fish always faces forward
@@ -198,9 +174,15 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	if f.Pos.Y < f.bodyLen*0.42+20 {
 		addForce(v2(0, maxSp), 1.1)
 	}
-	// a gentle altitude pull at the scalare cruise height
-	if off := w.H*0.36 - f.Pos.Y; absF(off) > 200 {
-		addForce(v2(0, off*0.25), 0.10)
+	// the altitude pull always runs (G67): each down-curled arc dips the
+	// pod a body lower, and only a live pull walks it back up between turns
+	if off := w.H*0.36 - f.Pos.Y; off > 0 {
+		addForce(v2(0, off*0.25), 0.35)
+	}
+	// right after a turn the climb home is deliberate (G67): the settle
+	// window carries the pod back to cruise height before the next glass
+	if f.turning <= 0 && f.turnT > 0 && f.Pos.Y > w.H*0.36+40 {
+		addForce(v2(0, -maxSp), 0.8)
 	}
 	f.formationSteer(w, maxSp, addForce)
 	f.lungeSteer(w, dt, maxSp, addForce)
@@ -247,17 +229,29 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	if l := hyp2(acc); l > contract.MaxForce*f.seekBonus {
 		acc = mulS(acc, contract.MaxForce*f.seekBonus/l)
 	}
-	return acc
-}
-
-// carveCurlTurn floors the speed mid-curl (G59): the 180 degree glass turn
-// is carved forward — the scalare never stalls inside it or backs out.
-func (f *Fish) carveCurlTurn(maxSp float64) {
-	if sp := hyp2(f.Vel); sp < maxSp*0.5 {
-		dir := f.Vel
-		if sp < 0.01 {
-			dir = v2(f.cruise, 0)
-		}
-		f.Vel = mulS(norm2(dir), maxSp*0.5)
+	// G59/G67 LAST: the body faces where it swims -- the heading eases
+	// toward the velocity (at burst pace through a strike), and whatever
+	// the mixed forces did, the velocity is shaved off the face's blind
+	// side. A scalare may be slowed sideways, never pushed tail-first.
+	follow := 2.5
+	if f.seekBonus > 1.01 {
+		follow = 6.5
 	}
+	if v := hyp2(f.Vel); v > 1 { // even a slow drift is already a heading
+		va := math.Atan2(f.Vel.Y, f.Vel.X)
+		da := math.Mod(va-f.headingA+3.14159, 6.28318) - 3.14159
+		f.headingA += clampF(da, -follow*dt, follow*dt)
+		ax, ay := math.Cos(f.headingA), math.Sin(f.headingA)
+		if back := f.Vel.X*ax + f.Vel.Y*ay; back < 0 {
+			f.Vel.X -= ax * back
+			f.Vel.Y -= ay * back
+		}
+		// the mixed acceleration may not push the nose backwards either —
+		// integration happens after this pass
+		if back := acc.X*ax + acc.Y*ay; back < 0 {
+			acc.X -= ax * back
+			acc.Y -= ay * back
+		}
+	}
+	return acc
 }
