@@ -162,6 +162,11 @@ const (
 	TitanSpeedMax      = 0.60
 	TitanLungeMul      = 10.0  // seekBonus while lunging (≥6× cruise burst, G41)
 	TitanSpineBend     = 0.085 // rad per segment — ≈63° total arc: the giant sweeps wide and never folds
+	SpineBendNormal    = 0.50  // rad per segment for the school (G63): the body may
+	// arc like a rope around the swim axis but can never coil onto itself
+	NormalTurnRate = 5.0 // rad/s the school's motion direction may swing (G63):
+	// a rear target or a startle bends the path into an arc — no fish ever
+	// flips and glides tail-first
 	TitanLungeSec      = 1.2   // burst duration
 	TitanLungeCD       = 240.0 // per-fish seconds between lunges (rare shock)
 	TitanSatietySec    = 12.0  // a giant belly drains this fast (normals: 40 s)

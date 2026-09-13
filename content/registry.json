@@ -14554,5 +14554,65 @@
     "kind": "species",
     "id": "neon-violetglow",
     "at": "2026-09-13T21:21:44Z"
+  },
+  {
+    "hash": "9039b20e0305ee7d",
+    "kind": "species",
+    "id": "astra-comettail",
+    "at": "2026-09-13T21:43:27Z"
+  },
+  {
+    "hash": "8cec9a460f9428f8",
+    "kind": "water",
+    "id": "midnight-depths-38",
+    "at": "2026-09-13T21:43:30Z"
+  },
+  {
+    "hash": "48890aac137f3212",
+    "kind": "coral",
+    "id": "aurora-crest-38",
+    "at": "2026-09-13T21:43:30Z"
+  },
+  {
+    "hash": "0445b09ed8b9f8d2",
+    "kind": "pattern",
+    "id": "elder-elder-mist-54",
+    "at": "2026-09-13T21:43:34Z"
+  },
+  {
+    "hash": "de509685c493fb83",
+    "kind": "pattern",
+    "id": "elder-elder-veil-45",
+    "at": "2026-09-13T21:43:34Z"
+  },
+  {
+    "hash": "e4a8f69fbd3e433e",
+    "kind": "pattern",
+    "id": "elder-elder-veil-46",
+    "at": "2026-09-13T21:44:54Z"
+  },
+  {
+    "hash": "b4ecb1eb6f863fbd",
+    "kind": "pattern",
+    "id": "elder-elder-fade-34",
+    "at": "2026-09-13T21:44:54Z"
+  },
+  {
+    "hash": "ed34f82714963167",
+    "kind": "water",
+    "id": "crystal-cove-36",
+    "at": "2026-09-13T21:45:21Z"
+  },
+  {
+    "hash": "cfe48d0b85b3a3cf",
+    "kind": "coral",
+    "id": "aurora-crown-41",
+    "at": "2026-09-13T21:45:21Z"
+  },
+  {
+    "hash": "e78d83d1aebbc61e",
+    "kind": "species",
+    "id": "astra-rippleveil",
+    "at": "2026-09-13T21:45:47Z"
   }
 ]

@@ -822,7 +822,11 @@ Evidence: `TestNestFloorLineAndMouthPlane`, `TestNestSceneryScale`, `nestFloorPi
 
 ## v1 known issues
 
-- Fish tails over-curl on sharp turns — looks unrealistic. Planned: spine curvature clamp.
+- Fish tails over-curl on sharp turns — looks unrealistic. CLOSED in v1.1
+  (G63): the spine curvature clamp now covers every species, and the chain
+  hangs from the correct trailing axis (the v1.1 clamp had referenced the
+  forward axis, which re-laid the whole body ahead of the head — eyes
+  trailing, tail fins leading like clock hands).
 
 ## v1.1 — Titans & floor critters (ambient life)
 

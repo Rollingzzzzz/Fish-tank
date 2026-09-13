@@ -212,9 +212,9 @@ func (w *World) Restore(s contract.Save) error {
 		}
 		f := newFish(sp, sf.Seed, rescale(sf.Pos), age, w.nextID())
 		f.Vel = sf.Vel
-		if sp.Role == contract.RoleShark {
-			// G62: the body axis is not persisted — rebuild it from the
-			// restored velocity so a loaded shark never opens tail-first
+		if hyp2(sf.Vel) > 1 {
+			// G63: the body heading is not persisted — rebuild it from the
+			// saved velocity so no fish opens a session tail-first
 			f.headingA = math.Atan2(f.Vel.Y, f.Vel.X)
 		}
 		f.Satiety = clampF(sf.Satiety, 0, 1)

@@ -224,12 +224,12 @@ func (f *Fish) advance(dt, night float64, w *World) {
 		f.carveCurlTurn(maxSp)
 	}
 
-	// v1.1 G62: the hammerhead swims ONLY toward its head — the velocity is
-	// rebuilt along the body axis and the axis itself turns at a bounded
-	// rate, so opposing forces arc the shark around instead of sliding it
-	// tail-first
+	// G62: the hammerhead rides its body axis — bounded turn, cruise floor
 	if f.Sp.Role == contract.RoleShark {
 		f.constrainForward(dt, maxSp)
+	}
+	if f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
+		f.capTurn(dt) // G63: school fish ARC, never flip — the body rides nose-first
 	}
 
 	f.Pos.X += f.Vel.X * dt

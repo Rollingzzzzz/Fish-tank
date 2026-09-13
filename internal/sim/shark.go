@@ -44,6 +44,11 @@ func (w *World) ensureSharks() {
 		f := newFish(sp, w.rng.Int63(), p, 6, w.nextID()) // frozen adult
 		f.headingA = math.Atan2(w.H/2-p.Y, w.W/2-p.X)     // born facing the open water
 		f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), 20)
+		// the chain is stretched to face where she swims — never tail-first
+		for j := range f.Spine {
+			f.Spine[j] = v2(p.X-float64(j)*f.segLen*cos(f.headingA),
+				p.Y-float64(j)*f.segLen*sin(f.headingA))
+		}
 		w.fishes = append(w.fishes, f)
 		w.logf("nature", "a hammerhead glides out of the blue")
 	}
