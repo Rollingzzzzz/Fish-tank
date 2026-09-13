@@ -139,7 +139,7 @@ func NewWorld(w, h float64, cfg contract.Config, species []*contract.Species,
 	count, kinds := 0, 0
 	for _, sp := range species {
 		if sp.Role == contract.RoleChosen || sp.Role == contract.RoleTitan || sp.Role == contract.RoleShark {
-			continue // the Chosen alone (FD9); titans visit, sharks arrive via ensureSharks
+			continue // the Chosen alone (FD9); the residents arrive via their ensure passes
 		}
 		if kinds >= 4 {
 			break
@@ -182,35 +182,6 @@ func NewWorld(w, h float64, cfg contract.Config, species []*contract.Species,
 	world.titanT = 45 + world.rng.Float64()*45
 	world.creatureT = 2 + world.rng.Float64()*4
 	return world
-}
-
-// ensureChosen guarantees exactly one Chosen fish exists (FD9): immortal,
-// outside the MaxFish economy, re-spawned whenever missing.
-func (w *World) ensureChosen() {
-	var sp *contract.Species
-	for _, s := range w.species {
-		if s.Role == contract.RoleChosen {
-			sp = s
-			break
-		}
-	}
-	if sp == nil {
-		return
-	}
-	for _, f := range w.fishes {
-		if f.Sp.Role == contract.RoleChosen && !f.Dying {
-			return // the eternal one endures
-		}
-	}
-	// home is the aura center when the rock layout is installed
-	home := v2(w.W*0.62, w.H*0.5)
-	for _, z := range w.zones {
-		if z.Owner == "chosen" {
-			home = add(z.Center, v2(0, -60))
-		}
-	}
-	w.fishes = append(w.fishes, newFish(sp, w.rng.Int63(), home, 8, w.nextID()))
-	w.logf("life", "the eternal one glides into view")
 }
 
 // Update advances the whole simulation by dt seconds.
@@ -266,6 +237,7 @@ func (w *World) Update(dt float64, in Input) {
 	w.sweepCorpses() // logs departures, then re-asserts the F14 plant majority
 	w.ensureChosen() // F23: if the eternal one was ever swept, she returns
 	w.ensureSharks() // v1.1: the resident pair stays whole
+	w.ensurePod()    // v1.1: the five elders are permanent residents (G39)
 	for _, f := range w.fishes {
 		// fast mouse swipes scatter nearby fish
 		if in.MouseActive && in.MouseSpeed > 900 {

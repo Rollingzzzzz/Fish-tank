@@ -183,7 +183,8 @@ func (w *World) Restore(s contract.Save) error {
 			continue
 		}
 		if sp.Role == contract.RoleTitan {
-			// v1.1: a hand-edited save cannot summon the deep — visits only
+			// v1.1: the pod is seeded by ensurePod, never by a save — a hand-edited
+			// entry can neither summon nor multiply the deep
 			continue
 		}
 		if sp.Role == contract.RoleShark {

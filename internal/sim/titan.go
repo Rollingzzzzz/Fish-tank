@@ -87,6 +87,17 @@ func (w *World) spawnPod() {
 	w.logf("nature", "the silver elders glide in -- five shadows, one drift")
 }
 
+// ensurePod keeps the pod resident (G39) -- the mirror of ensureChosen and
+// ensureSharks: whatever wipes the five, the next tick brings them back.
+// Nothing in the sim can remove a pod member (no aging, culling, fade or
+// predation on titans), so the only realistic gap is a fresh or restored
+// session -- exactly the paths the visit-era refactor left unseeded.
+func (w *World) ensurePod() {
+	if w.titanCount() == 0 {
+		w.spawnPod()
+	}
+}
+
 // tickTitans advances the pod rare-hunt gate. The pod itself is a
 // permanent resident: no visit machine, no departures -- it sweeps forever.
 func (w *World) tickTitans(dt float64) {

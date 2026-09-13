@@ -14392,5 +14392,77 @@
     "kind": "pattern",
     "id": "adult-adult-wash-36",
     "at": "2026-09-13T20:55:13Z"
+  },
+  {
+    "hash": "69a22da27699c76a",
+    "kind": "species",
+    "id": "zephyr-solarwing",
+    "at": "2026-09-13T20:58:03Z"
+  },
+  {
+    "hash": "3737e14d0e306483",
+    "kind": "water",
+    "id": "aurora-basin-38",
+    "at": "2026-09-13T20:58:06Z"
+  },
+  {
+    "hash": "27ba40c941968fac",
+    "kind": "coral",
+    "id": "aurora-boulder-36",
+    "at": "2026-09-13T20:58:06Z"
+  },
+  {
+    "hash": "bf2918b0e8de9b94",
+    "kind": "pattern",
+    "id": "fry-fry-veil-3",
+    "at": "2026-09-13T20:58:09Z"
+  },
+  {
+    "hash": "e8d8263f530989a0",
+    "kind": "species",
+    "id": "echo-auroradart",
+    "at": "2026-09-13T21:03:00Z"
+  },
+  {
+    "hash": "58ddf91161e50dcb",
+    "kind": "water",
+    "id": "aurora-current-34",
+    "at": "2026-09-13T21:03:03Z"
+  },
+  {
+    "hash": "2562a7e9db72424a",
+    "kind": "coral",
+    "id": "ember-torch-39",
+    "at": "2026-09-13T21:03:03Z"
+  },
+  {
+    "hash": "40ec0c70cad732e4",
+    "kind": "pattern",
+    "id": "fry-fry-wash-6",
+    "at": "2026-09-13T21:03:06Z"
+  },
+  {
+    "hash": "72fa75479d8d946e",
+    "kind": "pattern",
+    "id": "adult-adult-prime-43",
+    "at": "2026-09-13T21:04:26Z"
+  },
+  {
+    "hash": "f4fd19d4d60753cd",
+    "kind": "water",
+    "id": "prism-lagoon-39",
+    "at": "2026-09-13T21:04:53Z"
+  },
+  {
+    "hash": "7fe70bec484ca36f",
+    "kind": "coral",
+    "id": "violet-crest-41",
+    "at": "2026-09-13T21:04:53Z"
+  },
+  {
+    "hash": "9c806d69fa8c788b",
+    "kind": "species",
+    "id": "pyro-coralveil",
+    "at": "2026-09-13T21:05:20Z"
   }
 ]

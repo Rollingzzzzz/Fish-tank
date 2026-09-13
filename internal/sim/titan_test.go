@@ -272,3 +272,21 @@ func TestTitanSpineNeverFolds(t *testing.T) {
 		t.Fatalf("folded silhouette: spine span %.0f < 0.7×bodyLen %.0f", span, g.bodyLen)
 	}
 }
+
+// Regression: the permanent-resident refactor dropped the production spawn
+// call -- tests kept seeding the pod by hand, so a live tank opened with no
+// elders at all. The ensure pass must rebuild the pod in EVERY session: a
+// fresh world and a restored (titan-less) save alike.
+func TestPodReturnsOnItsOwn(t *testing.T) {
+	const dt = 0.05
+	w := titanWorld(t, 10)
+	w.Update(dt, Input{}) // first tick of a fresh session
+	if n := w.titanCount(); n != contract.TitanPodMax {
+		t.Fatalf("fresh world opened with %d titans, want %d", n, contract.TitanPodMax)
+	}
+	w.fishes = w.fishes[:0] // a restored save carries no titan entries
+	w.Update(dt, Input{})
+	if n := w.titanCount(); n != contract.TitanPodMax {
+		t.Fatalf("restored world reopened with %d titans, want %d", n, contract.TitanPodMax)
+	}
+}
