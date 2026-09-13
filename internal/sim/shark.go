@@ -6,6 +6,8 @@
 package sim
 
 import (
+	"math"
+
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
 )
 
@@ -40,7 +42,28 @@ func (w *World) ensureSharks() {
 	for w.sharkCount() < contract.SharkMax {
 		p := v2(w.W*(0.25+w.rng.Float64()*0.5), w.H*(0.30+w.rng.Float64()*0.35))
 		f := newFish(sp, w.rng.Int63(), p, 6, w.nextID()) // frozen adult
+		f.headingA = math.Atan2(w.H/2-p.Y, w.W/2-p.X)     // born facing the open water
+		f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), 20)
 		w.fishes = append(w.fishes, f)
 		w.logf("nature", "a hammerhead glides out of the blue")
 	}
+}
+
+// constrainForward pins the hammerhead to its own nose (G62): the velocity
+// rides the body axis and the axis itself swings at most SharkTurnRate —
+// the steering mix can steer the head around, but never slide the body
+// tail-first. A target behind the back turns into a carve, not a reverse.
+// The hunter is also always under way (G50): the pin may shave speed while
+// forces fight the turn, so it is floored at a dignified cruise.
+func (f *Fish) constrainForward(dt, maxSp float64) {
+	sp := hyp2(f.Vel)
+	if sp > 6 {
+		va := math.Atan2(f.Vel.Y, f.Vel.X)
+		da := math.Mod(va-f.headingA+3.14159, 6.28318) - 3.14159
+		f.headingA += clampF(da, -contract.SharkTurnRate*dt, contract.SharkTurnRate*dt)
+	}
+	if sp < maxSp*0.65 {
+		sp = maxSp * 0.65
+	}
+	f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), sp)
 }

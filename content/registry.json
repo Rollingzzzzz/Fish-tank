@@ -14494,5 +14494,65 @@
     "kind": "pattern",
     "id": "juvenile-juvenile-spark-37",
     "at": "2026-09-13T21:08:30Z"
+  },
+  {
+    "hash": "87045b83cc53068a",
+    "kind": "species",
+    "id": "aqua-auroraglow",
+    "at": "2026-09-13T21:19:24Z"
+  },
+  {
+    "hash": "31c0e75967b7d71b",
+    "kind": "water",
+    "id": "neon-reef-39",
+    "at": "2026-09-13T21:19:27Z"
+  },
+  {
+    "hash": "a8bdbd3bf522322d",
+    "kind": "coral",
+    "id": "rose-crown-39",
+    "at": "2026-09-13T21:19:27Z"
+  },
+  {
+    "hash": "6c40df4dfed9c454",
+    "kind": "pattern",
+    "id": "elder-elder-fade-33",
+    "at": "2026-09-13T21:19:30Z"
+  },
+  {
+    "hash": "ba26370610806773",
+    "kind": "pattern",
+    "id": "elder-elder-veil-43",
+    "at": "2026-09-13T21:19:30Z"
+  },
+  {
+    "hash": "c8add668fd84f1e2",
+    "kind": "pattern",
+    "id": "elder-elder-veil-44",
+    "at": "2026-09-13T21:20:50Z"
+  },
+  {
+    "hash": "30179f3b6c6f075d",
+    "kind": "pattern",
+    "id": "elder-elder-mist-53",
+    "at": "2026-09-13T21:20:50Z"
+  },
+  {
+    "hash": "55c15ad9bed13584",
+    "kind": "water",
+    "id": "crystal-trench-38",
+    "at": "2026-09-13T21:21:17Z"
+  },
+  {
+    "hash": "0a7434bf8258ebc4",
+    "kind": "coral",
+    "id": "violet-crown-38",
+    "at": "2026-09-13T21:21:17Z"
+  },
+  {
+    "hash": "4877b56bcee1a27e",
+    "kind": "species",
+    "id": "neon-violetglow",
+    "at": "2026-09-13T21:21:44Z"
   }
 ]

@@ -181,6 +181,8 @@ const (
 	SharkSizeMax  = 2.0
 	SharkSpeedMin = 0.7
 	SharkSpeedMax = 1.1 // ≤ her worst hour even at full chase (supremacy test)
+	SharkTurnRate = 2.8 // rad/s the body axis may swing — a target behind the
+	// back becomes a bounded carve, never a tail-first glide (G62)
 
 	// Depth lanes + pod turns (G51): the 3D read.
 	DepthSwing      = 0.35 // fish drift ±this around the mid lane (0 far .. 1 near)

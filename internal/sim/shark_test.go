@@ -6,6 +6,7 @@ package sim
 
 import (
 	"fmt"
+	"math"
 	"testing"
 
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
@@ -211,3 +212,94 @@ func TestTitanCurlForwardOnly(t *testing.T) {
 		t.Fatalf("the curl stalled to %.1f px/s (cruise %.1f) — a scalare must carve forward", minSp, cruise)
 	}
 }
+
+// G62: the hammerhead swims ONLY toward its head. With a waypoint pinned
+// behind its back, the shark must carve around at the bounded turn rate —
+// its applied motion may never carry it tail-first, and it must actually
+// reach around instead of gliding backward forever.
+func TestSharkSwimsOnlyTowardItsHead(t *testing.T) {
+	w := sharkWorld(t)
+	w.Update(0.05, Input{}) // spawn the pair
+	s := w.fishes[0]
+	for _, f := range w.fishes {
+		if f.Sp.Role == contract.RoleShark {
+			s = f
+		}
+	}
+	// face right, cruise right, waypoint far behind (to the left)
+	s.headingA = 0
+	s.Vel = v2(60, 0)
+	const dt = 0.05
+	worst := 1e18 // worst windowed net step along the head axis
+	turned := false
+	var sum contract.Vec2 // net displacement over a 10-frame window
+	var head contract.Vec2
+	for i := 0; i < 60*30; i++ { // 30 s
+		s.tourC = v2(s.Pos.X-400, s.Pos.Y) // the lure stays behind the back
+		s.tourT = 99
+		last := s.Pos
+		if i%10 == 0 {
+			head = v2(cos(s.headingA), sin(s.headingA))
+			sum = v2(0, 0)
+		}
+		w.Update(dt, Input{})
+		sum = add(sum, sub(s.Pos, last))
+		if (i+1)%10 == 0 {
+			// sub-pixel noise is bounds/zone correction, not swimming
+			if proj := dot2(sum, head); hyp2(sum) > 1 {
+				if proj < worst {
+					worst = proj
+				}
+				if proj < -0.5 {
+					t.Fatalf("frame %d: window net motion %.2f px BACKWARD of the head", i, proj)
+				}
+			}
+		}
+		if absF(s.headingA) > 2.2 {
+			turned = true // carved more than ~126 degrees around
+		}
+	}
+	if worst < -0.5 {
+		t.Fatalf("shark slid tail-first: worst windowed step %.2f px", worst)
+	}
+	if !turned {
+		t.Fatalf("shark never carved around toward the waypoint behind it")
+	}
+}
+
+// G62: a restored shark rebuilds its body axis from the saved velocity —
+// it may never open a session gliding tail-first.
+func TestSharkRestoreFacesItsMotion(t *testing.T) {
+	w := sharkWorld(t)
+	w.Update(0.05, Input{})
+	var s *Fish
+	for _, f := range w.fishes {
+		if f.Sp.Role == contract.RoleShark {
+			s = f
+		}
+	}
+	s.headingA = 1.4
+	s.Vel = v2(-55, 12)
+	snap := w.Snapshot()
+	w2 := sharkWorld(t)
+	if err := w2.Restore(snap); err != nil {
+		t.Fatal(err)
+	}
+	var r *Fish
+	for _, f := range w2.fishes {
+		if f.Sp.Role == contract.RoleShark {
+			r = f
+		}
+	}
+	if r == nil {
+		t.Fatal("no shark restored")
+	}
+	if absF(r.headingA-math.Atan2(r.Vel.Y, r.Vel.X)) > 0.01 {
+		t.Fatalf("restored heading %.2f does not match motion %.2f",
+			r.headingA, math.Atan2(r.Vel.Y, r.Vel.X))
+	}
+}
+
+// dot2 is the test-side vector dot (kept here; the sim uses projection in
+// exactly one place and the helper file stays lean).
+func dot2(a, b contract.Vec2) float64 { return a.X*b.X + a.Y*b.Y }

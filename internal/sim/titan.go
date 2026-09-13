@@ -236,3 +236,15 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	}
 	return acc
 }
+
+// carveCurlTurn floors the speed mid-curl (G59): the 180 degree glass turn
+// is carved forward — the scalare never stalls inside it or backs out.
+func (f *Fish) carveCurlTurn(maxSp float64) {
+	if sp := hyp2(f.Vel); sp < maxSp*0.5 {
+		dir := f.Vel
+		if sp < 0.01 {
+			dir = v2(f.cruise, 0)
+		}
+		f.Vel = mulS(norm2(dir), maxSp*0.5)
+	}
+}

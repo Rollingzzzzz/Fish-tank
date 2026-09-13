@@ -219,16 +219,17 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	f.fleeImp = mulS(f.fleeImp, maxF(0, 1-1.2*dt))
 	f.scareT = maxF(0, f.scareT-dt) // v0.3.8: shelter-seek window ticks down
 
-	// v1.1 G58: a curling scalare never stalls or backs up — it carves the
-	// 180° turn forward, tail trailing, like a real fish
+	// v1.1 G58/G59: a curling scalare carves the turn forward, never stalls
 	if f.turning > 0 && f.Sp.Role == contract.RoleTitan {
-		if sp := hyp2(f.Vel); sp < maxSp*0.5 {
-			dir := f.Vel
-			if sp < 0.01 {
-				dir = v2(f.cruise, 0)
-			}
-			f.Vel = mulS(norm2(dir), maxSp*0.5)
-		}
+		f.carveCurlTurn(maxSp)
+	}
+
+	// v1.1 G62: the hammerhead swims ONLY toward its head — the velocity is
+	// rebuilt along the body axis and the axis itself turns at a bounded
+	// rate, so opposing forces arc the shark around instead of sliding it
+	// tail-first
+	if f.Sp.Role == contract.RoleShark {
+		f.constrainForward(dt, maxSp)
 	}
 
 	f.Pos.X += f.Vel.X * dt
