@@ -25,7 +25,7 @@ func (f *Fish) tourSteer(w *World, dt, maxSp float64) (contract.Vec2, bool) {
 	}
 	f.tourT -= dt
 	if f.tourT <= 0 || hyp2(sub(f.tourC, f.Pos)) < 60 {
-		yLo, yHi := 0.15, 0.80
+		yLo, yHi := 0.20, 0.80 // v1.1 G66: leave the trailing body headroom
 		if f.Sp.Role == contract.RoleShark {
 			yLo, yHi = 0.15, 0.62 // v1.1: the hunter roams the upper water
 		}

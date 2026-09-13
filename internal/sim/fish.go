@@ -235,36 +235,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	f.Pos.X += f.Vel.X * dt
 	f.Pos.Y += f.Vel.Y * dt
 
-	// v1.1: titans cross the tank edges — the visit machine owns containment
-	freeEdge := f.Sp.Role == contract.RoleTitan
-
-	// impenetrable tank bounds — a fish can never leave the water
-	if !freeEdge {
-		if f.Pos.X < 8 {
-			f.Pos.X = 8
-			if f.Vel.X < 0 {
-				f.Vel.X = 0
-			}
-		}
-		if f.Pos.X > w.W-8 {
-			f.Pos.X = w.W - 8
-			if f.Vel.X > 0 {
-				f.Vel.X = 0
-			}
-		}
-	}
-	if f.Pos.Y < 8 {
-		f.Pos.Y = 8
-		if f.Vel.Y < 0 {
-			f.Vel.Y = 0
-		}
-	}
-	if f.Pos.Y > w.H-8 {
-		f.Pos.Y = w.H - 8
-		if f.Vel.Y > 0 {
-			f.Vel.Y = 0
-		}
-	}
+	f.applyFrameBounds(w)
 
 	// N3/G52: nothing alive but the Chosen may enter the aura — and for a
 	// big body "enter" means ANY spine segment, head to tail
@@ -288,6 +259,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 		64 / (64 + contract.BeatBodyDamp*f.bodyLen)
 	f.followSpine(dt)
 	w.dragSpineOut(f)
+	f.clampBodyInFrame(w) // G66: the whole drawn body stays in the view
 }
 
 // eat applies a successful bite.

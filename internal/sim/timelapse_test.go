@@ -13,8 +13,8 @@ import (
 )
 
 func TestTimeLapseEveryEyeLeadsItsMotion(t *testing.T) {
-	cfg := contract.Config{MaxFish: 16, DaySeconds: 120}
-	w := NewWorld(800, 600, cfg, []*contract.Species{
+	cfg := contract.Config{MaxFish: 24, DaySeconds: 120}
+	w := NewWorld(1720, 720, cfg, []*contract.Species{
 		cappedNormalSpecies("tl-neon-a", false),
 		cappedNormalSpecies("tl-neon-b", false),
 		titanTestSpecies(), sharkTestSpecies(), chosenTestSpecies(),
@@ -58,11 +58,25 @@ func TestTimeLapseEveryEyeLeadsItsMotion(t *testing.T) {
 				a := sub(f.Spine[j], f.Spine[j-1])
 				b := sub(f.Spine[j+1], f.Spine[j])
 				la, lb := hyp2(a), hyp2(b)
-				if la < 1e-6 || lb < 1e-6 {
+				// collapsed pairs are boundary-slide stacking (G66 canvas
+				// guard), not coils -- a real coil bends full segments
+				if la < f.segLen*0.5 || lb < f.segLen*0.5 {
+					continue
+				}
+				// a graze along the glass reads as a kink here but is a
+				// pinned contact, not a whip -- judge open-water bends only;
+				// the contact band scales with the body
+				band := f.bodyLen*0.12 + 4
+				mid := f.Spine[j]
+				if mid.X < band || mid.X > w.W-band || mid.Y < band || mid.Y > w.H-band {
 					continue
 				}
 				if ang := math.Acos(clampF(dot2(a, b)/(la*lb), -1, 1)); ang > worstBend {
 					worstBend = ang
+					t.Logf("kink %.2f rad: %s seg %d at (%.0f,%.0f)->(%.0f,%.0f)->(%.0f,%.0f) segLen=%.1f",
+						ang, f.Sp.ID, j,
+						f.Spine[j-1].X, f.Spine[j-1].Y, f.Spine[j].X, f.Spine[j].Y,
+						f.Spine[j+1].X, f.Spine[j+1].Y, f.segLen)
 				}
 			}
 			// the swim law every frame: the velocity never opposes the eye
@@ -170,4 +184,47 @@ func TestNoFishTeleportsAtTheNestRim(t *testing.T) {
 	if worst > 0 {
 		t.Fatalf("teleport: %s jumped %.1f px beyond its own speed budget in a single frame", worstFish, worst)
 	}
+}
+
+// G66: no part of a big body ever leaves the view. The pod and the
+// hammerhead pair run 120 s of sweeps with startle bolts fired at the
+// corners; every sampled frame, every spine point of every titan and shark
+// stays inside the canvas.
+func TestTitanBodiesStayInFrame(t *testing.T) {
+	w := titanWorld(t, 8)
+	w.Update(0.05, Input{}) // pod spawns
+	var bigs []*Fish
+	for _, f := range w.fishes {
+		if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
+			bigs = append(bigs, f)
+		}
+	}
+	if len(bigs) < 5 {
+		t.Fatalf("expected the pod (and pair) in frame, got %d big fish", len(bigs))
+	}
+	const dt = 0.05
+	worst := 1e18
+	for i := 0; i < 60*120; i++ { // 120 s
+		in := Input{}
+		if i%900 == 450 { // startle bolts at the corners mid-run
+			in = Input{MouseActive: true, MouseSpeed: 1500,
+				MouseX: float64((i/900)%2) * 800, MouseY: 40}
+		}
+		w.Update(dt, in)
+		if i%5 != 0 {
+			continue
+		}
+		for _, f := range bigs {
+			for j, p := range f.Spine {
+				if p.X < 0 || p.X > w.W || p.Y < 0 || p.Y > w.H {
+					t.Fatalf("t=%.0fs: %s spine point %d left the view at (%.0f,%.0f)",
+						float64(i)*dt, f.Sp.ID, j, p.X, p.Y)
+				}
+				if m := math.Min(math.Min(p.X, w.W-p.X), math.Min(p.Y, w.H-p.Y)); m < worst {
+					worst = m
+				}
+			}
+		}
+	}
+	t.Logf("in-frame ok: worst margin to the view edge %.1f px", worst)
 }

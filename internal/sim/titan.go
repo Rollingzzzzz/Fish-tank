@@ -82,6 +82,12 @@ func (w *World) spawnPod() {
 		for j := range f.Spine {
 			f.Spine[j] = v2(f.Pos.X-float64(j)*f.segLen*dir, f.Pos.Y)
 		}
+		// layout hygiene: the laid chain stays inside the canvas (G66) --
+		// test tanks are small, and a clamp-folded spawn reads as a glitch
+		for j := range f.Spine {
+			f.Spine[j].X = clampF(f.Spine[j].X, 10, w.W-10)
+			f.Spine[j].Y = clampF(f.Spine[j].Y, 10, w.H-10)
+		}
 		w.fishes = append(w.fishes, f)
 	}
 	w.logf("nature", "the silver elders glide in -- five shadows, one drift")
@@ -157,7 +163,9 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	if f.turning > 0 {
 		f.turning -= dt
 	}
-	edge := w.W * contract.TitanEdgeTurn
+	// G66: the curl needs room for its whole arc — the trigger scales with
+	// the body, so the sweeping tail never runs past the view edge
+	edge := f.bodyLen*0.5 + 24
 	if (f.cruise > 0 && f.Pos.X > w.W-edge) || (f.cruise < 0 && f.Pos.X < edge) {
 		if f.turnT <= 0 {
 			f.turnT = contract.TitanTurnWindow + 60
@@ -184,6 +192,11 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// the pod favors the upper 80% -- the sand line is not their water
 	if f.Pos.Y > w.H*contract.TitanUpperBand {
 		addForce(v2(0, -maxSp), 1.1)
+	}
+	// G66 ceiling twin: the view top is not their water either -- the
+	// ceiling scales with the body so the trailing chain fits during dives
+	if f.Pos.Y < f.bodyLen*0.42+20 {
+		addForce(v2(0, maxSp), 1.1)
 	}
 	// a gentle altitude pull at the scalare cruise height
 	if off := w.H*0.36 - f.Pos.Y; absF(off) > 200 {

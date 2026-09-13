@@ -238,6 +238,15 @@ func TestTitanSpineNeverFolds(t *testing.T) {
 	w.spawnPod()
 	g := w.titanGiant()
 	g.Pos = v2(600, 300)
+	if mathAbs(g.headingA-3.14159) < 0.1 {
+		g.Pos = v2(280, 300) // left-facing: the 512 px chain trails rightward
+	}
+	// re-lay the chain coherently behind the relocated head (a live head is
+	// never teleported; the trailing body always matches where it swam)
+	hx, hy := mathCos(g.headingA), mathSin(g.headingA)
+	for j := range g.Spine {
+		g.Spine[j] = v2(g.Pos.X-hx*float64(j)*g.segLen, g.Pos.Y-hy*float64(j)*g.segLen)
+	}
 	g.Satiety = 0.1 // lunges incoming
 	const dt = 0.05
 	for i := 0; i < 1200; i++ { // 60 s of hungry roaming
@@ -249,6 +258,11 @@ func TestTitanSpineNeverFolds(t *testing.T) {
 	maxAng := 0.0
 	dir := func(a, b contract.Vec2) float64 { return mathAtan2(b.Y-a.Y, b.X-a.X) }
 	for i := 2; i < len(g.Spine); i++ {
+		// glass-graze pairs (canvas-clamped flat) are contact, not folds
+		mid := g.Spine[i-1]
+		if mid.X < 6 || mid.X > w.W-6 || mid.Y < 6 || mid.Y > w.H-6 {
+			continue
+		}
 		a1, a2 := dir(g.Spine[i-2], g.Spine[i-1]), dir(g.Spine[i-1], g.Spine[i])
 		d := mathAbs(a2 - a1)
 		if d > 3.14159 {

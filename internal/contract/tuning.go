@@ -157,19 +157,20 @@ const (
 	TitanFinScale      = 1.6  // dorsal/anal fins tower over the diamond
 	TitanSpineBendTurn = 0.18 // bend allowance while curling a 180° turn
 	TitanTurnWindow    = 2.6  // seconds a curl takes
-	TitanEdgeTurn      = 0.12 // fraction of the width where the curl triggers
-	TitanSpeedMin      = 0.25 // behavior speed clamp — the ponderous cruise
-	TitanSpeedMax      = 0.60
-	TitanLungeMul      = 10.0  // seekBonus while lunging (≥6× cruise burst, G41)
-	TitanSpineBend     = 0.085 // rad per segment — ≈63° total arc: the giant sweeps wide and never folds
-	SpineBendNormal    = 0.50  // rad per segment for the school (G63): the body may
+	// TitanEdgeTurn was superseded by the body-scaled curl trigger of G66:
+	// the turn now starts at half the body length + 24 px from the glass
+	TitanSpeedMin   = 0.25 // behavior speed clamp — the ponderous cruise
+	TitanSpeedMax   = 0.60
+	TitanLungeMul   = 10.0  // seekBonus while lunging (≥6× cruise burst, G41)
+	TitanSpineBend  = 0.085 // rad per segment — ≈63° total arc: the giant sweeps wide and never folds
+	SpineBendNormal = 0.50  // rad per segment for the school (G63): the body may
 	// arc like a rope around the swim axis but can never coil onto itself
 	NormalTurnRate = 5.0 // rad/s the school's motion direction may swing (G63):
 	// a rear target or a startle bends the path into an arc — no fish ever
 	// flips and glides tail-first
-	TitanLungeSec      = 1.2   // burst duration
-	TitanLungeCD       = 240.0 // per-fish seconds between lunges (rare shock)
-	TitanSatietySec    = 12.0  // a giant belly drains this fast (normals: 40 s)
+	TitanLungeSec   = 1.2   // burst duration
+	TitanLungeCD    = 240.0 // per-fish seconds between lunges (rare shock)
+	TitanSatietySec = 12.0  // a giant belly drains this fast (normals: 40 s)
 
 	// Rare predation (G42): giant only, starved long enough, never the Chosen.
 	PredationSatiety = 0.15  // starving threshold

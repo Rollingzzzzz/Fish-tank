@@ -14710,5 +14710,107 @@
     "kind": "species",
     "id": "umbra-solarveil",
     "at": "2026-09-13T22:14:05Z"
+  },
+  {
+    "hash": "1f58d5ae44e89c03",
+    "kind": "species",
+    "id": "zephyr-cometgleam",
+    "at": "2026-09-13T22:15:58Z"
+  },
+  {
+    "hash": "6cb2e59eb5cceebc",
+    "kind": "water",
+    "id": "prism-current-39",
+    "at": "2026-09-13T22:16:01Z"
+  },
+  {
+    "hash": "4c3e14d44a490150",
+    "kind": "coral",
+    "id": "aurora-boulder-41",
+    "at": "2026-09-13T22:16:01Z"
+  },
+  {
+    "hash": "252b459499ea85f8",
+    "kind": "pattern",
+    "id": "elder-elder-mist-55",
+    "at": "2026-09-13T22:16:04Z"
+  },
+  {
+    "hash": "9103d1be0a16825a",
+    "kind": "species",
+    "id": "ember-ghostglow",
+    "at": "2026-09-13T22:17:05Z"
+  },
+  {
+    "hash": "9c01ba65f6812a89",
+    "kind": "water",
+    "id": "midnight-current-37",
+    "at": "2026-09-13T22:17:08Z"
+  },
+  {
+    "hash": "f657f6333f743e9c",
+    "kind": "coral",
+    "id": "rose-torch-40",
+    "at": "2026-09-13T22:17:08Z"
+  },
+  {
+    "hash": "b7f69b303eadfcc3",
+    "kind": "pattern",
+    "id": "adult-adult-fade-48",
+    "at": "2026-09-13T22:17:11Z"
+  },
+  {
+    "hash": "7c01115c57b57898",
+    "kind": "species",
+    "id": "nova-staticdrift",
+    "at": "2026-09-13T22:37:40Z"
+  },
+  {
+    "hash": "cbd126a573a47901",
+    "kind": "water",
+    "id": "twilight-depths-39",
+    "at": "2026-09-13T22:37:43Z"
+  },
+  {
+    "hash": "a890b795a5723a32",
+    "kind": "coral",
+    "id": "cyan-crest-38",
+    "at": "2026-09-13T22:37:43Z"
+  },
+  {
+    "hash": "b58c1c0312c1e5eb",
+    "kind": "pattern",
+    "id": "elder-elder-shine-49",
+    "at": "2026-09-13T22:37:46Z"
+  },
+  {
+    "hash": "bd99f6883429c3cf",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-spark-38",
+    "at": "2026-09-13T22:39:06Z"
+  },
+  {
+    "hash": "db8f5e90c0847b7c",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-shine-43",
+    "at": "2026-09-13T22:39:06Z"
+  },
+  {
+    "hash": "c4f690c4cf536d4e",
+    "kind": "water",
+    "id": "midnight-trench-36",
+    "at": "2026-09-13T22:39:33Z"
+  },
+  {
+    "hash": "0138999e9a39ee19",
+    "kind": "coral",
+    "id": "glimmer-torch-41",
+    "at": "2026-09-13T22:39:33Z"
+  },
+  {
+    "hash": "626dbaf68f81383b",
+    "kind": "species",
+    "id": "umbra-coralflare",
+    "at": "2026-09-13T22:40:00Z"
   }
 ]

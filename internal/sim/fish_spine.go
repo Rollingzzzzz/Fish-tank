@@ -86,3 +86,57 @@ func (f *Fish) capTurn(dt float64) {
 	f.headingA += clampF(da, -contract.NormalTurnRate*dt, contract.NormalTurnRate*dt)
 	f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), v)
 }
+
+// applyFrameBounds is the impenetrable tank bounds (v1.0) plus the G66
+// body margin: a fish can never leave the water, and the big residents
+// keep their tall frames below the top edge — the drawn body must fit.
+func (f *Fish) applyFrameBounds(w *World) {
+	if f.Pos.X < 8 {
+		f.Pos.X = 8
+		if f.Vel.X < 0 {
+			f.Vel.X = 0
+		}
+	}
+	if f.Pos.X > w.W-8 {
+		f.Pos.X = w.W - 8
+		if f.Vel.X > 0 {
+			f.Vel.X = 0
+		}
+	}
+	if f.Pos.Y < 8 {
+		f.Pos.Y = 8
+		if f.Vel.Y < 0 {
+			f.Vel.Y = 0
+		}
+	}
+	if f.Pos.Y > w.H-8 {
+		f.Pos.Y = w.H - 8
+		if f.Vel.Y > 0 {
+			f.Vel.Y = 0
+		}
+	}
+	if f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
+		return // short chains fit once the head is inside
+	}
+	// the tall scalare diamond + dorsal ride below the top edge, and the
+	// whole trailing chain must fit during a dive: the margin covers the
+	// cone's transient excursion (about 0.42 body lengths, G66)
+	myTop := f.bodyLen*0.42 + 6
+	if f.Pos.Y < myTop {
+		f.Pos.Y = myTop
+		if f.Vel.Y < 0 {
+			f.Vel.Y = 0
+		}
+	}
+}
+
+// clampBodyInFrame is the G66 guarantee pass: every spine point of a big
+// body stays inside the canvas, every frame. The per-frame sweep can only
+// overshoot by a few pixels, so the per-point clamp is an invisible
+// correction at the tail tip -- never a teleport, never a fold.
+func (f *Fish) clampBodyInFrame(w *World) {
+	for i := range f.Spine {
+		f.Spine[i].X = clampF(f.Spine[i].X, 3, w.W-3)
+		f.Spine[i].Y = clampF(f.Spine[i].Y, 3, w.H-3)
+	}
+}
