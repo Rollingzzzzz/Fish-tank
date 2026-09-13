@@ -25,11 +25,21 @@ func (w *World) tickFood(dt float64) {
 	for i := range w.foods {
 		fd := &w.foods[i]
 		fd.Age += dt
-		if fd.Pos.Y < w.H-10 {
+		// G68: flakes come to rest ON the dunes — never buried under the
+		// bed. The surface is the shared relief curve, so they sit exactly
+		// where the renderer draws the sand. Live treats stay free.
+		surface := contract.SandSurfaceY(w.H, fd.Pos.X) - 1.5
+		if fd.Pos.Y < surface {
 			fd.Vel.Y = minF(fd.Vel.Y+dt*30, foodSink)
 			fd.Pos.X += (fd.Vel.X + sin(w.time*3+fd.Seed)*8) * dt
 			fd.Pos.Y += fd.Vel.Y * dt
 			fd.Vel.X *= 1 - 0.6*dt
+			if fd.Pos.Y > surface {
+				fd.Pos.Y = surface
+			}
+		} else {
+			fd.Pos.Y = surface
+			fd.Vel.X, fd.Vel.Y = 0, 0 // at rest on the dune
 		}
 		if fd.Age > foodTTLSec {
 			continue // dissolved

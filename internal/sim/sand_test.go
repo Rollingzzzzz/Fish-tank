@@ -64,3 +64,56 @@ func TestSandStaysBounded(t *testing.T) {
 		}
 	}
 }
+
+// G68: flakes come to rest ON the dune surface — never buried under the
+// bed, and once landed they hold their spot (the school dives for them
+// where they lie). The relief is real terrain, not a ruler line.
+func TestFlakesRestOnSand(t *testing.T) {
+	w := titanWorld(t, 0)
+	w.foods = w.foods[:0]
+	drop := func(x float64) contract.Vec2 {
+		return v2(x, contract.SandSurfaceY(w.H, x)-60)
+	}
+	w.foods = append(w.foods,
+		Food{Pos: drop(300), Seed: 1},
+		Food{Pos: drop(900), Seed: 2},
+		Food{Pos: drop(1500), Seed: 3})
+	const dt = 0.05
+	resting := 0
+	for i := 0; i < 60*6; i++ { // 18 s of sinking (the flake TTL is 25)
+		w.tickFood(dt)
+		for k := range w.foods {
+			fd := &w.foods[k]
+			surf := contract.SandSurfaceY(w.H, fd.Pos.X)
+			if fd.Pos.Y > surf {
+				t.Fatalf("flake %d buried: y=%.1f below the dune surface %.1f", k, fd.Pos.Y, surf)
+			}
+			if hyp2(fd.Vel) < 0.01 && fd.Pos.Y > surf-3 {
+				resting++
+			}
+		}
+	}
+	if resting == 0 {
+		t.Fatal("no flake ever came to rest on the sand")
+	}
+	// at rest they hold: no drift, no further sink
+	x0, y0 := w.foods[0].Pos.X, w.foods[0].Pos.Y
+	for i := 0; i < 60; i++ {
+		w.tickFood(dt)
+	}
+	if d := hyp2(sub(w.foods[0].Pos, v2(x0, y0))); d > 0.5 {
+		t.Fatalf("a resting flake drifted %.2f px — it must sit still", d)
+	}
+}
+
+// G68: the relief curve is terrain — swells and a channel, never flat.
+func TestSandReliefIsNotFlat(t *testing.T) {
+	lo, hi := 1e18, -1e18
+	for x := 0.0; x <= 1720; x += 8 {
+		r := contract.SandRelief(x)
+		lo, hi = min(lo, r), max(hi, r)
+	}
+	if hi-lo < 10 {
+		t.Fatalf("relief spans only %.1f px — reads as a ruler line", hi-lo)
+	}
+}

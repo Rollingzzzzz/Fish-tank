@@ -10,6 +10,7 @@
 package render
 
 import (
+	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -37,11 +38,20 @@ func DrawSandBed(dst *ebiten.Image, cells []float64, w, h, floorY, night float64
 	baseC := lerpRGBA(cSandBase, cSandNight, night)
 	deepC := lerpRGBA(cSandDeep, cSandNight, night)
 	var base mesh
-	// the solid layer: floor line → bottom edge, full width
-	base.quad(
-		v2(0, floorY), v2(w, floorY), v2(w, h), v2(0, h),
-		withA(baseC, 245), withA(baseC, 245),
-		withA(deepC, 245), withA(deepC, 245))
+	// the solid layer follows the shared relief curve (G68): gentle swells
+	// and a shallow channel instead of a ruler line — the same surface the
+	// simulation rests flakes on
+	const step = 24.0
+	surf := func(x float64) float64 { return contract.SandSurfaceY(h, x) }
+	prevX, prevY := 0.0, surf(0)
+	for x := step; x <= w+step; x += step {
+		y := surf(x)
+		base.quad(
+			v2(prevX, prevY), v2(x, y), v2(x, h), v2(prevX, h),
+			withA(baseC, 245), withA(baseC, 245),
+			withA(deepC, 245), withA(deepC, 245))
+		prevX, prevY = x, y
+	}
 	base.draw(dst, false)
 	var m mesh
 	for i, off := range cells {
@@ -54,7 +64,7 @@ func DrawSandBed(dst *ebiten.Image, cells []float64, w, h, floorY, night float64
 			f1 := sandFract(sin(float64(i*7+k*13)) * 43758.5453)
 			f2 := sandFract(sin(float64(i*11+k*29)) * 24634.6345)
 			gx := x + (f1-0.5)*cellW*1.7 + off*1.4
-			gy := floorY + 2 + f2*20 - lift*0.7
+			gy := surf(gx) + 2 + f2*20 - lift*0.7
 			size := 1.1 + f1*1.5
 			col := cSandPale
 			if k == 1 || k == 3 {
