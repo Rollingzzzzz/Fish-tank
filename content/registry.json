@@ -14464,5 +14464,35 @@
     "kind": "species",
     "id": "pyro-coralveil",
     "at": "2026-09-13T21:05:20Z"
+  },
+  {
+    "hash": "28a5991768648650",
+    "kind": "species",
+    "id": "cryo-violetshade",
+    "at": "2026-09-13T21:08:24Z"
+  },
+  {
+    "hash": "faf8bdcbaaf6b141",
+    "kind": "water",
+    "id": "twilight-reef-36",
+    "at": "2026-09-13T21:08:27Z"
+  },
+  {
+    "hash": "ae678dec2c756831",
+    "kind": "coral",
+    "id": "glimmer-veil-38",
+    "at": "2026-09-13T21:08:27Z"
+  },
+  {
+    "hash": "4f222535446cfb4d",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-coat-46",
+    "at": "2026-09-13T21:08:30Z"
+  },
+  {
+    "hash": "111554352477738a",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-spark-37",
+    "at": "2026-09-13T21:08:30Z"
   }
 ]
