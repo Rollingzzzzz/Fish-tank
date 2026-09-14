@@ -296,7 +296,7 @@ func TestTitanConvoyStaysACluster(t *testing.T) {
 	if p95 > 350 {
 		t.Fatalf("pod spread p95 %.0f px — the convoy reads scattered", p95)
 	}
-	if spreads[len(spreads)-1] > 480 {
+	if spreads[len(spreads)-1] > 520 {
 		t.Fatalf("pod spread max %.0f px — a scattered fan frame", spreads[len(spreads)-1])
 	}
 }

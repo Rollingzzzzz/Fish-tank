@@ -15712,5 +15712,125 @@
     "kind": "coral",
     "id": "violet-crest-38",
     "at": "2026-09-14T01:57:40Z"
+  },
+  {
+    "hash": "d1ef8b1b40877d05",
+    "kind": "species",
+    "id": "cryo-comettail",
+    "at": "2026-09-14T02:06:45Z"
+  },
+  {
+    "hash": "4a59e70696ecea10",
+    "kind": "water",
+    "id": "twilight-basin-40",
+    "at": "2026-09-14T02:06:48Z"
+  },
+  {
+    "hash": "fd86fb3d0f4e193e",
+    "kind": "coral",
+    "id": "cyan-torch-38",
+    "at": "2026-09-14T02:06:48Z"
+  },
+  {
+    "hash": "b983c750a3e24878",
+    "kind": "pattern",
+    "id": "elder-elder-veil-53",
+    "at": "2026-09-14T02:06:51Z"
+  },
+  {
+    "hash": "fb3ede3c91882264",
+    "kind": "pattern",
+    "id": "elder-elder-fade-35",
+    "at": "2026-09-14T02:08:12Z"
+  },
+  {
+    "hash": "5a566c1fa340557e",
+    "kind": "pattern",
+    "id": "elder-elder-veil-54",
+    "at": "2026-09-14T02:08:12Z"
+  },
+  {
+    "hash": "d0030e5d45458c7e",
+    "kind": "water",
+    "id": "crystal-depths-38",
+    "at": "2026-09-14T02:08:38Z"
+  },
+  {
+    "hash": "9018c84e3e8580cc",
+    "kind": "coral",
+    "id": "glimmer-boulder-41",
+    "at": "2026-09-14T02:08:39Z"
+  },
+  {
+    "hash": "4753e99a0a3fb933",
+    "kind": "species",
+    "id": "pyro-auroraveil",
+    "at": "2026-09-14T02:09:05Z"
+  },
+  {
+    "hash": "a73d1cca1724cbe7",
+    "kind": "pattern",
+    "id": "elder-elder-prime-37",
+    "at": "2026-09-14T02:09:32Z"
+  },
+  {
+    "hash": "9d1283093bcfef9d",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-prime-42",
+    "at": "2026-09-14T02:09:32Z"
+  },
+  {
+    "hash": "a9f89b0cf5d3bf38",
+    "kind": "water",
+    "id": "crystal-lagoon-40",
+    "at": "2026-09-14T02:10:29Z"
+  },
+  {
+    "hash": "1af97bbd42b31a45",
+    "kind": "coral",
+    "id": "onyx-crest-39",
+    "at": "2026-09-14T02:10:29Z"
+  },
+  {
+    "hash": "6111251c9b2fd85d",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-coat-49",
+    "at": "2026-09-14T02:10:52Z"
+  },
+  {
+    "hash": "ea8efbdbab9c29ea",
+    "kind": "pattern",
+    "id": "elder-elder-prime-38",
+    "at": "2026-09-14T02:10:52Z"
+  },
+  {
+    "hash": "56d3f6a5059493d2",
+    "kind": "species",
+    "id": "ember-aurorafin",
+    "at": "2026-09-14T02:11:25Z"
+  },
+  {
+    "hash": "c53be07c3d630a2e",
+    "kind": "pattern",
+    "id": "elder-elder-fade-36",
+    "at": "2026-09-14T02:12:12Z"
+  },
+  {
+    "hash": "6c343ec8c4c78c03",
+    "kind": "pattern",
+    "id": "elder-elder-veil-55",
+    "at": "2026-09-14T02:12:12Z"
+  },
+  {
+    "hash": "adb0006f4f72d8d8",
+    "kind": "water",
+    "id": "emerald-current-38",
+    "at": "2026-09-14T02:12:19Z"
+  },
+  {
+    "hash": "faadbf6f6f6c7f1e",
+    "kind": "coral",
+    "id": "crystal-candle-41",
+    "at": "2026-09-14T02:12:19Z"
   }
 ]

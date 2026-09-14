@@ -191,10 +191,40 @@ func (f *Fish) applyFrameBounds(w *World, dt float64) {
 }
 
 // clampBodyInFrame is the G66 guarantee pass: every spine point of a big
-// body stays inside the canvas, every frame. The per-frame sweep can only
-// overshoot by a few pixels, so the per-point clamp is an invisible
-// correction at the tail tip -- never a teleport, never a fold.
+// body stays inside the canvas, every frame. G87: when the trailing cone
+// pokes past an edge the WHOLE FISH shifts rigidly (a few px per frame)
+// instead of the tail being pinned while the head keeps cruising — the
+// pin-and-slide read as a snag with the body oscillating around the still
+// eye. The fish glides level under the ceiling; the clamp itself remains
+// the last invisible guarantee.
 func (f *Fish) clampBodyInFrame(w *World) {
+	shiftX, shiftY := 0.0, 0.0
+	for i := range f.Spine {
+		if f.Spine[i].X < 3 {
+			shiftX = maxF(shiftX, 3-f.Spine[i].X)
+		}
+		if f.Spine[i].X > w.W-3 {
+			shiftX = minF(shiftX, w.W-3-f.Spine[i].X)
+		}
+		if f.Spine[i].Y < 3 {
+			shiftY = maxF(shiftY, 3-f.Spine[i].Y)
+		}
+		if f.Spine[i].Y > w.H-3 {
+			shiftY = minF(shiftY, w.H-3-f.Spine[i].Y)
+		}
+	}
+	// the rigid shift itself is bounded per frame — an unbounded jump is
+	// just another teleport wearing a fix's clothes
+	shiftX = clampF(shiftX, -5, 5)
+	shiftY = clampF(shiftY, -5, 5)
+	if shiftX != 0 || shiftY != 0 {
+		for i := range f.Spine {
+			f.Spine[i].X += shiftX
+			f.Spine[i].Y += shiftY
+		}
+		f.Pos.X += shiftX
+		f.Pos.Y += shiftY
+	}
 	for i := range f.Spine {
 		f.Spine[i].X = clampF(f.Spine[i].X, 3, w.W-3)
 		f.Spine[i].Y = clampF(f.Spine[i].Y, 3, w.H-3)

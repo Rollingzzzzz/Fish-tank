@@ -100,6 +100,7 @@ type Fish struct {
 	portalCD   float64 // chosen G73: idle cooldown before the next pass
 	exhaleT    float64 // shark G76: gill-breath timer between micro-bubble puffs
 	lastDa     float64 // G80: last heading correction sign — flip-flops betray noise
+	pitchT     float64 // G87: titan level-off hysteresis window
 	noiseT     float64 // G80: seconds of incoherent heading signal remaining
 	headingA   float64 // titan: sweep heading (0 = right, π = left)
 	slotBack   float64 // v1.1: formation distance behind the leader (px)
