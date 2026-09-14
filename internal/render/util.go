@@ -57,13 +57,19 @@ type colorRGBA = color.RGBA
 // withA returns c with the alpha replaced.
 func withA(c colorRGBA, a uint8) colorRGBA { c.A = a; return c }
 
-// sqrt / maxF micro-helpers.
+// sqrt / maxF / absF micro-helpers.
 func sqrt(x float64) float64 { return math.Sqrt(x) }
 func maxF(a, b float64) float64 {
 	if a > b {
 		return a
 	}
 	return b
+}
+func absF(x float64) float64 {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
 
 // shorthand trig (radians)

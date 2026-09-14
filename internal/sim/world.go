@@ -100,7 +100,8 @@ type World struct {
 	predT      float64 // pursuit seconds left before breaking off
 	creatures  []*Creature
 	creatureT  float64
-	sand       []float64 // v1.1: floor disturbance offsets, 0 = level bed
+	sand       []float64  // v1.1: floor disturbance offsets, 0 = level bed
+	ventT      [2]float64 // v1.1 G76: seep-column breath timers
 
 	WaterCur WaterLive
 	WaterTgt WaterLive
@@ -270,6 +271,8 @@ func (w *World) Update(dt float64, in Input) {
 	if contract.ExtrasEnabled { // v1.1 ambient features; TANK_EXTRAS=0 = A/B off
 		w.tickTitans(dt)
 		w.tickCreatures(dt)
+		w.tickVents(dt)
+		w.tickSharkExhale(dt)
 	}
 
 	// day counter (F8/F9): a full DaySeconds elapse = one tank day

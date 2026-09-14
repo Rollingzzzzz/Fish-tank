@@ -62,9 +62,15 @@ func (w *World) tryEat() {
 				continue // just spawned, give everyone a chance
 			}
 			if hyp2(sub(fd.Pos, f.Pos)) < reach {
+				// G77: a bite taken off the dune throws its dust — only when
+				// the flake was actually resting on the grains
+				resting := fd.Pos.Y >= contract.SandSurfaceY(w.H, fd.Pos.X)-2.5
 				f.eat()
 				w.addCare(contract.CareFeedScore)
 				w.burst(fd.Pos, f.Pal.Accent, 6)
+				if resting {
+					w.kickSand(fd.Pos)
+				}
 				// remove by swap
 				w.foods[i] = w.foods[len(w.foods)-1]
 				w.foods = w.foods[:len(w.foods)-1]
@@ -118,6 +124,7 @@ type Particle struct {
 	Max      float64
 	Color    string
 	Size     float64
+	Grav     float64 // px/s² settling pull — sparkles drift, sand grains drop
 }
 
 // Bubble rises to the surface.
@@ -141,6 +148,27 @@ func (w *World) burst(p contract.Vec2, colorHex string, n int) {
 			Pos: p, Vel: v2(cos(a)*sp, sin(a)*sp),
 			Life: 0.5 + w.rng.Float64()*0.4, Max: 0.9,
 			Color: colorHex, Size: 1 + w.rng.Float64()*2,
+			Grav: 14,
+		})
+	}
+}
+
+// sandKickColor matches the bed grains — the dust reads as the floor itself.
+const sandKickColor = "#e8d6a3"
+
+// kickSand throws a small dust cloud off the bed (G77): the payoff of a
+// floor feed — the bite leaves a mark. Grains pop up and drop back under
+// their own weight, unlike the weightless sparkles.
+func (w *World) kickSand(p contract.Vec2) {
+	for i := 0; i < contract.SandKickN && len(w.particles) < maxParticles; i++ {
+		a := w.rng.Float64() * 6.283
+		sp := 14 + w.rng.Float64()*46
+		w.particles = append(w.particles, Particle{
+			Pos:  v2(p.X+(w.rng.Float64()-0.5)*8, p.Y-1),
+			Vel:  v2(cos(a)*sp*0.55, -(12 + w.rng.Float64()*40)),
+			Life: 0.55 + w.rng.Float64()*0.45, Max: 1.0,
+			Color: sandKickColor, Size: 1 + w.rng.Float64()*1.6,
+			Grav: contract.SandKickGrav,
 		})
 	}
 }
@@ -155,7 +183,7 @@ func (w *World) tickParticles(dt float64) {
 		}
 		p.Pos.X += p.Vel.X * dt
 		p.Pos.Y += p.Vel.Y * dt
-		p.Vel.Y += 14 * dt
+		p.Vel.Y += p.Grav * dt
 		kept = append(kept, p)
 	}
 	w.particles = kept
@@ -179,4 +207,37 @@ func (w *World) tickParticles(dt float64) {
 		}
 	}
 	w.bubbles = keptB
+}
+
+// ventFrac pins the two seep columns on the floor — they sit on the dunes at
+// fixed tank fractions, reading as the bed breathing (G76).
+var ventFrac = [2]float64{0.17, 0.79}
+
+// tickVents breathes the seep columns (G76): every few seconds a vent
+// releases a small cluster that rises as a loose column. The water's bubble
+// setting modulates the vigor, but a physical vent never falls silent —
+// VentFloor keeps a baseline even at bubbles=0.
+func (w *World) tickVents(dt float64) {
+	vigor := contract.VentFloor + (1-contract.VentFloor)*contract.Clamp(w.WaterCur.Bubbles, 0, 1)
+	for i := range w.ventT {
+		w.ventT[i] -= dt
+		if w.ventT[i] > 0 || len(w.bubbles) >= maxBubbles {
+			continue
+		}
+		w.ventT[i] = contract.VentGapMin + w.rng.Float64()*(contract.VentGapMax-contract.VentGapMin)
+		if w.rng.Float64() > vigor {
+			continue // a weak breath this cycle — the column stutters
+		}
+		x := w.W * ventFrac[i]
+		n := 2 + int(w.rng.Float64()*3)
+		for k := 0; k < n && len(w.bubbles) < maxBubbles; k++ {
+			w.bubbles = append(w.bubbles, Bubble{
+				Pos:    v2(x+(w.rng.Float64()-0.5)*7, contract.SandSurfaceY(w.H, x)-2),
+				R:      0.9 + w.rng.Float64()*1.3,
+				Speed:  30 + w.rng.Float64()*36,
+				Wobble: w.rng.Float64() * 6.283,
+				Seed:   w.rng.Float64(),
+			})
+		}
+	}
 }

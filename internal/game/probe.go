@@ -38,7 +38,14 @@ func (s *shotRun) buildProbe() {
 		if i > 0 {
 			pin = (c.act - 2) * 60
 		}
-		s.steps = append(s.steps, smokeStep{until: pin, act: func(g *Game) { g.world.DebugSetDay() }})
+		act := func(g *Game) { g.world.DebugSetDay() }
+		if c.act == 88 {
+			// G77 evidence: rest flakes on the dunes just before this capture
+			// — the frame shows the food lying on the relief while the school
+			// dives for it (the kick dust itself is unit-proven)
+			act = func(g *Game) { g.world.DebugSetDay(); g.world.DebugFeedFloor(3) }
+		}
+		s.steps = append(s.steps, smokeStep{until: pin, act: act})
 		s.caps[c.act*60] = c.name
 	}
 	s.steps = append(s.steps,

@@ -98,6 +98,7 @@ type Fish struct {
 	portalPh   int     // chosen G73: 0 idle, 1 opening, 2 entering, 3 exiting
 	portalT    float64 // chosen G73: phase clock (s)
 	portalCD   float64 // chosen G73: idle cooldown before the next pass
+	exhaleT    float64 // shark G76: gill-breath timer between micro-bubble puffs
 	headingA   float64 // titan: sweep heading (0 = right, π = left)
 	slotBack   float64 // v1.1: formation distance behind the leader (px)
 	slotY      float64 // v1.1: formation vertical offset from the leader (px)

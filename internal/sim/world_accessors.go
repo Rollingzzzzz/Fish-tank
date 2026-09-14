@@ -205,3 +205,16 @@ func (w *World) DebugSetNight() {
 func (w *World) DebugSetDay() {
 	w.Clock = 0.25 * maxF(w.cfg.DaySeconds, 5)
 }
+
+// DebugFeedFloor drops n flakes straight onto the dunes — evidence harness
+// only (-probe): the resting-food composition with the school diving for it.
+func (w *World) DebugFeedFloor(n int) {
+	for i := 0; i < n; i++ {
+		x := w.W * (0.30 + 0.18*float64(i))
+		w.foods = append(w.foods, Food{
+			Pos:  v2(x, contract.SandSurfaceY(w.H, x)-1),
+			Seed: float64(i + 3),
+			Age:  1,
+		})
+	}
+}

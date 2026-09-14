@@ -85,6 +85,37 @@ func (f *Fish) carveCurlTurn(maxSp float64) {
 	}
 }
 
+// tickSharkExhale breathes the pair (G76): every few gill beats the hunter
+// releases a puff of micro-bubbles where the gills sit — the water reads as
+// water, and the rendered gill slits get a physical echo.
+func (w *World) tickSharkExhale(dt float64) {
+	for _, f := range w.fishes {
+		if f.Sp.Role != contract.RoleShark || f.Dying {
+			continue
+		}
+		if f.exhaleT == 0 {
+			f.exhaleT = contract.SharkExhaleMin + w.rng.Float64()*(contract.SharkExhaleMax-contract.SharkExhaleMin)
+		}
+		f.exhaleT -= dt
+		if f.exhaleT > 0 || len(w.bubbles) >= maxBubbles {
+			continue
+		}
+		f.exhaleT = contract.SharkExhaleMin + w.rng.Float64()*(contract.SharkExhaleMax-contract.SharkExhaleMin)
+		gx := f.Pos.X + cos(f.headingA)*f.bodyLen*0.14
+		gy := f.Pos.Y + sin(f.headingA)*f.bodyLen*0.14
+		n := 3 + int(w.rng.Float64()*3)
+		for k := 0; k < n && len(w.bubbles) < maxBubbles; k++ {
+			w.bubbles = append(w.bubbles, Bubble{
+				Pos:    v2(gx+(w.rng.Float64()-0.5)*f.bodyLen*0.10, gy+(w.rng.Float64()-0.5)*f.bodyLen*0.08),
+				R:      0.7 + w.rng.Float64()*1.0,
+				Speed:  34 + w.rng.Float64()*30,
+				Wobble: w.rng.Float64() * 6.283,
+				Seed:   w.rng.Float64(),
+			})
+		}
+	}
+}
+
 // titanStartConvoyTurn flips the caravan as ONE (G67): the leader's glass
 // call arms every member's arc at the same instant — each fish sweeps its
 // own parallel half circle from where it swims, so the five arrive on the

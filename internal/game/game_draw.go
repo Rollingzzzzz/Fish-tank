@@ -65,9 +65,38 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	order := g.fishOrder[:len(fishes)]
 	copy(order, fishes)
 	sort.Slice(order, func(i, j int) bool { return order[i].Z() < order[j].Z() })
+	if cap(g.casters) < len(order) {
+		g.casters = make([]render.ShadowCaster, len(order))
+	}
+	casters := g.casters[:0]
 	for _, f := range order {
 		if f.Hide01 > 0 { // swallowed by a crag door — not drawn at all
 			continue
+		}
+		// G74: the shadow projection rides the same loop — spine length,
+		// forward x, dune lift and the portal fade all come straight off
+		// the live body
+		if !f.Dying {
+			n := len(f.Spine)
+			bl, hx := 0.0, 1.0
+			if n >= 2 {
+				dx, dy := 0.0, 0.0
+				for j := 1; j < n; j++ {
+					sx := f.Spine[j].X - f.Spine[j-1].X
+					sy := f.Spine[j].Y - f.Spine[j-1].Y
+					bl += math.Sqrt(sx*sx + sy*sy)
+					dx += f.Spine[j-1].X - f.Spine[j].X
+					dy += f.Spine[j-1].Y - f.Spine[j].Y
+				}
+				if l := math.Sqrt(dx*dx + dy*dy); l > 1 {
+					hx = dx / l
+				}
+			}
+			casters = append(casters, render.ShadowCaster{
+				X: f.Pos.X, Hx: hx, BodyLen: bl, Z: f.Z(),
+				Lift: math.Max(0, contract.SandSurfaceY(float64(ScreenH), f.Pos.X)-f.Pos.Y),
+				Fade: f.PortalFade01(),
+			})
 		}
 		chosen := f.Sp.Role == contract.RoleChosen
 		anim := render.FishAnim{
@@ -113,6 +142,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// lands on its surface draw on top
 	render.DrawSandBed(screen, g.world.Sand(), float64(ScreenW), float64(ScreenH),
 		float64(ScreenH)*contract.FloorLineFrac, night)
+	if contract.ExtrasEnabled {
+		// v1.1 realism pass on the bed (G74/G75): sun first, shade second —
+		// a shadow reads as blocked light when it dims the dapple under it
+		render.DrawSandCaustics(screen, float64(ScreenW), float64(ScreenH), wl.Time, night)
+	}
+	render.DrawShadows(screen, casters, float64(ScreenW), float64(ScreenH), night)
 	for _, fd := range g.world.Foods() {
 		render.DrawGlow(screen, fd.Pos.X, fd.Pos.Y, 5, "#ffe9a0", 0.45)
 		render.DrawOrb(screen, fd.Pos.X, fd.Pos.Y, 1.8, "#fff6d8", 230)
@@ -131,9 +166,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		a := p.Life / p.Max
 		render.DrawGlow(screen, p.Pos.X, p.Pos.Y, p.Size*4, p.Color, 0.45*a)
 	}
-	for _, b := range g.world.Bubbles() {
-		render.DrawOrb(screen, b.Pos.X, b.Pos.Y, b.R, "#bfe9ff", 90)
+	// v1.1 G76: one mesh for every bubble — the seep columns and the gill
+	// breaths ride the same single draw call
+	bubs := g.world.Bubbles()
+	if cap(g.bubView) < len(bubs) {
+		g.bubView = make([]render.BubbleView, len(bubs))
 	}
+	view := g.bubView[:0]
+	for _, b := range bubs {
+		view = append(view, render.BubbleView{X: b.Pos.X, Y: b.Pos.Y, R: b.R, Seed: b.Seed})
+	}
+	render.DrawBubbles(screen, view)
 
 	g.menu.Draw(screen)
 	g.tray.Draw(screen, g.grabKind) // N8: tray button + open store (above menu)
@@ -146,11 +189,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	if g.debug {
 		ebitenutil.DebugPrint(screen, fmt.Sprintf(
-			"TPS %.0f FPS %.0f heap %.1fMB fish %d plants %d corals %d mites %d treats %d titan %d critters %d care %.0f",
+			"TPS %.0f FPS %.0f heap %.1fMB fish %d plants %d corals %d mites %d treats %d titan %d critters %d bubbles %d care %.0f",
 			ebiten.ActualTPS(), ebiten.ActualFPS(), heapMB(),
 			len(g.world.Fishes()), len(g.world.Plants()), len(g.world.Corals()),
 			len(g.world.Mites()), len(g.world.Treats()), g.world.TitanCount(),
-			len(g.world.Critters()), g.world.Care))
+			len(g.world.Critters()), len(g.world.Bubbles()), g.world.Care))
 	}
 
 	drawClose(screen, &g.closeBtn) // v0.3.3: the X, above even the menu

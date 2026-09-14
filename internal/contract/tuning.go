@@ -222,6 +222,22 @@ const (
 	CreatureLureRadius = 260.0 // hungry fish notice the struggling critter
 	CreatureWalkSpeed  = 14.0  // px/s along the floor
 	CreatureBurrowSec  = 2.0   // an uneaten critter sinks back into the floor
+
+	// v1.1 realism pass (G74–G77): light and water cues on the matte bed —
+	// measured ambience, never new neon (F16 stands).
+	ShadowAlphaFar  = 0.055 // far-lane floor shadow floor
+	ShadowAlphaNear = 0.150 // near-lane shadow ceiling
+	ShadowNightMul  = 0.45  // moon shadows keep less than half the day bite
+	CausticAmp      = 0.16  // peak sun-dapple alpha on the day bed
+	CausticNightK   = 0.15  // moon-dapple fraction at deep night
+	CausticStepPx   = 20.0  // dapple column width
+	VentGapMin      = 2.2   // seep column: seconds between puffs
+	VentGapMax      = 5.0
+	VentFloor       = 0.30 // vents keep breathing at bubbles=0 (physical decor)
+	SharkExhaleMin  = 3.5  // gill-breath seconds between micro-bubble puffs
+	SharkExhaleMax  = 8.0
+	SandKickN       = 7 // grains thrown by one floor feed
+	SandKickGrav    = 150.0
 )
 
 // GLM output guard.

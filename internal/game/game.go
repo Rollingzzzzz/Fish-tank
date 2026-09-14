@@ -52,6 +52,8 @@ type Game struct {
 	smoke     *smokeRun               // -menu-smoke scripted acceptance run
 	shot      *shotRun                // -shot scripted evidence capture (F19)
 	fishOrder []*sim.Fish             // v1.1: reused depth-sorted draw order
+	casters   []render.ShadowCaster   // v1.1 G74: reused floor-shadow projections
+	bubView   []render.BubbleView     // v1.1 G76: reused bubble batch view
 	feedHeld  bool                    // left-button level state (F5 feed edge)
 	scareHeld bool                    // right-button level state (N10 scare edge)
 	closeBtn  ui.ButtonState          // v0.3.3: the always-visible X button
