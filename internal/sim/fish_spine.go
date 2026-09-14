@@ -24,6 +24,12 @@ func (f *Fish) followSpine(dt float64) {
 	f.Spine[0] = f.Pos
 	maxSp := f.maxSpeed(f.curNight)
 	speed01 := clampF(hyp2(f.Vel)/maxSp, 0, 1)
+	// G90: the visible body reads the EASED pace. Raw speed01 rescales the
+	// wave amplitude and the beat in a single frame whenever a burst is
+	// granted or spent — the tail hops sideways. One low-pass (4/s) keeps
+	// the swim wave continuous through every speed change.
+	f.speed01S += (speed01 - f.speed01S) * minF(1, 4*dt)
+	speed01 = f.speed01S
 	bend := contract.SpineBendNormal
 	if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
 		bend = contract.TitanSpineBend
@@ -88,7 +94,22 @@ func (f *Fish) followSpine(dt float64) {
 					s = -1.0
 				}
 				cb, sb := math.Cos(bend), math.Sin(bend)
-				bx, by = px*cb-py*s*sb, py*cb+px*s*sb
+				tx, ty := px*cb-py*s*sb, py*cb+px*s*sb
+				// G90: a GRAZE outside the cone SLEWS toward the edge instead
+				// of snapping onto it — the instant rotation swung a joint
+				// ~segLen·sin(bend) in one frame (the ±3 px glitch at school
+				// scale, worse on big bodies). A genuine FOLD (the head
+				// overtook the tail — big external shoves) still returns in
+				// one frame: a lingering fold reads as a broken rope.
+				cur := math.Atan2(by, bx)
+				tgt := math.Atan2(ty, tx)
+				da := math.Mod(tgt-cur+3.14159, 6.28318) - 3.14159
+				if da > -0.3 && da < 0.3 {
+					cur += clampF(da, -contract.SpineBendSlew*dt, contract.SpineBendSlew*dt)
+					bx, by = math.Cos(cur), math.Sin(cur)
+				} else {
+					bx, by = tx, ty
+				}
 			}
 		}
 		px, py = bx, by
@@ -225,9 +246,11 @@ func (f *Fish) clampBodyInFrame(w *World) {
 		}
 	}
 	// the rigid shift itself is bounded per frame — an unbounded jump is
-	// just another teleport wearing a fix's clothes
-	shiftX = clampF(shiftX, -5, 5)
-	shiftY = clampF(shiftY, -5, 5)
+	// just another teleport wearing a fix's clothes. G90: 5 px/frame was
+	// still a visible hop at school scale; the cap now sits at
+	// BodyShiftCapPx and the edge deficit closes over a few gliding frames.
+	shiftX = clampF(shiftX, -contract.BodyShiftCapPx, contract.BodyShiftCapPx)
+	shiftY = clampF(shiftY, -contract.BodyShiftCapPx, contract.BodyShiftCapPx)
 	if shiftX != 0 || shiftY != 0 {
 		for i := range f.Spine {
 			f.Spine[i].X += shiftX

@@ -107,6 +107,7 @@ type Fish struct {
 	slotY      float64 // v1.1: formation vertical offset from the leader (px)
 	bodyLen    float64
 	segLen     float64
+	speed01S   float64 // G90: low-passed speed01 — the visible wave eases, never rescales in a frame
 	curNight   float64 // night factor cache for the spine pass
 	prevStage  string
 	restTarget *contract.Vec2
@@ -280,7 +281,9 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	}
 	// v1.1: big bodies beat their tails slower — the heavy, real read
 	// (64 px reference fish; a 576 px giant beats at ~a quarter the rate)
-	f.phase += dt * (3.2 + 7.5*speed01) * (1 - 0.25*f.ElderP) * phaseMul *
+	// G90: the beat rides the EASED pace (speed01S) — raw speed01 would
+	// rescale the beat in a single frame on every burst grant or spend.
+	f.phase += dt * (3.2 + 7.5*f.speed01S) * (1 - 0.25*f.ElderP) * phaseMul *
 		64 / (64 + contract.BeatBodyDamp*f.bodyLen)
 	f.followSpine(dt)
 	w.dragSpineOut(f)
