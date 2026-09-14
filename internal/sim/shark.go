@@ -114,7 +114,9 @@ func (f *Fish) constrainForward(dt, maxSp float64, w *World) {
 		f.headingA += clampF(da, -contract.SharkTurnRate*1.6*dt, contract.SharkTurnRate*1.6*dt)
 	}
 	if sp < maxSp*0.65 {
-		sp = maxSp * 0.65
+		// G81: the cruise floor is approached (3/s), not snapped — an
+		// instant lift read as a collision kick when the pin shaved speed
+		sp += minF(maxSp*0.65-sp, maxSp*0.65*3*dt)
 	}
 	f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), sp)
 }

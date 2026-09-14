@@ -321,7 +321,9 @@ func TestHeldTreatPullsHungryFishToRing(t *testing.T) {
 		w.Update(1/30.0, in)
 	}
 	for i, f := range w.fishes {
-		if d := hyp2(sub(f.Pos, cursor)); d > 60 {
+		// the keep-back ring is 60 px; a fish hovering the bait jostles a
+		// half body-length around it, so the sample instant allows 70
+		if d := hyp2(sub(f.Pos, cursor)); d > 70 {
 			t.Fatalf("fish %d not pulled in: %.0f px from the cursor", i, d)
 		}
 		if f.bites != 0 {

@@ -412,8 +412,8 @@ func TestTitanSoftVerticalWander(t *testing.T) {
 	for i := 0; i < 60*120; i++ { // 120 s
 		g.Satiety = 1 // fed: hunger lunges are a separate, welcome behavior
 		w.Update(dt, Input{})
-		if i%10 != 0 || g.turning > 0 {
-			continue // judge straight sweeps; the arc owns its own vertical
+		if i%10 != 0 || g.turning > 0 || g.seekBonus > 1.01 {
+			continue // judge straight sweeps; the arc and any strike own their own vertical
 		}
 		switch {
 		case g.Pos.Y < w.H*0.35:

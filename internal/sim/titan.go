@@ -61,7 +61,10 @@ func (w *World) tickTitans(dt float64) {
 // courtship and cursor games entirely.
 func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	acc := v2(0, 0)
-	f.seekBonus = 1.0
+	// G81: the spent-strike allowance decays here too (3.5/s) — the old
+	// hard reset dropped the cap from ×10 to ×1 in one frame and the speed
+	// cut read as a collision (probe: 126→26 px/s between frames)
+	f.seekBonus = maxF(1.0, f.seekBonus-3.5*dt)
 	addForce := func(desired contract.Vec2, weight float64) {
 		acc.X += (desired.X - f.Vel.X) * weight
 		acc.Y += (desired.Y - f.Vel.Y) * weight
@@ -260,29 +263,7 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	if l := hyp2(acc); l > contract.MaxForce*f.seekBonus {
 		acc = mulS(acc, contract.MaxForce*f.seekBonus/l)
 	}
-	// G59/G67 LAST: the body faces where it swims -- the heading eases
-	// toward the velocity (at burst pace through a strike), and whatever
-	// the mixed forces did, the velocity is shaved off the face's blind
-	// side. A scalare may be slowed sideways, never pushed tail-first.
-	follow := 2.5
-	if f.seekBonus > 1.01 {
-		follow = 6.5
-	}
-	if v := hyp2(f.Vel); v > 1 { // even a slow drift is already a heading
-		va := math.Atan2(f.Vel.Y, f.Vel.X)
-		da := math.Mod(va-f.headingA+3.14159, 6.28318) - 3.14159
-		f.headingA += clampF(da, -follow*dt, follow*dt)
-		ax, ay := math.Cos(f.headingA), math.Sin(f.headingA)
-		if back := f.Vel.X*ax + f.Vel.Y*ay; back < 0 {
-			f.Vel.X -= ax * back
-			f.Vel.Y -= ay * back
-		}
-		// the mixed acceleration may not push the nose backwards either —
-		// integration happens after this pass
-		if back := acc.X*ax + acc.Y*ay; back < 0 {
-			acc.X -= ax * back
-			acc.Y -= ay * back
-		}
-	}
+	f.titanAlign(dt, maxSp, &acc)
+
 	return acc
 }

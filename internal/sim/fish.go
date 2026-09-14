@@ -99,6 +99,8 @@ type Fish struct {
 	portalT    float64 // chosen G73: phase clock (s)
 	portalCD   float64 // chosen G73: idle cooldown before the next pass
 	exhaleT    float64 // shark G76: gill-breath timer between micro-bubble puffs
+	lastDa     float64 // G80: last heading correction sign — flip-flops betray noise
+	noiseT     float64 // G80: seconds of incoherent heading signal remaining
 	headingA   float64 // titan: sweep heading (0 = right, π = left)
 	slotBack   float64 // v1.1: formation distance behind the leader (px)
 	slotY      float64 // v1.1: formation vertical offset from the leader (px)
@@ -214,6 +216,20 @@ func (f *Fish) advance(dt, night float64, w *World) {
 
 	acc := f.steer(dt, maxSp, night, w)
 
+	// G81: the body owns its throttle. addForce sums RAW (desired−vel)
+	// deltas with no ceiling, so stacked behaviors (a separation spike, a
+	// courtship tangent, a wall push) could change speed by 100+ px/s in a
+	// single frame — the tank read like collision-response physics. Every
+	// desire now shares the one physical thrust budget (a strike buys extra
+	// authority through seekBonus; the titan mix carries its own
+	// bonus-weighted clamp inside steerTitan).
+	if f.Sp.Role != contract.RoleTitan {
+		thrust := contract.MaxForce * maxF(1, f.seekBonus*0.6)
+		if m := hyp2(acc); m > thrust {
+			acc = mulS(acc, thrust/m)
+		}
+	}
+
 	// integrate (seekBonus lets a food rush briefly exceed cruise speed)
 	f.Vel.X += acc.X * dt
 	f.Vel.Y += acc.Y * dt
@@ -243,7 +259,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	f.Pos.X += f.Vel.X * dt
 	f.Pos.Y += f.Vel.Y * dt
 
-	f.applyFrameBounds(w)
+	f.applyFrameBounds(w, dt)
 
 	// N3/G52: nothing alive but the Chosen may enter the aura — and for a
 	// big body "enter" means ANY spine segment, head to tail

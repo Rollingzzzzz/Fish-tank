@@ -81,11 +81,19 @@ func TestCritterLureSteersHungryFish(t *testing.T) {
 	if f.seekBonus < 2 {
 		t.Fatal("a hungry fish ignored the struggling critter")
 	}
-	// full-bellied fish feel nothing
+	// full-bellied fish feel nothing: the drive is not renewed and the
+	// residual excitement glides off within half a second (G81 — an
+	// instant reset would snap the speed cap in half mid-water)
 	f.Satiety = 1
 	f.steer(0.016, f.maxSpeed(0), 0, w)
-	if f.seekBonus > 1 {
+	if f.seekBonus > 1.99 {
 		t.Fatal("a full fish still chased the critter")
+	}
+	for i := 0; i < 30; i++ {
+		f.steer(0.016, f.maxSpeed(0), 0, w)
+	}
+	if f.seekBonus > 1.001 {
+		t.Fatal("the full fish's excitement never died")
 	}
 }
 

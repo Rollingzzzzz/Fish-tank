@@ -122,36 +122,56 @@ func (f *Fish) capTurn(dt float64) {
 	}
 	va := math.Atan2(f.Vel.Y, f.Vel.X)
 	da := math.Mod(va-f.headingA+3.14159, 6.28318) - 3.14159
-	f.headingA += clampF(da, -contract.NormalTurnRate*dt, contract.NormalTurnRate*dt)
+	// G80: COHERENCE gates the turn. A committed turn (food behind the
+	// back, a startle, a U-turn) holds its correction sign and swings at
+	// full rate. A heading signal that flip-flops frame to frame is
+	// noise, and noise may only turn a slow fish slowly — that is what
+	// killed the "eyes stay put while the body flails every direction"
+	// stationary whip without touching anyone's agility.
+	if da*f.lastDa < 0 {
+		f.noiseT = 0.35
+	}
+	f.lastDa = da
+	f.noiseT = maxF(0, f.noiseT-dt)
+	rate := contract.NormalTurnRate
+	if f.noiseT > 0 && v < f.bodyLen {
+		rate *= 0.35
+	}
+	f.headingA += clampF(da, -rate*dt, rate*dt)
 	f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), v)
 }
 
 // applyFrameBounds is the impenetrable tank bounds (v1.0) plus the G66
 // body margin: a fish can never leave the water, and the big residents
 // keep their tall frames below the top edge — the drawn body must fit.
-func (f *Fish) applyFrameBounds(w *World) {
+// G81: the inbound velocity component now decays (10/s) instead of being
+// zeroed in one frame — the instant kill read as collision-response
+// physics; the wall itself still stops the position dead, the easing only
+// governs how the speed reads after contact.
+func (f *Fish) applyFrameBounds(w *World, dt float64) {
+	soft := maxF(0, 1-10*dt)
 	if f.Pos.X < 8 {
 		f.Pos.X = 8
 		if f.Vel.X < 0 {
-			f.Vel.X = 0
+			f.Vel.X *= soft
 		}
 	}
 	if f.Pos.X > w.W-8 {
 		f.Pos.X = w.W - 8
 		if f.Vel.X > 0 {
-			f.Vel.X = 0
+			f.Vel.X *= soft
 		}
 	}
 	if f.Pos.Y < 8 {
 		f.Pos.Y = 8
 		if f.Vel.Y < 0 {
-			f.Vel.Y = 0
+			f.Vel.Y *= soft
 		}
 	}
 	if f.Pos.Y > w.H-8 {
 		f.Pos.Y = w.H - 8
 		if f.Vel.Y > 0 {
-			f.Vel.Y = 0
+			f.Vel.Y *= soft
 		}
 	}
 	if f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
@@ -165,7 +185,7 @@ func (f *Fish) applyFrameBounds(w *World) {
 	if f.Pos.Y < myTop {
 		f.Pos.Y = myTop
 		if f.Vel.Y < 0 {
-			f.Vel.Y = 0
+			f.Vel.Y *= soft
 		}
 	}
 }

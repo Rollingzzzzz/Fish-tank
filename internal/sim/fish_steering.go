@@ -8,7 +8,14 @@ import (
 // steer accumulates the behavior acceleration vector.
 func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	acc := v2(0, 0)
-	f.seekBonus = 1.0
+	// G81: a spent burst's speed allowance DECAYS (3.5/s) instead of
+	// snapping back to cruise — the cap follows it down gently, so the
+	// strict speed invariant holds while the deceleration reads as a
+	// glide, never a mid-water brake (an eat that crosses Satiety 0.9
+	// once snapped the cap in half mid-water — probe: 4244 px/s in a
+	// single frame). A full fish simply never renews the drive; the
+	// residual momentum glides off the same way.
+	f.seekBonus = maxF(1.0, f.seekBonus-3.5*dt)
 	addForce := func(desired contract.Vec2, weight float64) {
 		acc.X += (desired.X - f.Vel.X) * weight
 		acc.Y += (desired.Y - f.Vel.Y) * weight
@@ -29,9 +36,16 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	if f.transiting && f.transitPh == 0 && f.CourtID == "" && f.chaseT <= 0 && f.zoomT <= 0 {
 		return f.steerTransit(maxSp)
 	}
-	// wander (smooth random heading) — quiet neighbors let schooling win
+	// wander (smooth random heading) — quiet neighbors let schooling win.
+	// G80: the noise's authority rides the fin flow (clamped to 15 % at a
+	// standstill): a slow fish HOLDS its nose instead of being
+	// weather-vaned by noise, so the "eyes fixed while the body turns
+	// every direction" stationary spin is dead at the source — only a
+	// coherent target force (food, scare, shelter) turns a slow fish, and
+	// those turns read as intention.
 	f.wanderA += (f.rng.Float64() - 0.5) * 2.4 * dt
-	wx, wy := cos(f.wanderA)*0.6*maxSp, sin(f.wanderA)*0.6*maxSp
+	wAuth := clampF(hyp2(f.Vel)/(0.30*maxSp), 0.15, 1)
+	wx, wy := cos(f.wanderA)*0.6*maxSp*wAuth, sin(f.wanderA)*0.6*maxSp*wAuth
 	if f.Sp.Role == contract.RoleShark {
 		wy *= contract.TitanHeadFlat // the hunter hugs the sand line too
 	}
@@ -165,7 +179,16 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 		if treat != nil || held || tgtCrit != nil {
 			foodW += 1.0 // live food triggers a mad dash
 		}
-		addForce(mulS(d, maxSp*2.0/l), foodW)
+		// G80: ARRIVE, but only where the target is a PLACE — the held
+		// treat's keep-back ring. The old fixed 2×cruise desire overshot
+		// the ring and chained U-turn flexes into a sustained low-speed
+		// spin; a fish now settles onto the ring. Real food is hit at
+		// speed — the dash never brakes for a flake it means to eat.
+		approach := maxSp * 2.0
+		if held && l < 130 {
+			approach = maxF(approach*l/130, maxSp*0.55)
+		}
+		addForce(mulS(d, approach/l), foodW)
 		f.seekBonus = 2.0 // F3: local force + speed allowance while chasing
 		if held {
 			// N11: excited — the brief speed raise caps at ×HeldTreatSpeed
@@ -256,39 +279,13 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 		addForce(d, 1.0)
 	}
 
-	// N3 aura repulsion. F27: the Chosen is exempt — her own nest never
-	// pushes her out. v1.1: the radius grows with the fish's own body, so a
-	// long fish turns away early enough that no part of it crosses the line.
-	for _, z := range w.zones {
-		if z.Owner != "chosen" || f.Sp.Role == contract.RoleChosen {
-			continue
-		}
-		d := sub(f.Pos, z.Center)
-		r := z.Radius + 40 + f.bodyLen*0.45
-		if l := hyp2(d); l < r && l > 1 {
-			urgency := 1 + 2*(1-l/r)
-			addForce(mulS(d, maxSp*urgency/l), 1.8)
-		}
-	}
+	f.auraRepulsion(w, maxSp, addForce)
 
 	// v1.1: flow around the big bodies — through a titan or the shark
 	// nobody swims; the silhouette is gone around, never crossed
 	f.avoidBigBodies(w, maxSp, addForce)
 
-	// wall margins
-	const mgn = 60.0
-	if f.Pos.X < mgn {
-		addForce(v2(maxSp, 0), 1.2)
-	}
-	if f.Pos.X > w.W-mgn {
-		addForce(v2(-maxSp, 0), 1.2)
-	}
-	if f.Pos.Y < mgn*0.7 {
-		addForce(v2(0, maxSp), 1.2)
-	}
-	if f.Pos.Y > w.H-mgn*0.6 {
-		addForce(v2(0, -maxSp), 1.2)
-	}
+	f.wallMargins(w, maxSp, addForce)
 
 	// clamp total force (seekBonus = F3's local allowance while food-chasing)
 	l := hyp2(acc)
