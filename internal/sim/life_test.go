@@ -64,6 +64,7 @@ func TestCareThresholdTriggersCourtshipAndEggs(t *testing.T) {
 func TestNaturalDeathRespectsMinPopulation(t *testing.T) {
 	// FD11: deaths never take the tank below MinPopulation.
 	w := testWorld(t, testSpecies(0), contract.MinPopulation+1)
+	w.miteT = 1e9 // isolate the death logic — the teeming mites would feed and breed the school mid-fade
 	// fish 0 is ancient; the others stay young
 	f0 := w.fishes[0]
 	f0.AgeDays = contract.StageDays["elder"] + contract.DeathAfterElderDays + 1

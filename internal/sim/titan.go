@@ -216,7 +216,7 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 		if tgt := w.fishByID(w.predTgtID); tgt != nil {
 			d := sub(tgt.Pos, f.Pos)
 			addForce(mulS(d, maxSp*f.burstMul()/maxF(hyp2(d), 1)), 3.0)
-			f.seekBonus = f.burstMul()
+			f.seekBonus = maxF(f.seekBonus, f.burstMul())
 		}
 	}
 	// N10 for the deep ones (G49): a right-click scare bolts the whole pod

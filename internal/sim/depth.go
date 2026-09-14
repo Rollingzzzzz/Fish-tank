@@ -95,7 +95,7 @@ func (f *Fish) formationSteer(w *World, maxSp float64, addForce func(contract.Ve
 		// edge trigger gates on seekBonus.
 		if absF(d.X) > contract.TitanSlotNeed && f.seekBonus < contract.TitanSlotReflex &&
 			f.Pos.X > 130 && f.Pos.X < w.W-130 {
-			f.seekBonus = contract.TitanSlotReflex
+			f.seekBonus = maxF(f.seekBonus, contract.TitanSlotReflex)
 		}
 	}
 }

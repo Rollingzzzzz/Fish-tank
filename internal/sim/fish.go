@@ -236,7 +236,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	f.Vel.Y += acc.Y * dt
 	sp := hyp2(f.Vel)
 	if cap := maxSp * maxF(1, f.seekBonus); sp > cap {
-		f.Vel = mulS(f.Vel, cap/sp)
+		f.Vel = mulS(f.Vel, glideCap(sp, cap)) // G88: ceiling drops glide, never snap
 	}
 	// flee impulses decay
 	f.Vel.X += f.fleeImp.X * dt

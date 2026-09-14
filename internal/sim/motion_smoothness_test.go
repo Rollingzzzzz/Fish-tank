@@ -114,17 +114,17 @@ func TestSpeedChangesStayPhysical(t *testing.T) {
 		if i%(20*60) == 100 {
 			w.foods = append(w.foods, Food{Pos: v2(w.W*0.4, 300), Seed: 1, Age: 1})
 		}
-		before := make([]snapS, len(w.fishes))
-		for k, f := range w.fishes {
-			before[k] = snapS{hyp2(f.Vel), hyp2(f.fleeImp), f.scareT, f.seekBonus,
+		before := map[*Fish]snapS{}
+		for _, f := range w.fishes {
+			before[f] = snapS{hyp2(f.Vel), hyp2(f.fleeImp), f.scareT, f.seekBonus,
 				f.turning, f.lungeT, f.attachT, f.Dying, f.transiting, f.Sp.Role}
 		}
 		w.Update(dt, Input{})
-		for k, f := range w.fishes {
-			if k >= len(before) {
-				continue
+		for _, f := range w.fishes {
+			b, ok := before[f]
+			if !ok {
+				continue // a fish born this frame — no before-state to judge
 			}
-			b := before[k]
 			if b.dying || b.trans || b.attach > 0 || f.attachT > 0 ||
 				(f.Sp.Role == contract.RoleChosen && f.portalPh != 0) {
 				continue // scripted states own their velocity

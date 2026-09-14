@@ -189,10 +189,10 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 			approach = maxF(approach*l/130, maxSp*0.55)
 		}
 		addForce(mulS(d, approach/l), foodW)
-		f.seekBonus = 2.0 // F3: local force + speed allowance while chasing
+		f.seekBonus = maxF(f.seekBonus, 2.0) // F3/G88: MONOTONIC — a downward re-arm snaps the cap mid-flight (the teeming mite dives made second-target arms routine and the envelope measured 3048 px/s cuts)
 		if held {
 			// N11: excited — the brief speed raise caps at ×HeldTreatSpeed
-			f.seekBonus = contract.HeldTreatSpeed
+			f.seekBonus = maxF(f.seekBonus, contract.HeldTreatSpeed)
 		}
 	}
 

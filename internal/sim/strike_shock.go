@@ -29,11 +29,17 @@ func (w *World) strikeShock(pt contract.Vec2, radius float64, log string) {
 		if l := hyp2(d); l < radius && l > 1 {
 			// the flinch: the body snaps a half-turn toward open water and
 			// takes a real kick — the parting must read AT ONCE, then the
-			// decaying startle impulse carries it home
-			away := math.Atan2(d.Y, d.X)
-			da := math.Mod(away-f.headingA+3.14159, 6.28318) - 3.14159
-			f.headingA += clampF(da, -1.1, 1.1)
-			f.Vel = add(f.Vel, mulS(d, 55/l))
+			// decaying startle impulse carries it home. A fish ALREADY
+			// bolting (a second strike while the first scare lives) only
+			// gets the impulse refreshed — stacking kicks on a fleeing body
+			// read as a fresh glitch, and the teeming mite dives made them
+			// routine.
+			if f.scareT <= 1 {
+				away := math.Atan2(d.Y, d.X)
+				da := math.Mod(away-f.headingA+3.14159, 6.28318) - 3.14159
+				f.headingA += clampF(da, -1.1, 1.1)
+				f.Vel = add(f.Vel, mulS(d, 55/l))
+			}
 			flee := contract.MaxForce * (0.55 + 0.45*contract.Clamp(f.Sp.Behavior.Skittish, 0, 1))
 			f.flee(pt.X, pt.Y, flee)
 		}

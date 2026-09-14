@@ -113,7 +113,7 @@ func (f *Fish) lungeSteer(w *World, dt, maxSp float64, addForce func(contract.Ve
 		f.lungeT -= dt
 		d := sub(f.lungePt, f.Pos)
 		addForce(mulS(d, maxSp*f.burstMul()/maxF(hyp2(d), 1)), 4.5)
-		f.seekBonus = f.burstMul()
+		f.seekBonus = maxF(f.seekBonus, f.burstMul())
 		return
 	}
 	if f.lungeCD > 0 || f.Satiety >= 0.35 {

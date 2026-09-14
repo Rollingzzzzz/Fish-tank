@@ -149,6 +149,7 @@ func TestFishAlwaysOutnumberPlantsSoak(t *testing.T) {
 	defs := testPlantDefs(16)
 	w := NewWorld(800, 600, cfg, []*contract.Species{sp}, defs, nil)
 	w.SeedRng(2024)
+	w.miteT = 1e9 // isolate the F14 plant law — the teeming mites feed the school and blur the death-dip
 	w.fishes = w.fishes[:0]
 	for i := 0; i < 12; i++ {
 		p := v2(150+w.rng.Float64()*500, 150+w.rng.Float64()*300)

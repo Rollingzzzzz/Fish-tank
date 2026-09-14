@@ -109,6 +109,17 @@ func (f *Fish) followSpine(dt float64) {
 	}
 }
 
+// glideCap eases a speed down to its ceiling at ≤ 8 px/s per frame —
+// whichever path drops the ceiling (a spent chase, an elder stage
+// crossing, a vanished mite mid-frenzy) the speed GLIDES down inside
+// the envelope instead of snapping mid-flight (G88).
+func glideCap(sp, cap float64) float64 {
+	if excess := sp - cap; excess > 0 {
+		return (cap + excess - minF(excess, 8)) / sp
+	}
+	return 1
+}
+
 // capTurn is the forward law for the generic steering mix (G63): no fish
 // may swim tail-first. The velocity direction may swing at most
 // NormalTurnRate — a rear target or a startle bends the path into an arc

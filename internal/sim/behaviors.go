@@ -4,6 +4,8 @@
 package sim
 
 import (
+	"math"
+
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
 )
 
@@ -140,12 +142,31 @@ func (w *World) doNudge() {
 	}
 }
 
-// flee applies a skittish impulse away from (x, y).
+// flee applies a skittish impulse away from (x, y). The impulse is
+// capped as a VECTOR: the teeming strike shocks (mite dives at triple
+// cadence) refresh the startle on already-fleeing fish, and uncapped
+// stacking reached multi-thousand px/s single-frame kicks (the envelope
+// measured 2597 with nothing but scares armed).
 func (f *Fish) flee(x, y, strength float64) {
 	d := sub(f.Pos, v2(x, y))
 	l := maxF(hyp2(d), 1)
 	f.fleeImp.X += d.X / l * strength
 	f.fleeImp.Y += d.Y / l * strength
+	if m := hyp2(f.fleeImp); m > contract.MaxForce*4 {
+		f.fleeImp = mulS(f.fleeImp, contract.MaxForce*4/m)
+	}
+	// the startle itself lands as ONE real kick (the sustained-scare
+	// stacking that used to carry the bolt was the envelope glitch): a
+	// fish not already bolting takes it instantly, then the capped
+	// impulse carries the flight
+	if f.scareT < 1 {
+		f.Vel = add(f.Vel, mulS(d, 70/l))
+		// the flinch: the nose snaps toward open water (the strike shock's
+		// own pattern) — a kick alone leaves a fish charging the point
+		away := math.Atan2(d.Y, d.X)
+		da := math.Mod(away-f.headingA+3.14159, 6.28318) - 3.14159
+		f.headingA += clampF(da, -1.1, 1.1)
+	}
 	f.scareT = contract.ScareShelterSec // v0.3.8: keep seeking cover after the impulse fades
 	f.scarePt = v2(x, y)                // v1.1: the pod bolts from the exact point
 	f.Resting = false
