@@ -286,11 +286,3 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	w.dragSpineOut(f)
 	f.clampBodyInFrame(w) // G66: the whole drawn body stays in the view
 }
-
-// eat applies a successful bite.
-func (f *Fish) eat() {
-	f.Satiety = 1
-	f.EatFlash = 0.6
-	f.Energy = minF(1, f.Energy+0.08)
-	f.bites++
-}

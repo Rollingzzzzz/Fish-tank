@@ -235,8 +235,10 @@ func TestMitesSpawnAndFrenzy(t *testing.T) {
 	if len(w.mites) != 0 {
 		t.Fatal("hungry fish did not devour the mite")
 	}
-	if f.Satiety != 1 {
-		t.Fatalf("mite did not feed the fish: %v", f.Satiety)
+	// G88: a mite is a SNACK — a third of a meal (the teem tripled the
+	// cadence; the calories must not follow)
+	if f.Satiety < 0.3+0.33 || f.Satiety > 0.3+0.35 {
+		t.Fatalf("mite fed the fish %.3f — want a third of a meal", f.Satiety)
 	}
 }
 

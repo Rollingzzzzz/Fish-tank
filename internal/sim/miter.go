@@ -268,8 +268,8 @@ func (w *World) tickMites(dt float64) {
 				continue
 			}
 			if hyp2(sub(m.Pos, f.Pos)) < f.bodyLen*0.2 {
-				f.eat()
-				w.addCare(contract.CareFeedScore)
+				f.snack(0.34) // a third of a meal — the teem adds motion, not calories
+				w.addCare(contract.CareFeedScore / 3)
 				w.burst(m.Pos, "#d8ffe8", 8)
 				w.logf("nature", f.Sp.Name+" snaps up the mite")
 				eaten = true
