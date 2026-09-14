@@ -172,55 +172,16 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// heading follows the velocity, so the fish always faces forward
 	des := v2(f.cruise*0.8*maxSp, sin(f.wanderA)*0.06*maxSp)
 	addForce(des, 0.7)
-	// G69: the sweep is a slow wandering glide, not a rail -- each elder
-	// draws a personal altitude every ~20-40 s, anywhere from the surface
-	// light down to just above the nest level, and eases toward it. The
-	// members draw independently (small phase drift), so the pod breathes
-	// instead of marching in lockstep.
-	f.altT -= dt
-	if f.altT <= 0 {
-		lo := (f.bodyLen*0.30+6)/w.H + 0.03
-		// G84: the elders live ABOVE the nest level — four draws in ten ride
-		// high under the surface light, the rest glide the broad water down
-		// to TitanAltMax; one draw in ten is the rare dip that visits the
-		// nest level itself. The sand is not their water.
-		r := f.rng.Float64()
-		switch {
-		case r < 0.40:
-			f.altY = lo + f.rng.Float64()*(0.32-lo)
-		case r < 0.88:
-			f.altY = 0.32 + f.rng.Float64()*(contract.TitanAltMax-0.32)
-		default:
-			f.altY = contract.TitanAltMax + f.rng.Float64()*(contract.TitanAltDip-contract.TitanAltMax)
-		}
-		f.altT = 18 + f.rng.Float64()*22
-	}
-	// level swimming stays gentle: vertical drift is softly damped -- the
-	// body may glide up or down along its sweep, but not ballistically.
-	// Through a strike the damper stands aside: the lunge keeps its full
-	// 6x+ burst (G41) on both axes
-	// G82: a giant does not bob — the vertical drift bleeds at TitanVyDamp
-	// (probe: |vy| p95 was 20.7 px/s, the same size as the whole cruise —
-	// the "weird Y-axis turns" read). A strike still owns the water column.
-	dampW := contract.TitanVyDamp
-	if f.seekBonus > 1.01 {
-		dampW = 0.12
-	}
-	// far from the drawn altitude the climb/dive is deliberate — the damp
-	// relaxes so the glide keeps its momentum (full damp near the band is
-	// what levels the body out; crush it everywhere and the sweep becomes
-	// a rail on one height)
-	if off := w.H*f.altY - f.Pos.Y; absF(off) > 60 {
-		dampW *= 0.35
-	}
-	addForce(v2(0, -f.Vel.Y*dampW), dampW)
+	f.titanAltitudeWander(w, dt, maxSp, addForce)
+
 	// the pod favors the upper 80% -- the sand line is not their water.
-	// G85: the FLOOR of their water is the nest level: past it the climb
-	// back escalates with depth (outside strikes and arcs — a hunt may
-	// cross the line, the cruise never lives there)
+	// G86: the FLOOR of their water sits under the red line: past it the
+	// climb back escalates hard with depth (outside strikes and arcs — a
+	// hunt may cross; the cruise NEVER lives there, and the line itself
+	// is crossed only by the rarest events)
 	if f.seekBonus <= 1.01 && f.turning <= 0 {
 		if over := f.Pos.Y - w.H*contract.TitanAltDip; over > 0 {
-			addForce(v2(0, -(0.5+minF(over/40, 1.5))*maxSp), 1.5)
+			addForce(v2(0, -(1.0+minF(over/30, 2.0))*maxSp), 1.8)
 		}
 	}
 	if f.Pos.Y > w.H*contract.TitanUpperBand {

@@ -8,6 +8,7 @@ package sim
 
 import (
 	"math"
+	"sort"
 	"testing"
 
 	"github.com/Rollingzzzzz/Fish-tank/internal/contract"
@@ -226,7 +227,9 @@ func TestTitansKeepTheUpperWater(t *testing.T) {
 	w := titanWorld(t, 4)
 	w.spawnPod()
 	const dt = 1 / 60.0
-	below, sand, total := 0, 0, 0
+	// G86: the owner drew the line at 0.673H — the cruise lives well
+	// above it, the line itself is crossed only by the rarest events
+	below, line, total := 0, 0, 0
 	for i := 0; i < 60*240; i++ {
 		w.Update(dt, Input{})
 		for _, f := range w.fishes {
@@ -235,21 +238,65 @@ func TestTitansKeepTheUpperWater(t *testing.T) {
 			}
 			f.Satiety = 1
 			total++
-			if f.Pos.Y > 0.62*w.H {
+			if f.Pos.Y > 0.52*w.H {
 				below++
 			}
-			if f.Pos.Y > 0.72*w.H {
-				sand++
+			if f.Pos.Y > 0.673*w.H {
+				line++
 			}
 		}
 	}
 	if total == 0 {
 		t.Fatal("no titan samples")
 	}
-	if 100*below/total > 12 {
-		t.Fatalf("the pod lived %d%% of its time below the nest level", 100*below/total)
+	if 100*below/total > 10 {
+		t.Fatalf("the pod lived %d%% of its time below the dip band", 100*below/total)
 	}
-	if sand > 0 {
-		t.Fatalf("%d sand-side samples — the sand is not their water", sand)
+	if line > 0 {
+		t.Fatalf("%d frames below the red line — the line is crossed only by the rarest events", line)
+	}
+}
+
+// G86: the convoy reads as ONE loose body — the leader draws the pod's
+// water and members hold small personal offsets around her (the fully
+// independent altitude draws spread the pod across ~170 px of height and
+// read as a broken convoy). p95 spread ≤ 350 px, never a scattered fan.
+func TestTitanConvoyStaysACluster(t *testing.T) {
+	w := titanWorld(t, 4)
+	w.spawnPod()
+	const dt = 1 / 60.0
+	var spreads []float64
+	for i := 0; i < 60*180; i++ {
+		w.Update(dt, Input{})
+		if i%30 != 0 {
+			continue
+		}
+		g := w.titanGiant()
+		if g == nil {
+			continue
+		}
+		for _, f := range w.fishes {
+			if f.Sp.Role == contract.RoleTitan {
+				f.Satiety = 1
+			}
+		}
+		max := 0.0
+		for _, f := range w.fishes {
+			if f.Sp.Role != contract.RoleTitan || f == g || f.Dying {
+				continue
+			}
+			if d := hyp2(sub(f.Pos, g.Pos)); d > max {
+				max = d
+			}
+		}
+		spreads = append(spreads, max)
+	}
+	sort.Float64s(spreads)
+	p95 := spreads[len(spreads)*95/100]
+	if p95 > 350 {
+		t.Fatalf("pod spread p95 %.0f px — the convoy reads scattered", p95)
+	}
+	if spreads[len(spreads)-1] > 480 {
+		t.Fatalf("pod spread max %.0f px — a scattered fan frame", spreads[len(spreads)-1])
 	}
 }

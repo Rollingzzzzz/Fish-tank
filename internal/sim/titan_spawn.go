@@ -53,7 +53,7 @@ func (w *World) spawnPod() {
 		// and the next draw a while away. Unset, altY=0 pulled the whole
 		// pod toward the surface for the first ~12 s (the "fast and weird
 		// at opening, settling later" read)
-		f.altY = clampF((y+f.slotY)/w.H, 0.24, 0.46) // born at the altitude they hold
+		f.altY = clampF(y/w.H+(f.slotY/w.H)*0.5, 0.24, 0.40) // born at the altitude they hold, slots breathing
 		f.altT = 8 + w.rng.Float64()*16
 		f.bodyLen = f.targetLen()
 		f.segLen = f.bodyLen / (contract.SpineSegments - 1)
