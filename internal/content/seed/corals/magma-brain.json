@@ -1,0 +1,14 @@
+{
+  "id": "magma-brain",
+  "name": "Magma Brain",
+  "kind": "brain",
+  "fronds": 4,
+  "height": 0.14,
+  "width": 1.4,
+  "curve": 0.3,
+  "sway": 0.1,
+  "colors": ["#47190b", "#a8481f", "#e08a45"],
+  "glow": 0.4,
+  "source": "core",
+  "createdAt": ""
+}

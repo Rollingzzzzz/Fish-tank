@@ -1,0 +1,33 @@
+{
+  "id": "puff-orbit",
+  "name": "Puff Orbit",
+  "latin": "Globus orbitans",
+  "role": "normal",
+  "size": 0.8,
+  "width": 1.25,
+  "fin": 0.9,
+  "tail": 0.7,
+  "palette": {
+    "body": "#d9a53d",
+    "belly": "#f0d9a3",
+    "accent": "#e0785a",
+    "glow": "#e8c46b"
+  },
+  "pattern": {
+    "type": "spot",
+    "density": 0.5,
+    "size": 0.55
+  },
+  "behavior": {
+    "speed": 0.6,
+    "schooling": 0.1,
+    "curiosity": 0.9,
+    "skittish": 0.3,
+    "depth": 0.35,
+    "attachment": 0.05,
+    "nightActive": false
+  },
+  "note": "A curious slow balloon that drifts up to inspect anything new, stub tail wiggling.",
+  "source": "core",
+  "createdAt": ""
+}

@@ -1,0 +1,13 @@
+{
+  "id": "pearl-veil-silk",
+  "name": "Pearl Veil Silk",
+  "kind": "silk",
+  "fronds": 5,
+  "height": 0.34,
+  "width": 0.9,
+  "curve": 0.3,
+  "sway": 0.8,
+  "colors": ["#4a3a5e", "#c08fb8", "#ffe8f4"],
+  "glow": 0,
+  "source": "core"
+}

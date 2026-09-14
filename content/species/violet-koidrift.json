@@ -1,0 +1,31 @@
+{
+  "id": "violet-koidrift",
+  "name": "Violet Koidrift",
+  "latin": "Violaceus koi",
+  "size": 1.25,
+  "width": 1.15,
+  "fin": 0.9,
+  "tail": 1.1,
+  "palette": {
+    "body": "#8a3dff",
+    "belly": "#e8d5ff",
+    "accent": "#ffc36b",
+    "glow": "#b06dff"
+  },
+  "pattern": {
+    "type": "koi",
+    "density": 0.5,
+    "size": 0.65
+  },
+  "behavior": {
+    "speed": 0.75,
+    "schooling": 0.3,
+    "curiosity": 0.6,
+    "skittish": 0.25,
+    "depth": 0.55,
+    "nightActive": false
+  },
+  "note": "A slow violet drifter wearing molten gold koi patches.",
+  "source": "core",
+  "createdAt": "2026-09-11T15:13:40Z"
+}

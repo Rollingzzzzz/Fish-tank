@@ -1,0 +1,14 @@
+{
+  "id": "fry-veil",
+  "stage": "fry",
+  "name": "Fry Veil",
+  "satMul": 0.7,
+  "alphaMul": 0.55,
+  "glowMul": 0.8,
+  "pattern": {
+    "type": "stripe",
+    "density": 0.4,
+    "size": 0.5
+  },
+  "note": "Fry wear a translucent veil so their organs glow faintly through."
+}

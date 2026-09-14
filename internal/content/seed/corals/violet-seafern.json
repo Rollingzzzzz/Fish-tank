@@ -1,0 +1,14 @@
+{
+  "id": "violet-seafern",
+  "name": "Violet Seafern",
+  "kind": "fan",
+  "fronds": 7,
+  "height": 0.18,
+  "width": 1.0,
+  "curve": 0.55,
+  "sway": 0.5,
+  "colors": ["#5a2d9e", "#8a5cff", "#d9c2ff"],
+  "glow": 0.7,
+  "source": "core",
+  "createdAt": ""
+}

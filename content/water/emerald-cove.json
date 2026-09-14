@@ -1,0 +1,23 @@
+{
+  "id": "emerald-cove",
+  "name": "Emerald Cove",
+  "topColor": "#a32711",
+  "bottomColor": "#251f03",
+  "accent": "#38f2fa",
+  "rays": 0.9027227449692655,
+  "caustics": 0.5745858199665627,
+  "bubbles": 0.7654059395448803,
+  "plantPalette": [
+    "#659310",
+    "#66de12",
+    "#66f547",
+    "#8dfc93"
+  ],
+  "event": {
+    "name": "Prism Pulse",
+    "kind": "calm",
+    "durationSec": 21.78928283283593,
+    "note": "Charged atmosphere with a cold metallic shine."
+  },
+  "source": "water-agent"
+}

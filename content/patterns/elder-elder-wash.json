@@ -1,0 +1,14 @@
+{
+  "id": "elder-elder-wash",
+  "stage": "elder",
+  "name": "Elder Wash",
+  "satMul": 0.3250821350516934,
+  "alphaMul": 0.5257660699650049,
+  "glowMul": 0.6825760443867563,
+  "pattern": {
+    "type": "vein",
+    "density": 0.651456648962844,
+    "size": 0.1917163023612489
+  },
+  "note": "Desaturated and faded, a gentle dusk glow remains."
+}

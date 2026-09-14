@@ -1,0 +1,33 @@
+{
+  "id": "chosen-lilastar",
+  "name": "Chosen Lilastar",
+  "latin": "Lilacus aeterna",
+  "role": "chosen",
+  "size": 1.4,
+  "width": 1.1,
+  "fin": 1.5,
+  "tail": 1.4,
+  "palette": {
+    "body": "#b57edc",
+    "belly": "#d9c2f0",
+    "accent": "#e6d6ff",
+    "glow": "#c77dff"
+  },
+  "pattern": {
+    "type": "wave",
+    "density": 0.7,
+    "size": 0.6
+  },
+  "behavior": {
+    "speed": 1.6,
+    "schooling": 0,
+    "curiosity": 0.8,
+    "skittish": 0.05,
+    "depth": 0.45,
+    "attachment": 0,
+    "nightActive": false
+  },
+  "note": "The eternal one — lilac belongs to her alone.",
+  "source": "core",
+  "createdAt": ""
+}

@@ -1,0 +1,21 @@
+{
+  "id": "violet-shallows",
+  "name": "Violet Shallows",
+  "topColor": "#a50e0e",
+  "bottomColor": "#1d1402",
+  "accent": "#38faee",
+  "rays": 0.4538997587967243,
+  "caustics": 0.907266624983491,
+  "bubbles": 0.03575129386681049,
+  "plantPalette": [
+    "#479310",
+    "#a3f990"
+  ],
+  "event": {
+    "name": "Midnight Drift",
+    "kind": "glowWave",
+    "durationSec": 30.06518191177204,
+    "note": "Charged atmosphere with a cold metallic shine."
+  },
+  "source": "water-agent"
+}

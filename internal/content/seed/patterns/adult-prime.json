@@ -1,0 +1,15 @@
+{
+  "id": "adult-prime",
+  "stage": "adult",
+  "name": "Adult Prime",
+  "satMul": 1.2,
+  "alphaMul": 0.95,
+  "glowMul": 1.4,
+  "pattern": {
+    "type": "wave",
+    "density": 0.55,
+    "size": 0.5
+  },
+  "note": "Adults run their boldest neon waves at full opacity.",
+  "source": "core"
+}

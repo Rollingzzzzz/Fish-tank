@@ -1,0 +1,13 @@
+{
+  "id": "abyss-silkthread",
+  "name": "Abyss Silkthread",
+  "kind": "silk",
+  "fronds": 6,
+  "height": 0.5,
+  "width": 1.15,
+  "curve": 0.55,
+  "sway": 0.9,
+  "colors": ["#241a3e", "#5c4a98", "#c0b0f0"],
+  "glow": 0,
+  "source": "core"
+}

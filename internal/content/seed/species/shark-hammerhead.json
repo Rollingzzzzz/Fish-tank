@@ -1,0 +1,33 @@
+{
+  "id": "shark-hammerhead",
+  "name": "Hammerhead",
+  "latin": "Sphyrna abyssalis",
+  "role": "shark",
+  "size": 1.8,
+  "width": 0.9,
+  "fin": 1.3,
+  "tail": 1.2,
+  "palette": {
+    "body": "#101c2e",
+    "belly": "#f2f6fa",
+    "accent": "#2e5f96",
+    "glow": "#1d3a5f"
+  },
+  "pattern": {
+    "type": "vein",
+    "density": 0.35,
+    "size": 0.7
+  },
+  "behavior": {
+    "speed": 1.0,
+    "schooling": 0,
+    "curiosity": 0.15,
+    "skittish": 0.1,
+    "depth": 0.5,
+    "attachment": 0,
+    "nightActive": false
+  },
+  "note": "A dark blue-black hammerhead with a white belly — always on the move, never faster than her.",
+  "source": "core",
+  "createdAt": ""
+}

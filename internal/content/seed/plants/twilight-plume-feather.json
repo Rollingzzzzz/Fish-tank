@@ -1,0 +1,13 @@
+{
+  "id": "twilight-plume-feather",
+  "name": "Twilight Plume Feather",
+  "kind": "feather",
+  "fronds": 3,
+  "height": 0.52,
+  "width": 0.95,
+  "curve": 0.2,
+  "sway": 0.5,
+  "colors": ["#2e2050", "#6a4fa8", "#d8c8f4"],
+  "glow": 0,
+  "source": "core"
+}

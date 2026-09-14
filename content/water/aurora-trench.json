@@ -1,0 +1,21 @@
+{
+  "id": "aurora-trench",
+  "name": "Aurora Trench",
+  "topColor": "#67670c",
+  "bottomColor": "#0b1b02",
+  "accent": "#6038fa",
+  "rays": 0.8930251366423899,
+  "caustics": 0.9996903004282143,
+  "bubbles": 0.42514601272568,
+  "plantPalette": [
+    "#109381",
+    "#90eff9"
+  ],
+  "event": {
+    "name": "Violet Swell",
+    "kind": "bubbleStorm",
+    "durationSec": 15.075207411083902,
+    "note": "Soft drifting light, made for lazy schools."
+  },
+  "source": "water-agent"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "juvenile-juvenile-fade",
+  "stage": "juvenile",
+  "name": "Juvenile Fade",
+  "satMul": 0.9656126581247055,
+  "alphaMul": 0.7222516147275257,
+  "glowMul": 1.0547896327869575,
+  "pattern": {
+    "type": "spot",
+    "density": 0.11299497800053744,
+    "size": 0.4687260568291931
+  },
+  "note": "First bold colors coming in while schooling improves."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "moon-silk-grass",
+  "name": "Moon Silk Grass",
+  "kind": "silk",
+  "fronds": 5,
+  "height": 0.42,
+  "width": 1.0,
+  "curve": 0.4,
+  "sway": 0.85,
+  "colors": ["#3f5570", "#8fd0d8", "#f0ffff"],
+  "glow": 0,
+  "source": "core"
+}

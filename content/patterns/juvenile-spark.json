@@ -1,0 +1,14 @@
+{
+  "id": "juvenile-spark",
+  "stage": "juvenile",
+  "name": "Juvenile Spark",
+  "satMul": 1.1,
+  "alphaMul": 0.8,
+  "glowMul": 1.2,
+  "pattern": {
+    "type": "spot",
+    "density": 0.5,
+    "size": 0.45
+  },
+  "note": "Juveniles flash their first bright spots while learning to school."
+}

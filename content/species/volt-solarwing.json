@@ -1,0 +1,31 @@
+{
+  "id": "volt-solarwing",
+  "name": "Volt Solarwing",
+  "latin": "Iridessa mirus",
+  "size": 0.8106874798054972,
+  "width": 1.0924386704667415,
+  "fin": 1.2960371454739796,
+  "tail": 0.8555715812685947,
+  "palette": {
+    "body": "#27fbcc",
+    "belly": "#82d6e8",
+    "accent": "#fe32a0",
+    "glow": "#ff3258"
+  },
+  "pattern": {
+    "type": "koi",
+    "density": 0.15604285614800792,
+    "size": 0.8796620560069127
+  },
+  "behavior": {
+    "speed": 1.4666364565909296,
+    "schooling": 0.05169826809009124,
+    "curiosity": 0.8321632932093727,
+    "skittish": 0.8411944146171889,
+    "depth": 0.686399302389931,
+    "nightActive": false
+  },
+  "note": "Volt Solarwing glides through mid-water trailing flickering light.",
+  "source": "user",
+  "createdAt": "2026-09-11T15:13:43Z"
+}

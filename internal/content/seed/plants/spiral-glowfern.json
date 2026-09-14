@@ -1,0 +1,12 @@
+{
+  "id": "spiral-glowfern",
+  "name": "Spiral Glowfern",
+  "fronds": 5,
+  "height": 0.34,
+  "width": 1.0,
+  "curve": 0.7,
+  "sway": 0.5,
+  "colors": ["#0f7d5c", "#19c6a6", "#7bffe0"],
+  "glow": 0.6,
+  "source": "core"
+}

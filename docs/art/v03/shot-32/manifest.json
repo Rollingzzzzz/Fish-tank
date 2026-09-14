@@ -1,0 +1,683 @@
+[
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "01-closed.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 1064,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "01-closed.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 1002,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "01-closed.png"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "02-tab-agents.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "02-tab-agents.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "03-tab-species.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "03-tab-species.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "04-tab-plants.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "04-tab-plants.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "05-tab-log.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "05-tab-log.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "06-tab-setup.png",
+    "kind": "scene"
+  },
+  {
+    "name": "settings-Auto feed",
+    "x": 610,
+    "y": 202,
+    "w": 460,
+    "h": 24,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "settings-Music",
+    "x": 610,
+    "y": 250,
+    "w": 460,
+    "h": 24,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "settings-Start fullscreen",
+    "x": 610,
+    "y": 274,
+    "w": 460,
+    "h": 24,
+    "image": "06-tab-setup.png"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "07-tray-open.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-panel",
+    "x": 918,
+    "y": 72,
+    "w": 150,
+    "h": 166,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-0",
+    "x": 926,
+    "y": 80,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-1",
+    "x": 926,
+    "y": 118,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-2",
+    "x": 926,
+    "y": 156,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-row-3",
+    "x": 926,
+    "y": 194,
+    "w": 134,
+    "h": 32,
+    "image": "07-tray-open.png"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "08-held-worm.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "08-held-worm.png",
+    "kind": "scene"
+  },
+  {
+    "name": "held-treat",
+    "x": 516,
+    "y": 336,
+    "w": 48,
+    "h": 48,
+    "image": "08-held-worm.png",
+    "kind": "scene"
+  },
+  {
+    "name": "tray-button",
+    "x": 988,
+    "y": 40,
+    "w": 80,
+    "h": 30,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "menu-handle",
+    "x": 584,
+    "y": 305,
+    "w": 16,
+    "h": 110,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "menu-chip",
+    "x": 522,
+    "y": 421,
+    "w": 58,
+    "h": 20,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-agents",
+    "x": 610,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-species",
+    "x": 702,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-plants",
+    "x": 794,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-log",
+    "x": 886,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-setup",
+    "x": 978,
+    "y": 10,
+    "w": 92,
+    "h": 34,
+    "image": "09-frenzy.png"
+  },
+  {
+    "name": "tab-content",
+    "x": 610,
+    "y": 50,
+    "w": 460,
+    "h": 660,
+    "image": "09-frenzy.png",
+    "kind": "scene"
+  }
+]

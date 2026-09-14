@@ -1,0 +1,33 @@
+{
+  "id": "ribbon-streamer",
+  "name": "Ribbon Streamer",
+  "latin": "Vitta fluctuans",
+  "role": "normal",
+  "size": 0.95,
+  "width": 0.7,
+  "fin": 1.2,
+  "tail": 1.3,
+  "palette": {
+    "body": "#5d84b8",
+    "belly": "#a9c4e4",
+    "accent": "#d98ba3",
+    "glow": "#7fa9dc"
+  },
+  "pattern": {
+    "type": "wave",
+    "density": 0.35,
+    "size": 0.7
+  },
+  "behavior": {
+    "speed": 0.85,
+    "schooling": 0.25,
+    "curiosity": 0.6,
+    "skittish": 0.35,
+    "depth": 0.4,
+    "attachment": 0,
+    "nightActive": false
+  },
+  "note": "Schools weave slow ribbons through the open water, tails streaming like silk.",
+  "source": "core",
+  "createdAt": ""
+}

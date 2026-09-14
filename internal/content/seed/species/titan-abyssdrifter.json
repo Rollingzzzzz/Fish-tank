@@ -1,0 +1,33 @@
+{
+  "id": "titan-abyssdrifter",
+  "name": "Abyss Drifter",
+  "latin": "Vorax profundi",
+  "role": "titan",
+  "size": 6.5,
+  "width": 0.9,
+  "fin": 1.5,
+  "tail": 1.1,
+  "palette": {
+    "body": "#d9e2ea",
+    "belly": "#f6f9fc",
+    "accent": "#37475a",
+    "glow": "#9fb4c4"
+  },
+  "pattern": {
+    "type": "stripe",
+    "density": 0.7,
+    "size": 0.85
+  },
+  "behavior": {
+    "speed": 0.26,
+    "schooling": 0,
+    "curiosity": 0.1,
+    "skittish": 0,
+    "depth": 0.5,
+    "attachment": 0,
+    "nightActive": false
+  },
+  "note": "A silver scalare with dark fin edges — five drift as one, curling 180° at the glass.",
+  "source": "core",
+  "createdAt": ""
+}

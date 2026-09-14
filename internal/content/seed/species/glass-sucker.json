@@ -1,0 +1,33 @@
+{
+  "id": "glass-sucker",
+  "name": "Glass Sucker",
+  "latin": "Petrus adhaerens",
+  "role": "normal",
+  "size": 0.9,
+  "width": 1.15,
+  "fin": 0.7,
+  "tail": 0.8,
+  "palette": {
+    "body": "#ff5f9e",
+    "belly": "#ffe3ef",
+    "accent": "#ffd23f",
+    "glow": "#ff8fc2"
+  },
+  "pattern": {
+    "type": "spot",
+    "density": 0.25,
+    "size": 0.3
+  },
+  "behavior": {
+    "speed": 0.55,
+    "schooling": 0.05,
+    "curiosity": 0.15,
+    "skittish": 0.9,
+    "depth": 0.9,
+    "attachment": 0.9,
+    "nightActive": false
+  },
+  "note": "A rose-pink glass hugger with a cream belly and gold accents — vivid, never sickly.",
+  "source": "core",
+  "createdAt": ""
+}
