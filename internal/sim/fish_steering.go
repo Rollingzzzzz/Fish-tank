@@ -32,6 +32,13 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 		return f.steerLounge(maxSp, w)
 	}
 
+	// G93: the glass gaze owns the steering mix while it runs — the glide
+	// to the spot and the hover ARE the behavior. Startles and courtship
+	// interrupt it in tickGaze before this branch is reached.
+	if f.gazePhase > 0 {
+		return f.gazeSteer(dt, maxSp, w)
+	}
+
 	// F25: swimming into a volcanic door replaces the mix the same way
 	if f.transiting && f.transitPh == 0 && f.CourtID == "" && f.chaseT <= 0 && f.zoomT <= 0 {
 		return f.steerTransit(maxSp)
@@ -209,28 +216,9 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 		}
 	}
 
-	// rest near plants when tired and not hungry
-	if f.Energy < 0.28 && f.Satiety > 0.3 {
-		if f.restTarget == nil {
-			f.restTarget = w.nearestPlantAnchor(f.Pos)
-		}
-		if f.restTarget != nil {
-			d := sub(*f.restTarget, f.Pos)
-			if hyp2(d) > 30 {
-				addForce(mulS(d, maxSp*0.35/maxF(hyp2(d), 1)), 1.0)
-			} else {
-				f.Resting = true
-			}
-		}
-	}
-	if f.Resting {
-		if f.Energy > 0.92 || f.Satiety < 0.3 {
-			f.Resting = false
-			f.restTarget = nil
-		}
-		bob := sin(w.time*1.4+float64(f.Seed%7)) * 6
-		addForce(v2(0, bob-f.Vel.Y*2), 0.4)
-	}
+	// rest near plants when tired and not hungry (F15; moved for the line
+	// ceiling — restSteer in lounge.go)
+	f.restSteer(w, maxSp, &acc)
 
 	// courtship circling
 	if f.CourtID != "" {

@@ -102,8 +102,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		anim := render.FishAnim{
 			Time: wl.Time, Speed01: clamp01(hypot2v(f.Vel) / 110), ElderP: f.ElderP,
 			Attached: f.Attached(), AttachSide: f.AttachWall(), // F18
-			Hide01: f.Hide01, // v0.3.8: binary 0/1
-			Z:      f.Z(),    // v1.1 depth lane
+			Hide01: f.Hide01,   // v0.3.8: binary 0/1
+			Z:      f.Z(),      // v1.1 depth lane
+			Gaze01: f.Gaze01(), // G93: the face-on glass stare
 		}
 		if chosen {
 			// G73: the wormhole pass — her body fades into the door and

@@ -114,3 +114,32 @@ func (f *Fish) steerLounge(maxSp float64, w *World) contract.Vec2 {
 // Lounging reports whether the fish is currently enjoying a cave (F15) —
 // read by the renderer for the lazy tail curl.
 func (f *Fish) Lounging() bool { return f.loungeT > 0 && !f.Dying }
+
+// restSteer (v0.3.8): a tired, fed fish drifts to the nearest plant anchor
+// and bobs there while it recharges. Appends its share of the steering mix
+// straight onto acc (moved from fish_steering.go for the line ceiling).
+func (f *Fish) restSteer(w *World, maxSp float64, acc *contract.Vec2) {
+	if f.Energy < 0.28 && f.Satiety > 0.3 {
+		if f.restTarget == nil {
+			f.restTarget = w.nearestPlantAnchor(f.Pos)
+		}
+		if f.restTarget != nil {
+			d := sub(*f.restTarget, f.Pos)
+			if hyp2(d) > 30 {
+				acc.X += (mulS(d, maxSp*0.35/maxF(hyp2(d), 1)).X - f.Vel.X) * 1.0
+				acc.Y += (mulS(d, maxSp*0.35/maxF(hyp2(d), 1)).Y - f.Vel.Y) * 1.0
+			} else {
+				f.Resting = true
+			}
+		}
+	}
+	if f.Resting {
+		if f.Energy > 0.92 || f.Satiety < 0.3 {
+			f.Resting = false
+			f.restTarget = nil
+		}
+		bob := sin(w.time*1.4+float64(f.Seed%7)) * 6
+		acc.X += (0 - f.Vel.X) * 0.4
+		acc.Y += (bob - f.Vel.Y*3) * 0.4
+	}
+}

@@ -10,28 +10,7 @@ import (
 )
 
 // FishAnim carries per-frame animation inputs.
-type FishAnim struct {
-	Time       float64 // global seconds
-	Speed01    float64 // 0..1 normalized speed, drives tail beat
-	ElderP     float64 // F7: 0..1 elder fade (desaturation + alpha + dim glow)
-	Attached   bool    // F18: suctioned to the glass (flat sucker pose)
-	AttachSide int     // F18: -1 left wall, +1 right wall (0 when free)
-	Hide01     float64 // F25: binary (v0.3.8): 0 visible .. 1 inside a crag
-	Z          float64 // v1.1 depth lane 0 far .. 1 near (0 treated as mid)
-	PortalFade float64 // v1.1 G73: 0 solid .. 1 fully inside a wormhole
-}
-
 // stageAlpha tunes body opacity per life stage (fry are translucent).
-func stageAlpha(stage string) uint8 {
-	switch stage {
-	case "fry":
-		return 190
-	case "juvenile":
-		return 228
-	default:
-		return 255
-	}
-}
 
 // patternSeed derives a stable per-species RNG seed from the species ID so
 // every fish of a species shares deterministic pattern placement.
@@ -75,6 +54,15 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 	}
 	hide := clampF(anim.Hide01, 0, 1)
 	if hide >= 1 { // F25: fully inside the crag — nothing to rasterize
+		return
+	}
+	// G93: the glass gaze — at full blend the face-on pose REPLACES the
+	// side mesh; mid-blend both draw, alpha-weighted (a crossfade inside
+	// the shared batch, so the lane sort stays honest).
+	gaze := clampF(anim.Gaze01, 0, 1)
+	if gaze >= 0.85 {
+		drawFaceOn(b, spine, spec, pal, stage, night, anim, gaze)
+		b.n++
 		return
 	}
 	n := len(spine)
@@ -137,6 +125,7 @@ func (b *FishBatch) Draw(dst, glowDst *ebiten.Image, spine []contract.Vec2, spec
 	aMul = uint8(float64(aMul) * (1 - hide))            // F25: transit fade
 	aMul = uint8(float64(aMul) * (1 - anim.PortalFade)) // G73: wormhole pass
 	aMul = uint8(float64(aMul) * aDepth)                // v1.1: depth lane dimming
+	aMul = uint8(float64(aMul) * (1 - gaze))            // G93: the side view yields to the face-on pose
 
 	// ---- fins (behind the body, translucent, gently swaying) ----
 	var fins mesh

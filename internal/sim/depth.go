@@ -15,7 +15,7 @@ import (
 // the whole range so they cross the big bodies in front (near) or slip
 // behind them (far); the scalare pair-pod drifts in the FAR lane — the big
 // brothers cruise behind the school, rarely stepping forward (G59).
-func (f *Fish) driftDepth(w *World) {
+func (f *Fish) driftDepth(dt float64, w *World) {
 	if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
 		if f.turning > 0 && f.Sp.Role == contract.RoleTitan {
 			// G67: the convoy turn lives in the fake Z — mid-arc every
@@ -29,6 +29,11 @@ func (f *Fish) driftDepth(w *World) {
 		return
 	}
 	if f.Sp.Role != contract.RoleNormal {
+		return
+	}
+	// G93: a staring fish holds the near lane — she came to the glass.
+	if f.gazePhase >= 2 {
+		f.z += (contract.GazeNearZ - f.z) * minF(1, 2*dt)
 		return
 	}
 	f.z = 0.5 + contract.DepthSwing*sin(w.time*f.zSpeed+f.zPhase)

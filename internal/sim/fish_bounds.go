@@ -111,6 +111,13 @@ func (f *Fish) clampBodyInFrame(w *World) {
 			p.X = clampF(p.X, 3, w.W-3)
 			p.Y = clampF(p.Y, 3, w.H-3)
 		}
+		if i >= 2 {
+			capKinkBetween(&f.Spine[i-2], &f.Spine[i-1], &p)
+		}
+		// the frame clamp is the LAST word: the kink cap's rotation must
+		// never push a point back out of the view (G66 stands)
+		p.X = clampF(p.X, 3, w.W-3)
+		p.Y = clampF(p.Y, 3, w.H-3)
 		f.Spine[i] = p
 	}
 }

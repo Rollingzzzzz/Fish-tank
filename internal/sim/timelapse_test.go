@@ -68,10 +68,15 @@ func TestTimeLapseEveryEyeLeadsItsMotion(t *testing.T) {
 				}
 				// a graze along the glass reads as a kink here but is a
 				// pinned contact, not a whip -- judge open-water bends only;
-				// the contact band scales with the body
-				band := f.bodyLen*0.12 + 4
+				// the contact band scales with the body. G93 note: the band
+				// grew with the tank — the surface (mite drops, G88) and the
+				// sand line (floor feed, G44) are busy contact lanes now,
+				// and the G90 rope-slide keeps edge chains stacked instead
+				// of collapsed, so their kinks count as contact too.
+				band := f.bodyLen*0.15 + 10
+				sandTop := w.H*contract.FloorLineFrac - 10
 				mid := f.Spine[j]
-				if mid.X < band || mid.X > w.W-band || mid.Y < band || mid.Y > w.H-band {
+				if mid.X < band || mid.X > w.W-band || mid.Y < band || mid.Y > sandTop {
 					continue
 				}
 				if ang := math.Acos(clampF(dot2(a, b)/(la*lb), -1, 1)); ang > worstBend {

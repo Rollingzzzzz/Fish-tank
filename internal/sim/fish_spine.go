@@ -93,8 +93,33 @@ func (f *Fish) followSpine(dt float64) {
 		l := maxF(hyp2(d), 1e-6)
 		bx, by := d.X/l, d.Y/l
 		clamped := false
+		// swimming wave displacement (perpendicular to the segment),
+		// computed FIRST so the bend cone below can account for its tilt —
+		// a big body carries a calmer tail (G67): with the eye glued to the
+		// line, the trailing tip may only shimmer, not wander off it
+		amp := f.segLen * 0.35 * (0.25 + 0.75*speed01)
+		if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
+			amp *= 0.30
+		}
+		wave := sin(f.phase-float64(i)*0.55) * amp * (float64(i) / float64(len(f.Spine)-1))
+		waveTilt := absF(wave) / maxF(f.segLen, 1e-6)
 		if px != 0 || py != 0 {
-			if dot := bx*px + by*py; dot < math.Cos(bend) {
+			// G90: the cone the BASE direction must respect shrinks by the
+			// wave's own tilt, so base bend + wave tilt stays inside the
+			// designed silhouette — the slew slack then costs nothing.
+			// The BIG bodies slew nothing: their 0.085 cone is the G67
+			// design itself and the wave tilt there is ~the whole cone —
+			// they keep the exact instant clamp (their own twitch class
+			// was tamed by the G87 laws).
+			effBend := bend
+			slew := true
+			if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
+				effBend = maxF(bend-waveTilt, bend*0.25)
+				slew = false
+			} else {
+				effBend = maxF(bend-waveTilt, bend*0.25)
+			}
+			if dot := bx*px + by*py; dot < math.Cos(effBend) {
 				s := 1.0
 				if cross := px*by - py*bx; cross < 0 {
 					s = -1.0
@@ -112,7 +137,7 @@ func (f *Fish) followSpine(dt float64) {
 						}
 					}
 				}
-				cb, sb := math.Cos(bend), math.Sin(bend)
+				cb, sb := math.Cos(effBend), math.Sin(effBend)
 				tx, ty := px*cb-py*s*sb, py*cb+px*s*sb
 				cur := math.Atan2(by, bx)
 				tgt := math.Atan2(ty, tx)
@@ -120,21 +145,11 @@ func (f *Fish) followSpine(dt float64) {
 				// G90: a GRAZE outside the cone SLEWS toward the edge
 				// instead of snapping onto it — the instant rotation swung
 				// a joint ~segLen·sin(bend) in one frame. The window is
-				// proportional to the cone (a stiff giant may never amass a
-				// loose curl that then folds back in one sawtooth snap) and
-				// capped by the hairpin budget of the timelapse law (0.85
-				// rad) for the loose school cone. Beyond the window is a
-				// genuine FOLD and still returns in one frame.
-				// the slew window covers the swim-wave's own tilt band
-				// (amp/segLen ≈ bend·0.35·0.30) so the wave never trips the
-				// fold; beyond it a genuine FOLD returns in one frame. The
-				// school cap keeps slewed grazes under the hairpin budget
-				// of the timelapse law (0.85 rad).
-				window := bend
-				if lo := 0.85 - bend; window > lo {
-					window = lo
-				}
-				if ad := absF(da); ad <= window {
+				// half the effective cone: the transient total (base bend +
+				// wave tilt) can never cross the hairpin budget of the
+				// timelapse law (0.85 rad). Beyond the window is a genuine
+				// FOLD and still returns in one frame.
+				if slew && absF(da) <= 0.5*effBend {
 					cur += clampF(da, -contract.SpineBendSlew*dt, contract.SpineBendSlew*dt)
 					bx, by = math.Cos(cur), math.Sin(cur)
 				} else {
@@ -151,20 +166,23 @@ func (f *Fish) followSpine(dt float64) {
 		if !clamped {
 			px, py = bx, by
 		}
-		// constrained base vector
+		// constrained base vector + the wave, laid at exact segment length
 		dx, dy := bx*f.segLen, by*f.segLen
-		// swimming wave displacement (perpendicular to the segment); a big
-		// body carries a calmer tail (G67): with the eye glued to the line,
-		// the trailing tip may only shimmer, not wander off it
-		amp := f.segLen * 0.35 * (0.25 + 0.75*speed01)
-		if f.Sp.Role == contract.RoleTitan || f.Sp.Role == contract.RoleShark {
-			amp *= 0.30
-		}
-		wave := sin(f.phase-float64(i)*0.55) * amp * (float64(i) / float64(len(f.Spine)-1))
 		nx, ny := -dy/f.segLen, dx/f.segLen
 		vx, vy := dx+nx*wave, dy+ny*wave
 		vl := maxF(sqrt(vx*vx+vy*vy), 1e-6)
 		f.Spine[i] = v2(f.Spine[i-1].X+vx/vl*f.segLen, f.Spine[i-1].Y+vy/vl*f.segLen)
+		// G90: the LAYOUT kink cap — the angle between two LAID neighbors
+		// is what the eye sees and what the timelapse law measures; cap it
+		// directly whatever the clamp, the slew and the wave did upstream.
+		// School scale only: the giants' 0.085 cone never produces hairpins,
+		// and rotating their 448 px tail would re-trigger the ceiling drape
+		// shifts the G87 law just tamed.
+		if i >= 2 && f.Sp.Role == contract.RoleNormal {
+			p2 := f.Spine[i]
+			capKinkBetween(&f.Spine[i-2], &f.Spine[i-1], &p2)
+			f.Spine[i] = p2
+		}
 	}
 }
 
@@ -177,6 +195,36 @@ func glideCap(sp, cap float64) float64 {
 		return (cap + excess - minF(excess, 8)) / sp
 	}
 	return 1
+}
+
+// capKinkBetween caps the layout angle of the pair (prev1→prev2) versus
+// (prev2→p): the observed neighbor kink may never exceed LayoutKinkMax,
+// whatever the clamp, the slew and the wave did upstream (G90). Rotation
+// preserves the segment length.
+func capKinkBetween(prev2, prev1, p *contract.Vec2) {
+	pd := sub(*prev1, *prev2)
+	pl := hyp2(pd)
+	d := sub(*p, *prev1)
+	dl := hyp2(d)
+	if pl < 1e-6 || dl < 1e-6 {
+		return
+	}
+	cosA := (d.X*pd.X + d.Y*pd.Y) / (dl * pl)
+	if cosA >= math.Cos(contract.LayoutKinkMax) {
+		return
+	}
+	sign := 1.0
+	if d.X*pd.Y-d.Y*pd.X < 0 {
+		sign = -1.0
+	}
+	ca, sa := math.Cos(contract.LayoutKinkMax), math.Sin(contract.LayoutKinkMax)
+	ux, uy := pd.X/pl, pd.Y/pl
+	tx := ux*ca - uy*sign*sa
+	ty := ux*sign*sa + uy*ca
+	if d.X*tx+d.Y*ty < 0 { // the segment lay on the far side — take the near edge
+		tx, ty = ux*ca+uy*sa, -ux*sa+uy*ca
+	}
+	*p = v2(prev1.X+tx*dl, prev1.Y+ty*dl)
 }
 
 // capTurn is the forward law for the generic steering mix (G63): no fish

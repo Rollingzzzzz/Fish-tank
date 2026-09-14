@@ -126,8 +126,9 @@ func TestSpeedChangesStayPhysical(t *testing.T) {
 				continue // a fish born this frame — no before-state to judge
 			}
 			if b.dying || b.trans || b.attach > 0 || f.attachT > 0 ||
+				f.gazePhase > 0 ||
 				(f.Sp.Role == contract.RoleChosen && f.portalPh != 0) {
-				continue // scripted states own their velocity
+				continue // scripted states own their velocity (the G93 stare is one)
 			}
 			// a fresh startle (the strike shock's flinch kick) is a reflex —
 			// the envelopes judge open-water mechanics, not the C-start

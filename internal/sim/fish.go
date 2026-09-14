@@ -99,6 +99,11 @@ type Fish struct {
 	portalT    float64 // chosen G73: phase clock (s)
 	portalCD   float64 // chosen G73: idle cooldown before the next pass
 	exhaleT    float64 // shark G76: gill-breath timer between micro-bubble puffs
+	gazePhase  int     // G93: 0 idle, 1 approaching the glass, 2 staring, 3 releasing
+	gazeBlend  float64 // G93: 0 side view .. 1 full face-on pose
+	gazeT      float64 // G93: seconds left in the current stare
+	gazeCD     float64 // G93: seconds until this fish may pick the glass again
+	gazePt     contract.Vec2 // G93: the spot she stares from
 	lastDa     float64 // G80: last heading correction sign — flip-flops betray noise
 	pitchT     float64 // G87: titan level-off hysteresis window
 	noiseT     float64 // G80: seconds of incoherent heading signal remaining
@@ -200,7 +205,8 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	}
 	maxSp := f.maxSpeed(night)
 	f.curNight = night
-	f.driftDepth(w)
+	f.tickGaze(dt, w)
+	f.driftDepth(dt, w)
 	speed01 := clampF(hyp2(f.Vel)/maxSp, 0, 1)
 
 	// energy economy
@@ -244,6 +250,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 	f.Vel.Y += f.fleeImp.Y * dt
 	f.fleeImp = mulS(f.fleeImp, maxF(0, 1-1.2*dt))
 	f.scareT = maxF(0, f.scareT-dt) // v0.3.8: shelter-seek window ticks down
+	f.gazeHover(dt)                 // G93: the stare is a scripted hover
 
 	// v1.1 G58/G59: a curling scalare carves the turn forward, never stalls
 	if f.turning > 0 && f.Sp.Role == contract.RoleTitan {

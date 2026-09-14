@@ -27,6 +27,14 @@ func newFish(sp *contract.Species, seed int64, pos contract.Vec2, ageDays float6
 	f.zPhase = f.rng.Float64() * 6.283
 	f.zSpeed = 0.05 + f.rng.Float64()*0.08
 	f.z = 0.5
+	// G93: the first urge to visit the glass arrives within a couple of
+	// minutes; curious species come sooner. The roll draws from its OWN
+	// seed stream — the gameplay rng stream must stay bit-identical to the
+	// pre-gaze tank (an extra draw here re-rolled every later wander and
+	// lounge draw and broke the tuned convoy trajectories).
+	cur := 0.6 + 0.8*contract.Clamp(sp.Behavior.Curiosity, 0, 1)
+	gseed := contract.RandSeed(seed + 3)
+	f.gazeCD = (contract.GazeCDMin + gseed.Float64()*(contract.GazeCDMax-contract.GazeCDMin)) / cur
 	f.loungeNext = contract.LoungeMeanSec * (0.5 + f.rng.Float64()) // F15 stagger
 	f.bodyLen = f.targetLen()
 	f.segLen = f.bodyLen / (contract.SpineSegments - 1)
