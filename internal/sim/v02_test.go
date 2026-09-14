@@ -22,6 +22,8 @@ func TestFoodRushCovers300pxFast(t *testing.T) {
 	f := w.fishes[0]
 	f.Satiety = 0.1
 	f.Pos = v2(100, 300)
+	w.miteT = 1e9 // G89: the surface mite release is N7's own drama — this
+	// contract judges the flake sprint alone, un-distracted by live prey
 	f.Vel = v2(0, 0)
 	w.foods = append(w.foods, Food{Pos: v2(400, 300), Age: 1})
 	eaten := false

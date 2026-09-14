@@ -37,3 +37,43 @@ func TestMitesTeemButNotAtHerDoor(t *testing.T) {
 		t.Fatalf("%d mites appeared inside her circle — her home stays undisturbed", inCircle)
 	}
 }
+
+// G89: mites are RELEASED at the surface — the same lane the auto-feeder
+// drops flakes into — and settle from there; none are conjured mid-water.
+func TestMitesDropFromTheSurfaceLikeFeed(t *testing.T) {
+	w := testWorld(t, testSpecies(0), 3)
+	w.miteT = 0.01
+	w.mites = w.mites[:0]
+	const dt = 0.05
+	spawns, atSurface, midWater := 0, 0, 0
+	var deepest float64
+	for i := 0; i < int(60/dt); i++ {
+		before := len(w.mites)
+		w.tickMites(dt)
+		if len(w.mites) > before {
+			spawns++
+			m := w.mites[len(w.mites)-1]
+			if absF(m.Pos.Y-contract.MiteDropY) < 5 { // the wiggle already sways the fresh release
+				atSurface++
+			}
+		}
+		for _, m := range w.mites {
+			deepest = maxF(deepest, m.Pos.Y)
+		}
+	}
+	if spawns == 0 {
+		t.Fatal("no mite released in 60 s")
+	}
+	if atSurface != spawns {
+		t.Fatalf("%d of %d releases were not at the surface line — mites drop like feed", atSurface, spawns)
+	}
+	_ = midWater
+	// the drift settles: mites sink away from the release line and never
+	// carpet the floor band
+	if deepest <= contract.MiteDropY+8 {
+		t.Fatalf("mites never sank (deepest %.0f px) — the drop must settle", deepest)
+	}
+	if deepest > w.H*contract.MiteSinkMaxFrac+14 {
+		t.Fatalf("a mite reached %.0f px — the drift stops at %.0f px", deepest, w.H*contract.MiteSinkMaxFrac)
+	}
+}

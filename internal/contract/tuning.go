@@ -53,6 +53,9 @@ const (
 	PlantCoverageMax     = 0.35  // fraction of tank width plants+corals may occupy
 	MiteCap              = 6     // live water mites at once (N7)
 	MiteSpawnMeanSec     = 8.5   // mean seconds between wild mite spawns (owner: tripled — the tank teems)
+	MiteDropY            = 54.0  // surface line mites are released from (same lane as the auto-feeder)
+	MiteSinkSpeed        = 14.0  // px/s a dropped mite settles downward
+	MiteSinkMaxFrac      = 0.72  // depth fraction where the drift stops and the mite lingers
 	CareDecayPerSec      = 0.02  // care decay above the last tier (recurring breeding)
 	CourtshipCooldownSec = 45.0  // min seconds between courtships (care-gated)
 	StartleMeanSec       = 50.0  // mean seconds between random startle events

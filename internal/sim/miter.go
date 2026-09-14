@@ -220,45 +220,52 @@ func (w *World) tickDecor(dt float64) {
 	w.tickSand(dt)
 }
 
+// miteKeepOut projects a mite position out of the lilac one's circle with a
+// +70 px buffer — the owner's rule (her home stays undisturbed) holds at the
+// release AND through the whole descent.
+func (w *World) miteKeepOut(p contract.Vec2) contract.Vec2 {
+	for _, z := range w.zones {
+		if z.Owner != "chosen" {
+			continue
+		}
+		d := sub(p, z.Center)
+		keep := z.Radius + 70
+		if l := hyp2(d); l < keep {
+			if l < 1 {
+				d = v2(1, 0)
+				l = 1
+			}
+			p = add(z.Center, mulS(d, keep/l))
+		}
+	}
+	return p
+}
+
 func (w *World) tickMites(dt float64) {
 	// spawn: rare, natural, capped (N7)
 	w.miteT -= dt
 	if w.miteT <= 0 {
 		w.miteT = contract.MiteSpawnMeanSec * (0.5 + w.rng.Float64())
 		if len(w.mites) < w.miteCap() {
-			var anchor contract.Vec2
-			if len(w.plants) > 0 && w.rng.Float64() < 0.7 {
-				pl := w.plants[w.rng.Intn(len(w.plants))]
-				anchor = v2(pl.X+(w.rng.Float64()*30-15), pl.Y-20-w.rng.Float64()*40)
-			} else {
-				side := w.rng.Float64()
-				anchor = v2(w.W*w.rng.Float64(), w.H*(0.15+0.7*side))
-			}
-			// owner's rule: no mites in the lilac one's circle — her home
-			// stays undisturbed (draws that land inside her aura are pushed
-			// out to the rim)
-			for _, z := range w.zones {
-				if z.Owner != "chosen" {
-					continue
-				}
-				d := sub(anchor, z.Center)
-				keep := z.Radius + 70
-				if l := hyp2(d); l < keep {
-					if l < 1 {
-						d = v2(1, 0)
-						l = 1
-					}
-					anchor = add(z.Center, mulS(d, keep/l))
-				}
-			}
+			// G89: released at the surface, the same lane the auto-feeder
+			// uses — never conjured mid-water beside a plant
+			anchor := w.miteKeepOut(v2(w.W*(0.08+w.rng.Float64()*0.84), contract.MiteDropY))
 			w.mites = append(w.mites, &Mite{Pos: anchor, Anchor: anchor, Phase: w.rng.Float64() * 6.283, TTL: 25})
-			w.logf("nature", "a water mite appears — the school stirs")
+			w.logf("nature", "a water mite drifts down from the surface — the tank stirs")
 		}
 	}
 	kept := w.mites[:0]
 	for _, m := range w.mites {
 		m.TTL -= dt
 		m.Phase += dt * 6
+		// G89: the release settles — a slow sink from the surface that runs
+		// out of push at the lingering depth (mites never carpet the floor)
+		if m.Anchor.Y < w.H*contract.MiteSinkMaxFrac {
+			m.Anchor.Y += contract.MiteSinkSpeed * dt
+			// the drift may carry a mite over her circle — the keep-out that
+			// guards the release guards the whole descent
+			m.Anchor = w.miteKeepOut(m.Anchor)
+		}
 		m.Pos.X = m.Anchor.X + cos(m.Phase*0.6)*6
 		m.Pos.Y = m.Anchor.Y + sin(m.Phase)*3
 		// frenzy: the first hungry fish to reach it devours it
