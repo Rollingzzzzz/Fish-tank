@@ -34,6 +34,7 @@ func (w *World) tickPredation(dt float64) {
 			tgt.fadeFast = true
 			w.burst(tgt.Pos, g.Pal.Accent, 10)
 			w.logf("nature", "the abyss feeds — a shadow swallows "+tgt.Sp.Name)
+			w.strikeShock(tgt.Pos, contract.StrikeScareR2, "") // the impact reaches further
 			g.eat()
 			w.resetPredation()
 			w.predCD = contract.PredationCD
@@ -69,7 +70,7 @@ func (w *World) tickPredation(dt float64) {
 	if best != nil {
 		w.predTgtID = best.ID
 		w.predT = contract.PredationPursuit
-		best.flee(g.Pos.X, g.Pos.Y, contract.MaxForce*0.4) // the water scatters
+		w.strikeShock(g.Pos, contract.StrikeScareR, "the hunt opens — the water splits")
 	}
 }
 
@@ -95,9 +96,12 @@ func (f *Fish) deathFadeRate() float64 {
 	return contract.DeathFadeSec
 }
 
-// lungeSteer runs the per-fish hunger lunge (G41): a burst at
-// TitanLungeMul × cruise toward the nearest flake or live treat — or, with
-// nothing in sight, one sharp direction dart. The shock is the point.
+// lungeSteer runs the per-fish hunger lunge (G41, retuned G82): a burst at
+// TitanLungeMul × cruise — but ONLY at living food. The old version also
+// struck at dead flakes and, with nothing in sight, threw a raw random
+// direction dart (probe: ten darts in four hungry minutes — exactly the
+// "sudden fast movement in place" glitch). A hungry elder with no live food
+// simply holds the sweep; starvation eventually opens the rare hunt instead.
 func (f *Fish) lungeSteer(w *World, dt, maxSp float64, addForce func(contract.Vec2, float64)) {
 	if f.lungeCD > 0 {
 		f.lungeCD -= dt
@@ -114,29 +118,21 @@ func (f *Fish) lungeSteer(w *World, dt, maxSp float64, addForce func(contract.Ve
 	}
 	var pt contract.Vec2
 	found, bestD := false, 620.0
-	for i := range w.foods {
-		if d := hyp2(sub(w.foods[i].Pos, f.Pos)); d < bestD {
-			bestD, pt, found = d, w.foods[i].Pos, true
-		}
-	}
 	for _, t := range w.treats {
 		if d := hyp2(sub(t.Pos, f.Pos)); d < bestD {
 			bestD, pt, found = d, t.Pos, true
 		}
 	}
-	if found {
-		f.lungeCD = contract.TitanLungeCD
-		if f.sizeMul >= 0.99 {
-			w.logf("nature", "the giant dives — the water shivers")
-		}
-	} else {
-		// no food in sight: a raw shock dart — flat, like every giant move
-		a := f.rng.Float64() * 6.283
-		pt = add(f.Pos, v2(cos(a)*320, sin(a)*320*contract.TitanHeadFlat))
-		f.lungeCD = contract.TitanLungeCD * 0.6
+	if !found {
+		return // no living food in sight — the sweep holds its gravity
+	}
+	f.lungeCD = contract.TitanLungeCD
+	if f.sizeMul >= 0.99 {
+		w.logf("nature", "the giant dives — the water shivers")
 	}
 	f.lungePt = pt
 	f.lungeT = contract.TitanLungeSec
+	w.strikeShock(pt, contract.StrikeScareR, "the school parts before the dive")
 }
 
 // DebugForceTitanVisit pins the pod's next arrival to now — evidence

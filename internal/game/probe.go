@@ -52,4 +52,11 @@ func (s *shotRun) buildProbe() {
 		smokeStep{until: 144 * 60, act: func(g *Game) { g.world.DebugSetNight() }},
 		smokeStep{until: 149 * 60})
 	s.caps[148*60] = "12-night.png"
+	// G83: the strike shock — a live worm lands by the pod, the dive opens
+	// the school and rings the water; two captures bracket the moment
+	s.steps = append(s.steps,
+		smokeStep{until: 152 * 60, act: func(g *Game) { g.world.DebugSetDay(); g.world.DebugDropTreat(0.62, 0.42) }},
+		smokeStep{until: 158 * 60})
+	s.caps[152*60+40] = "17-strike-open.png"
+	s.caps[152*60+110] = "18-strike-after.png"
 }

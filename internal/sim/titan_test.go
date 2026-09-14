@@ -20,7 +20,7 @@ func titanTestSpecies() *contract.Species {
 	c.ID = "test-titan"
 	c.Role = contract.RoleTitan
 	c.Size = 8.0
-	c.Behavior.Speed = 0.3
+	c.Behavior.Speed = 0.26
 	return &c
 }
 
@@ -87,7 +87,10 @@ func TestTitanHungerLungeBurst(t *testing.T) {
 	g.Satiety = 0.2 // hungry
 	g.lungeCD = 0
 	cruise := g.maxSpeed(1)
-	w.foods = append(w.foods, Food{Pos: add(g.Pos, v2(240, 0)), Age: 1})
+	// G82: the strike is for LIVING food alone — a wriggling treat, not a
+	// dead flake (the probe-measured random dart and the flake dive were
+	// the "sudden fast movement in place" glitches)
+	w.treats = append(w.treats, &Treat{Kind: contract.TreatWorm, Pos: add(g.Pos, v2(240, 0)), Phase: 0, BitesLeft: 3})
 	const dt = 0.05
 	lunged, maxSeen := false, 0.0
 	for i := 0; i < 40; i++ {
@@ -106,7 +109,7 @@ func TestTitanHungerLungeBurst(t *testing.T) {
 		}
 	}
 	if !lunged {
-		t.Fatal("a starving giant never lunged at the flake")
+		t.Fatal("a starving giant never lunged at the live treat")
 	}
 	if maxSeen < 6*cruise {
 		t.Fatalf("lunge burst %.1f px/s below 6× cruise %.1f", maxSeen, 6*cruise)

@@ -102,6 +102,7 @@ type World struct {
 	creatureT  float64
 	sand       []float64  // v1.1: floor disturbance offsets, 0 = level bed
 	ventT      [2]float64 // v1.1 G76: seep-column breath timers
+	shocks     []Shock    // v1.1 G83: strike pressure rings
 
 	WaterCur WaterLive
 	WaterTgt WaterLive
@@ -274,6 +275,7 @@ func (w *World) Update(dt float64, in Input) {
 		w.tickVents(dt)
 		w.tickSharkExhale(dt)
 	}
+	w.tickShocks(dt) // G83: the strike rings age independent of the kill-switch
 
 	// day counter (F8/F9): a full DaySeconds elapse = one tank day
 	if d := int(w.Clock / maxF(w.cfg.DaySeconds, 1)); d > w.Day {

@@ -189,9 +189,19 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// body may glide up or down along its sweep, but not ballistically.
 	// Through a strike the damper stands aside: the lunge keeps its full
 	// 6x+ burst (G41) on both axes
-	dampW := 0.75
+	// G82: a giant does not bob — the vertical drift bleeds at TitanVyDamp
+	// (probe: |vy| p95 was 20.7 px/s, the same size as the whole cruise —
+	// the "weird Y-axis turns" read). A strike still owns the water column.
+	dampW := contract.TitanVyDamp
 	if f.seekBonus > 1.01 {
 		dampW = 0.12
+	}
+	// far from the drawn altitude the climb/dive is deliberate — the damp
+	// relaxes so the glide keeps its momentum (full damp near the band is
+	// what levels the body out; crush it everywhere and the sweep becomes
+	// a rail on one height)
+	if off := w.H*f.altY - f.Pos.Y; absF(off) > 60 {
+		dampW *= 0.35
 	}
 	addForce(v2(0, -f.Vel.Y*dampW), dampW)
 	// the pod favors the upper 80% -- the sand line is not their water
@@ -210,7 +220,9 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// is enough — the lunge lasts 1.2 s) so the burst keeps its full budget
 	if f.seekBonus <= 1.01 {
 		if off := w.H*f.altY - f.Pos.Y; absF(off) > 8 {
-			addForce(v2(0, clampF(off*0.22, -maxSp*0.4, maxSp*0.4)), 1.0)
+			// G82: the altitude eases in gently (weight and clamp both halved
+			// — level gliding is the resting state, the climb is an excursion)
+			addForce(v2(0, clampF(off*0.15, -maxSp*contract.TitanAltClamp, maxSp*contract.TitanAltClamp)), contract.TitanAltWeight)
 		}
 	}
 	// overshoot brake: drifting well past the drawn altitude turns the

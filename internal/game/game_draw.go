@@ -142,6 +142,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// lands on its surface draw on top
 	render.DrawSandBed(screen, g.world.Sand(), float64(ScreenW), float64(ScreenH),
 		float64(ScreenH)*contract.FloorLineFrac, night)
+	// G83: the strike pressure rings — one batched ring mesh for every
+	// live shock, riding just under the floor dwellers
+	if sv := g.world.Shocks(); len(sv) > 0 {
+		if cap(g.shockView) < len(sv) {
+			g.shockView = make([]render.ShockView, len(sv))
+		}
+		view := g.shockView[:0]
+		for _, sh := range sv {
+			view = append(view, render.ShockView{X: sh.Pos.X, Y: sh.Pos.Y,
+				P: sh.T / contract.ShockRingSec})
+		}
+		render.DrawShocks(screen, view)
+	}
 	if contract.ExtrasEnabled {
 		// v1.1 realism pass on the bed (G74/G75): sun first, shade second —
 		// a shadow reads as blocked light when it dims the dapple under it

@@ -206,6 +206,37 @@ func (w *World) DebugSetDay() {
 	w.Clock = 0.25 * maxF(w.cfg.DaySeconds, 5)
 }
 
+// DebugStarveTitans empties every pod belly — evidence harness only
+// (-probe): guarantees the live-food strike window is open.
+func (w *World) DebugStarveTitans() {
+	for _, f := range w.fishes {
+		if f.Sp.Role == contract.RoleTitan {
+			f.Satiety = 0.1
+			f.lungeCD = 0
+		}
+	}
+}
+
+// DebugDropTreatByGiant drops a live worm 180 px ahead of the leader —
+// evidence harness only (-probe): the strike is guaranteed in range.
+func (w *World) DebugDropTreatByGiant() {
+	g := w.titanGiant()
+	if g == nil {
+		return
+	}
+	pt := add(g.Pos, v2(180*float64(g.cruise), -20))
+	w.treats = append(w.treats, &Treat{Kind: contract.TreatWorm, Pos: pt, BitesLeft: 3})
+}
+
+// DebugDropTreat drops a live worm at a tank fraction — evidence harness
+// only (-probe): guarantees a titan strike (G82: strikes are for living
+// food alone) so the shock ring and the scattered school can be captured.
+func (w *World) DebugDropTreat(fx, fy float64) {
+	w.treats = append(w.treats, &Treat{
+		Kind: contract.TreatWorm, Pos: v2(w.W*fx, w.H*fy), BitesLeft: 3,
+	})
+}
+
 // DebugFeedFloor drops n flakes straight onto the dunes — evidence harness
 // only (-probe): the resting-food composition with the school diving for it.
 func (w *World) DebugFeedFloor(n int) {

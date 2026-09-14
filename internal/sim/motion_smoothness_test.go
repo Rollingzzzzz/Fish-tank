@@ -129,6 +129,12 @@ func TestSpeedChangesStayPhysical(t *testing.T) {
 				(f.Sp.Role == contract.RoleChosen && f.portalPh != 0) {
 				continue // scripted states own their velocity
 			}
+			// a fresh startle (the strike shock's flinch kick) is a reflex —
+			// the envelopes judge open-water mechanics, not the C-start
+			startled := f.scareT > b.scare+0.5
+			if startled {
+				continue
+			}
 			dSp := math.Abs(hyp2(f.Vel)-b.sp) / dt
 			// wall contact is physical: the inbound component eases off at
 			// the glass by design (10/s of the component) — both budgets

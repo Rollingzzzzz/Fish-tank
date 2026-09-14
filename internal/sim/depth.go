@@ -81,7 +81,14 @@ func (f *Fish) formationSteer(w *World, maxSp float64, addForce func(contract.Ve
 	ty := lead.Pos.Y + f.slotY
 	d := sub(v2(tx, ty), f.Pos)
 	if l := hyp2(d); l > 30 {
-		addForce(mulS(d, maxSp*0.55/l), 0.8)
+		// G82: the pod is alignment-first — the slot pull is the strongest
+		// cruise force, and a member blown well out of line earns the one
+		// cruise reflex there is: a brief TitanSlotReflex burst to slot
+		// back in (strikes stay the only other burst)
+		addForce(mulS(d, maxSp*0.55/l), 1.05)
+		if l > contract.TitanSlotNeed && f.seekBonus < contract.TitanSlotReflex {
+			f.seekBonus = contract.TitanSlotReflex
+		}
 	}
 }
 

@@ -192,7 +192,7 @@ func TestTitanRoleCoreOnly(t *testing.T) {
 	if err := s.ValidateSpecies(seeded); err != nil {
 		t.Fatalf("core titan invalid: %v", err)
 	}
-	if seeded.Size != 6.5 || seeded.Behavior.Speed != 0.3 {
+	if seeded.Size != 6.5 || seeded.Behavior.Speed != 0.26 { // G82: cruise 0.30→0.26, the gravity pass
 		t.Fatalf("titan seed drifted outside its class: size=%v speed=%v", seeded.Size, seeded.Behavior.Speed)
 	}
 	// v1.1 vivid pass: the frozen cerulean/gold palette stays, and it never

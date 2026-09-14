@@ -87,7 +87,12 @@ func TestTimeLapseEveryEyeLeadsItsMotion(t *testing.T) {
 			}
 			// the swim law every frame: the velocity never opposes the eye
 			// (zone projections shove POSITION, not the swim — they are not
-			// tail-first gliding and are judged by the loose window below)
+			// tail-first gliding and are judged by the loose window below;
+			// a fresh startle flinch — the strike shock — bends the body
+			// away in one beat and is judged after it lands)
+			if f.scareT > contract.ScareShelterSec-0.25 {
+				continue
+			}
 			a := sub(f.Spine[0], f.Spine[1])
 			la := hyp2(a)
 			if v := hyp2(f.Vel); !f.Dying && v > 6 && la > 1e-3 {

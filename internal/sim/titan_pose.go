@@ -43,4 +43,15 @@ func (f *Fish) titanAlign(dt, maxSp float64, acc *contract.Vec2) {
 			acc.Y -= ay * back
 		}
 	}
+	// G82: the level-flight envelope — a scalare is a disc; it slips
+	// vertical SLOWLY. Outside a strike the vertical speed never exceeds
+	// 55 % of cruise, so the body reads as a gliding plate, never a
+	// bobbing tube (probe: sustained 16 px/s climbs after each arc).
+	if f.seekBonus <= 1.01 {
+		if cap := maxSp * 0.55; f.Vel.Y > cap {
+			f.Vel.Y = cap
+		} else if f.Vel.Y < -cap {
+			f.Vel.Y = -cap
+		}
+	}
 }

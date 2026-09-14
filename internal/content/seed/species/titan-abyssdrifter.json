@@ -19,7 +19,7 @@
     "size": 0.85
   },
   "behavior": {
-    "speed": 0.3,
+    "speed": 0.26,
     "schooling": 0,
     "curiosity": 0.1,
     "skittish": 0,

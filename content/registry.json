@@ -15232,5 +15232,221 @@
     "kind": "pattern",
     "id": "juvenile-juvenile-shine-47",
     "at": "2026-09-14T00:20:55Z"
+  },
+  {
+    "hash": "7d3fa3144b90fe6d",
+    "kind": "species",
+    "id": "prism-ripplefin",
+    "at": "2026-09-14T01:11:39Z"
+  },
+  {
+    "hash": "6074900252181fa3",
+    "kind": "water",
+    "id": "neon-lagoon-39",
+    "at": "2026-09-14T01:11:42Z"
+  },
+  {
+    "hash": "35f2ef95c99ec76e",
+    "kind": "coral",
+    "id": "aurora-seafan-41",
+    "at": "2026-09-14T01:11:42Z"
+  },
+  {
+    "hash": "df83d7090d9b107d",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-shine-48",
+    "at": "2026-09-14T01:11:45Z"
+  },
+  {
+    "hash": "592899cb983e3d6b",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-prime-40",
+    "at": "2026-09-14T01:13:06Z"
+  },
+  {
+    "hash": "9cd29a5fd28454e8",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-mist-43",
+    "at": "2026-09-14T01:13:06Z"
+  },
+  {
+    "hash": "6e89c9e74be0d707",
+    "kind": "water",
+    "id": "emerald-shallows-38",
+    "at": "2026-09-14T01:13:32Z"
+  },
+  {
+    "hash": "efb6f8959f307169",
+    "kind": "coral",
+    "id": "onyx-veil-41",
+    "at": "2026-09-14T01:13:32Z"
+  },
+  {
+    "hash": "abce1c795064d0f2",
+    "kind": "species",
+    "id": "aqua-staticflare",
+    "at": "2026-09-14T01:13:59Z"
+  },
+  {
+    "hash": "e83f1e7da6052ee5",
+    "kind": "species",
+    "id": "glimmer-staticgleam",
+    "at": "2026-09-14T01:15:52Z"
+  },
+  {
+    "hash": "08eb95c04db2cd2c",
+    "kind": "water",
+    "id": "neon-basin-37",
+    "at": "2026-09-14T01:15:55Z"
+  },
+  {
+    "hash": "7fa8c7f472cf40c4",
+    "kind": "coral",
+    "id": "glimmer-crest-40",
+    "at": "2026-09-14T01:15:55Z"
+  },
+  {
+    "hash": "13e984b4f5df2554",
+    "kind": "pattern",
+    "id": "elder-elder-veil-49",
+    "at": "2026-09-14T01:15:58Z"
+  },
+  {
+    "hash": "cac823b096cacc19",
+    "kind": "pattern",
+    "id": "elder-elder-wash-53",
+    "at": "2026-09-14T01:15:59Z"
+  },
+  {
+    "hash": "d4a3739e32574fc3",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-shine-49",
+    "at": "2026-09-14T01:17:19Z"
+  },
+  {
+    "hash": "01b49ceeafe01d5a",
+    "kind": "pattern",
+    "id": "elder-elder-shine-52",
+    "at": "2026-09-14T01:17:19Z"
+  },
+  {
+    "hash": "5b98a00f5e8cb657",
+    "kind": "water",
+    "id": "midnight-basin-36",
+    "at": "2026-09-14T01:17:45Z"
+  },
+  {
+    "hash": "b46ab6eb409d2c3f",
+    "kind": "coral",
+    "id": "crystal-crown-39",
+    "at": "2026-09-14T01:17:45Z"
+  },
+  {
+    "hash": "6c75e587cf4e1e15",
+    "kind": "species",
+    "id": "ember-onyxwing",
+    "at": "2026-09-14T01:18:12Z"
+  },
+  {
+    "hash": "b1d28365dd35fa56",
+    "kind": "species",
+    "id": "lumen-coraldrift",
+    "at": "2026-09-14T01:19:10Z"
+  },
+  {
+    "hash": "613d510537926852",
+    "kind": "water",
+    "id": "violet-lagoon-39",
+    "at": "2026-09-14T01:19:13Z"
+  },
+  {
+    "hash": "19dcb5596cc1f089",
+    "kind": "coral",
+    "id": "rose-candle-40",
+    "at": "2026-09-14T01:19:13Z"
+  },
+  {
+    "hash": "56e82a762f27bec3",
+    "kind": "pattern",
+    "id": "elder-elder-veil-50",
+    "at": "2026-09-14T01:19:16Z"
+  },
+  {
+    "hash": "db9b5c79446331f7",
+    "kind": "pattern",
+    "id": "adult-adult-fade-49",
+    "at": "2026-09-14T01:20:36Z"
+  },
+  {
+    "hash": "b256912617aa3bf6",
+    "kind": "pattern",
+    "id": "adult-adult-coat-39",
+    "at": "2026-09-14T01:20:37Z"
+  },
+  {
+    "hash": "9f0e1f8af81cced9",
+    "kind": "water",
+    "id": "lunar-reef-40",
+    "at": "2026-09-14T01:21:03Z"
+  },
+  {
+    "hash": "a3dabc76bc91d629",
+    "kind": "coral",
+    "id": "violet-crown-41",
+    "at": "2026-09-14T01:21:03Z"
+  },
+  {
+    "hash": "702952b4cd894c1e",
+    "kind": "species",
+    "id": "astra-coralveil",
+    "at": "2026-09-14T01:21:30Z"
+  },
+  {
+    "hash": "8bdc83c4ab9a2dbd",
+    "kind": "species",
+    "id": "glimmer-violetdart",
+    "at": "2026-09-14T01:22:48Z"
+  },
+  {
+    "hash": "745bdcc0217b2ad1",
+    "kind": "water",
+    "id": "lunar-reef-39",
+    "at": "2026-09-14T01:22:51Z"
+  },
+  {
+    "hash": "175b26b89b466446",
+    "kind": "coral",
+    "id": "cyan-torch-41",
+    "at": "2026-09-14T01:22:51Z"
+  },
+  {
+    "hash": "33e1501449f37257",
+    "kind": "pattern",
+    "id": "fry-fry-coat-3",
+    "at": "2026-09-14T01:22:54Z"
+  },
+  {
+    "hash": "8fcf06ba1e793cf4",
+    "kind": "pattern",
+    "id": "juvenile-juvenile-mist-44",
+    "at": "2026-09-14T01:24:14Z"
+  },
+  {
+    "hash": "785253dc18648119",
+    "kind": "water",
+    "id": "prism-shallows-38",
+    "at": "2026-09-14T01:24:41Z"
+  },
+  {
+    "hash": "a5da43f1978f2fcf",
+    "kind": "coral",
+    "id": "rose-boulder-40",
+    "at": "2026-09-14T01:24:41Z"
+  },
+  {
+    "hash": "2c261765e402cec5",
+    "kind": "species",
+    "id": "cryo-onyxflare",
+    "at": "2026-09-14T01:25:08Z"
   }
 ]

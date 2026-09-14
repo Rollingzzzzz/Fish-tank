@@ -238,6 +238,17 @@ const (
 	SharkExhaleMax  = 8.0
 	SandKickN       = 7 // grains thrown by one floor feed
 	SandKickGrav    = 150.0
+
+	// v1.1 titan gravity pass (G82–G83): the elders swim like the alien
+	// flora grows — ponderous, mostly level, striking only at living food.
+	TitanVyDamp     = 1.40 // vertical drift bleeds fast — a giant does not bob
+	TitanAltWeight  = 0.85 // altitude pull softness
+	TitanAltClamp   = 0.55 // altitude pull cap (× maxSp)
+	TitanSlotReflex = 1.25 // the one cruise burst: regaining the formation slot
+	TitanSlotNeed   = 90.0 // px out of slot before the reflex may fire
+	StrikeScareR    = 320.0
+	StrikeScareR2   = 430.0 // the swallow reaches further than the lunge
+	ShockRingSec    = 0.65
 )
 
 // GLM output guard.
