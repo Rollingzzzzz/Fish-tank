@@ -31,7 +31,7 @@ func TestChosenPortalRareAndSound(t *testing.T) {
 	events, active, maxFade := 0, 0.0, 0.0
 	prevPos := ch.Pos
 	jumps := []float64{}
-	for i := 0; i < 60*400; i++ { // 400 s
+	for i := 0; i < int(400/dt); i++ { // a true 400 s (dt=0.05; the old 60*400 frames simulated 1200 s and mis-calibrated the rarity window)
 		prevPhase := ch.portalPh
 		w.Update(dt, Input{})
 		if prevPhase == 0 && ch.portalPh == 1 {

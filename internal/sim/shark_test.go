@@ -307,3 +307,46 @@ func TestSharkRestoreFacesItsMotion(t *testing.T) {
 // dot2 is the test-side vector dot (kept here; the sim uses projection in
 // exactly one place and the helper file stays lean).
 func dot2(a, b contract.Vec2) float64 { return a.X*b.X + a.Y*b.Y }
+
+// G79: the pair OWNS the stage. Before the patrol fix the hunters looped
+// locally: a 7 s waypoint at ~55 px/s is ~300 px of travel, and over three
+// measured minutes their x-span never left [0.00, 0.78]W — the right
+// quarter of the tank went unpatrolled. They now hold waypoints long
+// enough to cross (×2.5) and most draws pull to the opposite half.
+func TestHuntersCoverTheStage(t *testing.T) {
+	cfg := contract.Config{MaxFish: 20, DaySeconds: 60}
+	w := NewWorld(1720, 720, cfg, []*contract.Species{sharkTestSpecies(), chosenTestSpecies()}, nil, nil)
+	w.SeedRng(11)
+	const dt = 1 / 60.0
+	minX, maxX := 1e9, -1e9
+	midFrames, total := 0, 0
+	for i := 0; i < 60*180; i++ {
+		w.Update(dt, Input{})
+		if i%(2*60) != 0 {
+			continue
+		}
+		for _, f := range w.fishes {
+			if f.Sp.Role != contract.RoleShark || f.Dying {
+				continue
+			}
+			total++
+			fx, fy := f.Pos.X/w.W, f.Pos.Y/w.H
+			minX, maxX = min(minX, fx), max(maxX, fx)
+			if fx > 0.15 && fx < 0.85 && fy > 0.12 && fy < 0.62 {
+				midFrames++
+			}
+		}
+	}
+	if total == 0 {
+		t.Fatal("no shark samples — the pair never spawned")
+	}
+	if minX > 0.20 || maxX < 0.80 {
+		t.Fatalf("the stage goes unpatrolled: x-span [%.2f, %.2f]", minX, maxX)
+	}
+	if maxX-minX < 0.70 {
+		t.Fatalf("patrol span too narrow: %.2f", maxX-minX)
+	}
+	if pct := 100 * midFrames / total; pct < 50 {
+		t.Fatalf("hunters live off-stage: mid-stage %d%% of samples", pct)
+	}
+}

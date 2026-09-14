@@ -26,11 +26,27 @@ func (f *Fish) tourSteer(w *World, dt, maxSp float64) (contract.Vec2, bool) {
 	f.tourT -= dt
 	if f.tourT <= 0 || hyp2(sub(f.tourC, f.Pos)) < 60 {
 		yLo, yHi := 0.20, 0.80 // v1.1 G66: leave the trailing body headroom
+		xLo, xMul := 0.08, 0.84
+		persist := 1.0
 		if f.Sp.Role == contract.RoleShark {
 			yLo, yHi = 0.15, 0.62 // v1.1: the hunter roams the upper water
+			// G79: the pair OWNS the stage. A 7 s waypoint at ~55 px/s is
+			// ~300 px of travel — the hunters looped locally and never once
+			// crossed into the right quarter (measured x-span [0.00, 0.78]
+			// over 3 min). They now hold a waypoint long enough to reach the
+			// far side, and most draws pull to the OPPOSITE half of the tank,
+			// so a crossing reads as a patrol, not a stroll.
+			persist = 2.5
+			if w.rng.Float64() < 0.6 {
+				if f.Pos.X < w.W*0.5 {
+					xLo, xMul = 0.50, 0.42
+				} else {
+					xLo, xMul = 0.08, 0.42
+				}
+			}
 		}
-		f.tourC = v2(w.W*(0.08+w.rng.Float64()*0.84), w.H*(yLo+w.rng.Float64()*(yHi-yLo)))
-		f.tourT = contract.RoamMeanSec * (0.6 + w.rng.Float64()*0.8)
+		f.tourC = v2(w.W*(xLo+w.rng.Float64()*xMul), w.H*(yLo+w.rng.Float64()*(yHi-yLo)))
+		f.tourT = contract.RoamMeanSec * persist * (0.6 + w.rng.Float64()*0.8)
 	}
 	d := sub(f.tourC, f.Pos)
 	l := hyp2(d)

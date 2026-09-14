@@ -20,7 +20,7 @@ func TestVentsBreatheFromTheDunes(t *testing.T) {
 	w.WaterTgt.Bubbles = 0
 	const dt = 0.05
 	hits := 0
-	for i := 0; i < 60*90; i++ { // 90 s
+	for i := 0; i < int(90/dt); i++ { // a true 90 s
 		w.Update(dt, Input{})
 		for _, b := range w.bubbles {
 			for _, vf := range ventFrac {
@@ -55,7 +55,7 @@ func TestSharksExhaleAtTheGills(t *testing.T) {
 	w.WaterTgt.Bubbles = 0
 	const dt = 0.05
 	hits := 0
-	for i := 0; i < 60*45; i++ { // 45 s
+	for i := 0; i < int(45/dt); i++ { // a true 45 s
 		w.Update(dt, Input{})
 		for _, f := range w.fishes {
 			if f.Sp.Role != contract.RoleShark || f.Dying {
@@ -132,6 +132,33 @@ func TestBubbleBudgetHolds(t *testing.T) {
 		w.Update(1/60.0, Input{})
 		if len(w.bubbles) > maxBubbles {
 			t.Fatalf("%d bubbles over the cap %d", len(w.bubbles), maxBubbles)
+		}
+	}
+}
+
+// G78: every spawned bubble is big enough to hold a visible rim — the
+// vent floor (1.4) and the gill-breath floor (1.1) are the contract.
+func TestBubbleRadiiReadAtScreenScale(t *testing.T) {
+	w := titanWorld(t, 4)
+	w.WaterCur.Bubbles = 0 // silent water: vents are the only source
+	w.WaterTgt.Bubbles = 0
+	for i := 0; i < 60*60; i++ { // 180 s at dt=0.05
+		w.Update(0.05, Input{})
+		for _, b := range w.bubbles {
+			if b.R < 1.3 {
+				t.Fatalf("vent bubble radius %.2f under the readable floor", b.R)
+			}
+		}
+	}
+	ws := sharkWorld(t)
+	ws.WaterCur.Bubbles = 0 // silent water: gill breaths are the only source
+	ws.WaterTgt.Bubbles = 0
+	for i := 0; i < 60*45; i++ {
+		ws.Update(0.05, Input{})
+		for _, b := range ws.bubbles {
+			if b.R < 1.0 {
+				t.Fatalf("gill bubble radius %.2f under the readable floor", b.R)
+			}
 		}
 	}
 }

@@ -234,7 +234,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 
 	// G62: the hammerhead rides its body axis — bounded turn, cruise floor
 	if f.Sp.Role == contract.RoleShark {
-		f.constrainForward(dt, maxSp)
+		f.constrainForward(dt, maxSp, w)
 	}
 	if f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
 		f.capTurn(dt) // G63: school fish ARC, never flip — the body rides nose-first

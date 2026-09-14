@@ -188,11 +188,12 @@ func (w *World) tickParticles(dt float64) {
 	}
 	w.particles = kept
 
-	// ambient bubbles ∝ water setting
+	// ambient bubbles ∝ water setting (G78: radius floor 1.3 — a bubble
+	// smaller than this cannot hold a visible rim at screen scale)
 	if len(w.bubbles) < maxBubbles && w.rng.Float64() < w.WaterCur.Bubbles*2.2*dt {
 		w.bubbles = append(w.bubbles, Bubble{
 			Pos:    v2(w.rng.Float64()*w.W, w.H-4),
-			R:      1 + w.rng.Float64()*2.6,
+			R:      1.3 + w.rng.Float64()*2.3,
 			Speed:  26 + w.rng.Float64()*34,
 			Wobble: w.rng.Float64() * 6.283,
 			Seed:   w.rng.Float64(),
@@ -233,7 +234,7 @@ func (w *World) tickVents(dt float64) {
 		for k := 0; k < n && len(w.bubbles) < maxBubbles; k++ {
 			w.bubbles = append(w.bubbles, Bubble{
 				Pos:    v2(x+(w.rng.Float64()-0.5)*7, contract.SandSurfaceY(w.H, x)-2),
-				R:      0.9 + w.rng.Float64()*1.3,
+				R:      1.4 + w.rng.Float64()*1.3, // G78: floor 1.4 — the rim must read
 				Speed:  30 + w.rng.Float64()*36,
 				Wobble: w.rng.Float64() * 6.283,
 				Seed:   w.rng.Float64(),

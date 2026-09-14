@@ -60,12 +60,58 @@ func (w *World) ensureSharks() {
 // tail-first. A target behind the back turns into a carve, not a reverse.
 // The hunter is also always under way (G50): the pin may shave speed while
 // forces fight the turn, so it is floored at a dignified cruise.
-func (f *Fish) constrainForward(dt, maxSp float64) {
+// G79 glass glide: a force-only wall push could never turn a nose-first
+// hunter at the pane — the push is anti-parallel to the body axis, it
+// changes SPEED not direction, and the cruise floor erased the speed
+// change every frame (measured: a pair pinned at x=0.00, heading frozen at
+// π for minutes). When the axis points at a pane inside the lookahead, the
+// pin itself yaws the heading toward the wall tangent — along the glass,
+// the way a real shark slides past the pane — so steering forces regain a
+// perpendicular component and the tour takes over again.
+func (f *Fish) constrainForward(dt, maxSp float64, w *World) {
 	sp := hyp2(f.Vel)
 	if sp > 6 {
 		va := math.Atan2(f.Vel.Y, f.Vel.X)
 		da := math.Mod(va-f.headingA+3.14159, 6.28318) - 3.14159
 		f.headingA += clampF(da, -contract.SharkTurnRate*dt, contract.SharkTurnRate*dt)
+	}
+	// the glass glide: project the nose one glide-length ahead and yaw to
+	// the tangent before the pane can pin the body
+	const edge = 52.0
+	look := maxF(sp*0.8, 30)
+	nx, ny := cos(f.headingA), sin(f.headingA)
+	xAhead, yAhead := f.Pos.X+nx*look, f.Pos.Y+ny*look
+	var tgt float64
+	glide := false
+	switch {
+	case xAhead < edge && nx < 0: // left pane
+		glide = true
+		tgt = -0.35
+		if f.Pos.Y > w.H*0.55 {
+			tgt = 0.35
+		}
+	case xAhead > w.W-edge && nx > 0: // right pane
+		glide = true
+		tgt = math.Pi + 0.35
+		if f.Pos.Y > w.H*0.55 {
+			tgt = math.Pi - 0.35
+		}
+	case yAhead < edge*0.7 && ny < 0: // surface
+		glide = true
+		tgt = 1.25
+		if f.Pos.X > w.W*0.5 {
+			tgt = math.Pi - 1.25
+		}
+	case yAhead > w.H-edge*0.6 && ny > 0: // floor side
+		glide = true
+		tgt = -1.25
+		if f.Pos.X > w.W*0.5 {
+			tgt = -(math.Pi - 1.25)
+		}
+	}
+	if glide {
+		da := math.Mod(tgt-f.headingA+3.14159, 6.28318) - 3.14159
+		f.headingA += clampF(da, -contract.SharkTurnRate*1.6*dt, contract.SharkTurnRate*1.6*dt)
 	}
 	if sp < maxSp*0.65 {
 		sp = maxSp * 0.65
@@ -107,7 +153,7 @@ func (w *World) tickSharkExhale(dt float64) {
 		for k := 0; k < n && len(w.bubbles) < maxBubbles; k++ {
 			w.bubbles = append(w.bubbles, Bubble{
 				Pos:    v2(gx+(w.rng.Float64()-0.5)*f.bodyLen*0.10, gy+(w.rng.Float64()-0.5)*f.bodyLen*0.08),
-				R:      0.7 + w.rng.Float64()*1.0,
+				R:      1.1 + w.rng.Float64()*0.8, // G78: floor 1.1 — gill breaths stay readable
 				Speed:  34 + w.rng.Float64()*30,
 				Wobble: w.rng.Float64() * 6.283,
 				Seed:   w.rng.Float64(),
