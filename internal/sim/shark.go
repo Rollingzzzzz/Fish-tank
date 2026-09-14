@@ -167,22 +167,24 @@ func (w *World) tickSharkExhale(dt float64) {
 // titanStartConvoyTurn flips the caravan as ONE (G67): the leader's glass
 // call arms every member's arc at the same instant — each fish sweeps its
 // own parallel half circle from where it swims, so the five arrive on the
-// opposite sweep still clustered, never strung out.
+// opposite sweep still clustered, never strung out. G85: the turn
+// DIRECTION is decided once, by the LEADER's room — mixed per-member
+// directions turned the pod into a scattered fan; members' own radii still
+// fit their own water, and the down-curl never sweeps below the nest.
 func (w *World) titanStartConvoyTurn() {
+	lead := w.titanGiant()
 	for _, f := range w.fishes {
 		if f.Sp.Role != contract.RoleTitan || f.Dying {
 			continue
 		}
 		f.turnH0 = f.headingA
 		f.cruise = -f.cruise
-		// the pod turns UP by default (against the surface light, G67): the
-		// radius shrinks to fit the top margin, and only a truly closed top
-		// falls back to a down-curl — repeated down-curls walked the pod
-		// into the bottom band and its tail into the corner
-		f.turnS = f.cruise
-		room := f.Pos.Y - (f.bodyLen*0.30 + 6) - 15
-		if room < f.bodyLen*0.12 {
-			f.turnS = -f.cruise
+		f.turnS = f.cruise // up against the light by default
+		if lead != nil {
+			room := lead.Pos.Y - (lead.bodyLen*0.30 + 6) - 15
+			if room < lead.bodyLen*0.12 {
+				f.turnS = -f.cruise
+			}
 		}
 		f.turnT = contract.TitanTurnWindow + 60
 		f.turning = contract.TitanTurnWindow

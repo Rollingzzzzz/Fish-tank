@@ -157,7 +157,7 @@ const zoneFix = 12.0
 // belly or tail — crosses into her circle. A head found inside glides back
 // out at a bounded pace (a snap would read as a teleport, G65); a sagging
 // body drains out at the same capped pace.
-func (w *World) enforceFishZones(f *Fish) {
+func (w *World) enforceFishZones(f *Fish, dt float64) {
 	for _, z := range w.zones {
 		if z.Owner != "chosen" || f.Sp.Role == contract.RoleChosen {
 			continue
@@ -195,14 +195,19 @@ func (w *World) enforceFishZones(f *Fish) {
 		}
 		// G65: the pin laws ride headingA — if it still aims into her
 		// circle, the next frame's rebuild would drive the fish straight
-		// back in. Slide the heading onto the outward hemisphere as well,
-		// so the fish skirts along the rim instead of grinding through it.
+		// back in. Slide the heading toward the outward hemisphere — G84:
+		// at a BOUNDED rate (1.2 rad/s). The old instant projection was a
+		// heading teleport the big bodies wore as a visible twitch at her
+		// rim; the position drain still holds the line while the nose
+		// swings around like a nose, not a door.
 		hx, hy := cos(f.headingA), sin(f.headingA)
 		if vn := hx*out.X + hy*out.Y; vn < 0 {
 			hx -= vn * out.X
 			hy -= vn * out.Y
 			if l := hyp2(v2(hx, hy)); l > 1e-3 {
-				f.headingA = math.Atan2(hy/l, hx/l)
+				tgt := math.Atan2(hy/l, hx/l)
+				da := math.Mod(tgt-f.headingA+3.14159, 6.28318) - 3.14159
+				f.headingA += clampF(da, -1.2*dt, 1.2*dt)
 			}
 		}
 	}

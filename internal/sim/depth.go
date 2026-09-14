@@ -86,7 +86,15 @@ func (f *Fish) formationSteer(w *World, maxSp float64, addForce func(contract.Ve
 		// cruise reflex there is: a brief TitanSlotReflex burst to slot
 		// back in (strikes stay the only other burst)
 		addForce(mulS(d, maxSp*0.55/l), 1.05)
-		if l > contract.TitanSlotNeed && f.seekBonus < contract.TitanSlotReflex {
+		// the reflex answers HORIZONTAL lag only — the procession is
+		// horizontal; the members' independent altitude draws ARE the
+		// breathing (G69), and counting their vertical spread armed the
+		// boost forever (an escort living at ×1.25 — the stiff read — and
+		// its eternal seekBonus blocking its own glass turn). It also
+		// stands down near the pane: it rides seekBonus, and the arc's
+		// edge trigger gates on seekBonus.
+		if absF(d.X) > contract.TitanSlotNeed && f.seekBonus < contract.TitanSlotReflex &&
+			f.Pos.X > 130 && f.Pos.X < w.W-130 {
 			f.seekBonus = contract.TitanSlotReflex
 		}
 	}

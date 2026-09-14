@@ -263,7 +263,7 @@ func (f *Fish) advance(dt, night float64, w *World) {
 
 	// N3/G52: nothing alive but the Chosen may enter the aura — and for a
 	// big body "enter" means ANY spine segment, head to tail
-	w.enforceFishZones(f)
+	w.enforceFishZones(f, dt)
 
 	// N5: occasional glass attach for high-Attachment species
 	f.maybeAttach(w, dt)

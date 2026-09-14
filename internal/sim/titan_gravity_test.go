@@ -176,3 +176,80 @@ func TestTheStrikeShocksTheSchool(t *testing.T) {
 		t.Fatal("a pressure ring outlived its moment")
 	}
 }
+
+// G84: born settled — the opening seconds ride the same smoothness budget
+// as the settled cruise (unset altY used to pull the whole pod toward the
+// surface for the first ~12 s: "fast and weird at first, settles later").
+func TestTitanOpensSettled(t *testing.T) {
+	w := titanWorld(t, 4)
+	w.spawnPod()
+	const dt = 1 / 60.0
+	maxVy, maxJump := 0.0, 0.0
+	prev := map[*Fish]float64{}
+	grace := map[*Fish]float64{}
+	for i := 0; i < 60*30; i++ { // the first half minute
+		w.Update(dt, Input{})
+		for _, f := range w.fishes {
+			if f.Sp.Role != contract.RoleTitan || f.Dying {
+				continue
+			}
+			f.Satiety = 1
+			armed := f.seekBonus > 1.01 || f.turning > 0 || f.scareT > 0 || f.lungeT > 0
+			if armed {
+				grace[f] = 1.2 // arcs and reflexes leave tails — judge settled water
+			}
+			grace[f] = maxF(0, grace[f]-dt)
+			if !armed && grace[f] <= 0 {
+				if vy := math.Abs(f.Vel.Y); vy > maxVy {
+					maxVy = vy
+				}
+				if p, ok := prev[f]; ok {
+					if j := math.Abs(f.headingA - p); j > maxJump {
+						maxJump = j
+					}
+				}
+			}
+			prev[f] = f.headingA
+		}
+	}
+	if maxVy > 12 {
+		t.Fatalf("opening |vy| %.1f px/s — the pod must open as it means to continue", maxVy)
+	}
+	if maxJump > 0.35 {
+		t.Fatalf("an opening single-frame heading jump of %.2f rad", maxJump)
+	}
+}
+
+// G85: the elders live above the nest level — the sand is not their water.
+// Cruising below the nest line is a rare visit; the sand side is never.
+func TestTitansKeepTheUpperWater(t *testing.T) {
+	w := titanWorld(t, 4)
+	w.spawnPod()
+	const dt = 1 / 60.0
+	below, sand, total := 0, 0, 0
+	for i := 0; i < 60*240; i++ {
+		w.Update(dt, Input{})
+		for _, f := range w.fishes {
+			if f.Sp.Role != contract.RoleTitan || f.Dying || f.turning > 0 {
+				continue
+			}
+			f.Satiety = 1
+			total++
+			if f.Pos.Y > 0.62*w.H {
+				below++
+			}
+			if f.Pos.Y > 0.72*w.H {
+				sand++
+			}
+		}
+	}
+	if total == 0 {
+		t.Fatal("no titan samples")
+	}
+	if 100*below/total > 12 {
+		t.Fatalf("the pod lived %d%% of its time below the nest level", 100*below/total)
+	}
+	if sand > 0 {
+		t.Fatalf("%d sand-side samples — the sand is not their water", sand)
+	}
+}

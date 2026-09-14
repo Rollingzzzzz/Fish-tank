@@ -38,8 +38,11 @@ func (w *World) tickPredation(dt float64) {
 			g.eat()
 			w.resetPredation()
 			w.predCD = contract.PredationCD
-		} else if w.predT <= 0 {
-			w.resetPredation() // broke off — a shorter wait before the next try
+		} else if w.predT <= 0 || tgt.Pos.X < 70 || tgt.Pos.X > w.W-70 {
+			// broke off, or the prey hugged the pane and slipped away — a
+			// shadow does not grind the glass for a cornered fish (the
+			// pinned pursuit stalled the whole convoy at the edge)
+			w.resetPredation()
 			w.predCD = 60
 		}
 		return

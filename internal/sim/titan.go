@@ -122,14 +122,15 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 		// the arc is a true wide U (G67): radius scaled to the body, pace
 		// quickening through the turn — v = πR/window ≈ 2× cruise, so the
 		// head TRAVELS a quarter tank while it turns, never spins on a spot
+		// the radius fits the member's own water (direction is shared by
+		// the leader's call, G85); the down-curl floor keeps every sweep
+		// above the nest level — the sand is not their water.
 		r := f.bodyLen * contract.TitanTurnRadiusFrac
-		// the arc fits the room it actually has — an up-curl shrinks to the
-		// top margin, a down-curl to the upper band
 		if f.turnS*f.cruise > 0 {
 			if room := f.Pos.Y - (f.bodyLen*0.30 + 6) - 15; room < r {
 				r = maxF(f.bodyLen*0.12, room)
 			}
-		} else if room := w.H*contract.TitanUpperBand - 40 - f.Pos.Y; room < r {
+		} else if room := w.H*contract.TitanArcFloor - 20 - f.Pos.Y; room < r {
 			r = maxF(f.bodyLen*0.12, room)
 		}
 		// the pace never sinks below cruise — a shrunken arc must not
@@ -159,7 +160,11 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	// until it closes (the next sweep will still reach the glass in time)
 	edge := f.bodyLen*(contract.TitanTurnRadiusFrac+0.85) + 30
 	if f.seekBonus <= 1.01 && ((f.cruise > 0 && f.Pos.X > w.W-edge) || (f.cruise < 0 && f.Pos.X < edge)) {
-		if f.turnT <= 0 {
+		// the anti-spam clock yields to the pane itself: at the slower
+		// cruise a sweep can reach the glass before the 68 s lock expires,
+		// and a leader grinding the pane stalls the whole caravan
+		hard := f.Pos.X < edge*0.45 || f.Pos.X > w.W-edge*0.45
+		if f.turnT <= 0 || hard {
 			w.titanStartConvoyTurn()
 		}
 	}
@@ -175,13 +180,18 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 	f.altT -= dt
 	if f.altT <= 0 {
 		lo := (f.bodyLen*0.30+6)/w.H + 0.03
-		// biased to the ends: a third of the draws ride high under the
-		// surface light, the rest glide the broad lower water — the sweep
-		// visits both worlds instead of parking mid-tank
-		if f.rng.Float64() < 0.34 {
-			f.altY = lo + f.rng.Float64()*(0.30-lo)
-		} else {
-			f.altY = 0.30 + f.rng.Float64()*(contract.TitanAltMax-0.30)
+		// G84: the elders live ABOVE the nest level — four draws in ten ride
+		// high under the surface light, the rest glide the broad water down
+		// to TitanAltMax; one draw in ten is the rare dip that visits the
+		// nest level itself. The sand is not their water.
+		r := f.rng.Float64()
+		switch {
+		case r < 0.40:
+			f.altY = lo + f.rng.Float64()*(0.32-lo)
+		case r < 0.88:
+			f.altY = 0.32 + f.rng.Float64()*(contract.TitanAltMax-0.32)
+		default:
+			f.altY = contract.TitanAltMax + f.rng.Float64()*(contract.TitanAltDip-contract.TitanAltMax)
 		}
 		f.altT = 18 + f.rng.Float64()*22
 	}
@@ -204,7 +214,15 @@ func (f *Fish) steerTitan(dt, maxSp float64, w *World) contract.Vec2 {
 		dampW *= 0.35
 	}
 	addForce(v2(0, -f.Vel.Y*dampW), dampW)
-	// the pod favors the upper 80% -- the sand line is not their water
+	// the pod favors the upper 80% -- the sand line is not their water.
+	// G85: the FLOOR of their water is the nest level: past it the climb
+	// back escalates with depth (outside strikes and arcs — a hunt may
+	// cross the line, the cruise never lives there)
+	if f.seekBonus <= 1.01 && f.turning <= 0 {
+		if over := f.Pos.Y - w.H*contract.TitanAltDip; over > 0 {
+			addForce(v2(0, -(0.5+minF(over/40, 1.5))*maxSp), 1.5)
+		}
+	}
 	if f.Pos.Y > w.H*contract.TitanUpperBand {
 		addForce(v2(0, -maxSp), 1.1)
 	}

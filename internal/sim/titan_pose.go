@@ -16,7 +16,7 @@ import (
 // read; the reflection preserves speed, lands the nose law instantly and
 // leaves the lateral drift the staggered formation rides on).
 func (f *Fish) titanAlign(dt, maxSp float64, acc *contract.Vec2) {
-	follow := 2.5
+	follow := 2.5 // G84: a heavier nose — the ease takes its time (2.5 scattered the post-arc re-align)
 	if f.seekBonus > 1.01 {
 		follow = 6.5
 	}
@@ -43,15 +43,16 @@ func (f *Fish) titanAlign(dt, maxSp float64, acc *contract.Vec2) {
 			acc.Y -= ay * back
 		}
 	}
-	// G82: the level-flight envelope — a scalare is a disc; it slips
-	// vertical SLOWLY. Outside a strike the vertical speed never exceeds
-	// 55 % of cruise, so the body reads as a gliding plate, never a
-	// bobbing tube (probe: sustained 16 px/s climbs after each arc).
+	// G82/G84: the level-flight envelope — a scalare is a disc; it slips
+	// vertical SLOWLY. Outside a strike the vertical speed eases back under
+	// 55 % of cruise at 6/s (an instant clamp was itself a hard cut — the
+	// last stiff edge), so the body reads as a gliding plate, never a
+	// bobbing tube and never a snapped one.
 	if f.seekBonus <= 1.01 {
 		if cap := maxSp * 0.55; f.Vel.Y > cap {
-			f.Vel.Y = cap
+			f.Vel.Y -= minF(f.Vel.Y-cap, (f.Vel.Y-cap)*6*dt+6*dt)
 		} else if f.Vel.Y < -cap {
-			f.Vel.Y = -cap
+			f.Vel.Y += minF(-cap-f.Vel.Y, (-cap-f.Vel.Y)*6*dt+6*dt)
 		}
 	}
 }

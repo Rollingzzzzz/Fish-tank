@@ -34,18 +34,27 @@ func (w *World) spawnPod() {
 		if i > 0 {
 			mul = 0.31 + w.rng.Float64()*0.25 // escorts: ~130-230 px bodies
 		}
-		f := newFish(sp, w.rng.Int63(), v2(leadX+float64(i)*46, y+float64(i%3)*26), 6, w.nextID())
+		// staggered parallel slots behind the leader (G59) -- a loose
+		// procession whose bodies overlap a little, never a stack. G84:
+		// members are BORN on their slot (slotBack behind, slotY across) --
+		// no opening shuffle, the procession exists from frame one
+		slotBack := float64(i) * 45
+		slotY := float64(i%3-1) * 34
+		f := newFish(sp, w.rng.Int63(), v2(leadX-slotBack*dir, y+slotY), 6, w.nextID())
+		f.slotBack, f.slotY = slotBack, slotY
 		f.sizeMul = mul
 		f.cruise = dir
 		f.headingA = 0
 		if dir < 0 {
 			f.headingA = 3.14159
 		}
-		// staggered parallel slots behind the leader (G59) -- a loose
-		// procession whose bodies overlap a little, never a stack
-		f.slotBack = float64(i) * 45
-		f.slotY = float64(i%3-1) * 34
 		f.Vel = v2(dir*15, 0) // born under way along the sweep line
+		// G84: born SETTLED — a personal altitude inside the cruising band
+		// and the next draw a while away. Unset, altY=0 pulled the whole
+		// pod toward the surface for the first ~12 s (the "fast and weird
+		// at opening, settling later" read)
+		f.altY = clampF((y+f.slotY)/w.H, 0.24, 0.46) // born at the altitude they hold
+		f.altT = 8 + w.rng.Float64()*16
 		f.bodyLen = f.targetLen()
 		f.segLen = f.bodyLen / (contract.SpineSegments - 1)
 		for j := range f.Spine {

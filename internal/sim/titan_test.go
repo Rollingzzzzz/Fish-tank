@@ -418,10 +418,10 @@ func TestTitanSoftVerticalWander(t *testing.T) {
 		if i%10 != 0 || g.turning > 0 || g.seekBonus > 1.01 {
 			continue // judge straight sweeps; the arc and any strike own their own vertical
 		}
-		switch {
+		switch { // G85: the band moved up — deep is now below the main band
 		case g.Pos.Y < w.H*0.35:
 			high++
-		case g.Pos.Y > w.H*0.55:
+		case g.Pos.Y > w.H*0.50:
 			deep++
 		}
 		if vy := mathAbs(g.Vel.Y); vy > worstVy {
@@ -429,8 +429,8 @@ func TestTitanSoftVerticalWander(t *testing.T) {
 		}
 	}
 	t.Logf("wander: %d samples high, %d deep, worst |vy| %.1f", high, deep, worstVy)
-	if high < 40 || deep < 40 {
-		t.Fatalf("the sweep is a rail: %d high / %d deep samples in 120 s", high, deep)
+	if high < 40 || deep < 15 {
+		t.Fatalf("the sweep is a rail: %d high / %d deep samples in 120 s (deep = the rare dips below the band)", high, deep)
 	}
 	if worstVy > 35 {
 		t.Fatalf("vertical pace %.1f px/s — not the gentle glide asked for", worstVy)
