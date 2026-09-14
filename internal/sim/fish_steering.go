@@ -280,6 +280,7 @@ func (f *Fish) steer(dt, maxSp, night float64, w *World) contract.Vec2 {
 	}
 
 	f.auraRepulsion(w, maxSp, addForce)
+	f.zoneLookahead(w, maxSp, addForce) // G92: slide around her rim, not into it
 
 	// v1.1: flow around the big bodies — through a titan or the shark
 	// nobody swims; the silhouette is gone around, never crossed

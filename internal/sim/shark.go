@@ -49,6 +49,8 @@ func (w *World) ensureSharks() {
 			f.Spine[j] = v2(p.X-float64(j)*f.segLen*cos(f.headingA),
 				p.Y-float64(j)*f.segLen*sin(f.headingA))
 		}
+		f.followSpine(0) // G90: born settled onto her own laws
+		w.placeOutsideZones(f) // G92: arrive outside her circle
 		w.fishes = append(w.fishes, f)
 		w.logf("nature", "a hammerhead glides out of the blue")
 	}

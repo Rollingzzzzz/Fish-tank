@@ -109,6 +109,7 @@ func (w *World) tickEggs(dt float64) {
 		n := 1 + int(contract.RandSeed(e.Seed).Float64()*2) // 1-2 fry
 		for k := 0; k < n && len(w.aliveFishes()) < w.popCap; k++ {
 			f := newFish(sp, w.rng.Int63(), add(e.Pos, v2(w.rng.Float64()*14-7, w.rng.Float64()*10-5)), 0, w.nextID())
+			w.placeOutsideZones(f) // G92: fry never hatch into her circle
 			w.fishes = append(w.fishes, f)
 			w.burst(f.Pos, sp.Palette.Accent, 10)
 		}

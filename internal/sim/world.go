@@ -153,7 +153,9 @@ func NewWorld(w, h float64, cfg contract.Config, species []*contract.Species,
 		}
 		for k := 0; k < capK; k++ {
 			p := v2(w*(0.15+world.rng.Float64()*0.7), h*(0.25+world.rng.Float64()*0.55))
-			world.fishes = append(world.fishes, newFish(sp, world.rng.Int63(), p, 6+world.rng.Float64()*3, world.nextID()))
+			nf := newFish(sp, world.rng.Int63(), p, 6+world.rng.Float64()*3, world.nextID())
+			world.placeOutsideZones(nf) // G92: no resident is born inside her circle
+			world.fishes = append(world.fishes, nf)
 			count++
 		}
 	}

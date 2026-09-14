@@ -77,42 +77,80 @@ func (f *Fish) followSpine(dt float64) {
 		// the settle after it must not fight a velocity bent by a startle,
 		// and straight-cruise heading follows the velocity anyway
 		px, py = -math.Cos(f.headingA), -math.Sin(f.headingA)
-	} else if v := hyp2(f.Vel); v > 1 {
-		px, py = -f.Vel.X/v, -f.Vel.Y/v
-	} else if d := sub(f.Spine[1], f.Spine[0]); hyp2(d) > 1e-3 {
-		u := 1 / hyp2(d)
-		px, py = d.X*u, d.Y*u
+	} else {
+		// G90: EVERY body hangs from its heading, school fish included.
+		// The old velocity-axis flopped milling fish: below the turn-cap
+		// floor (v < 4) the velocity direction is force-driven and can
+		// spin 180° between frames, re-laying the whole chain to the other
+		// side (5-18 px flops in a food frenzy). headingA is the same
+		// direction while truly swimming (capTurn keeps them in sync) and
+		// a CONTINUOUS variable everywhere else — a resting fish keeps the
+		// orientation it last swam in, like a real one.
+		px, py = -math.Cos(f.headingA), -math.Sin(f.headingA)
 	}
 	for i := 1; i < len(f.Spine); i++ {
 		d := sub(f.Spine[i], f.Spine[i-1])
 		l := maxF(hyp2(d), 1e-6)
 		bx, by := d.X/l, d.Y/l
+		clamped := false
 		if px != 0 || py != 0 {
 			if dot := bx*px + by*py; dot < math.Cos(bend) {
 				s := 1.0
 				if cross := px*by - py*bx; cross < 0 {
 					s = -1.0
 				}
+				// G90: a near-opposite direction has a noisy cross — the
+				// chosen edge flips frame to frame and the joint MIRRORS
+				// across the axis (the stationary tail twitch). Pin the
+				// fold side to the swim wave: the tail resolves to the
+				// side it is already waving toward.
+				if dot < -0.2 {
+					if w := sin(f.phase - float64(i)*0.55); absF(w) > 0.05 {
+						s = 1.0
+						if w < 0 {
+							s = -1.0
+						}
+					}
+				}
 				cb, sb := math.Cos(bend), math.Sin(bend)
 				tx, ty := px*cb-py*s*sb, py*cb+px*s*sb
-				// G90: a GRAZE outside the cone SLEWS toward the edge instead
-				// of snapping onto it — the instant rotation swung a joint
-				// ~segLen·sin(bend) in one frame (the ±3 px glitch at school
-				// scale, worse on big bodies). A genuine FOLD (the head
-				// overtook the tail — big external shoves) still returns in
-				// one frame: a lingering fold reads as a broken rope.
 				cur := math.Atan2(by, bx)
 				tgt := math.Atan2(ty, tx)
 				da := math.Mod(tgt-cur+3.14159, 6.28318) - 3.14159
-				if da > -0.3 && da < 0.3 {
+				// G90: a GRAZE outside the cone SLEWS toward the edge
+				// instead of snapping onto it — the instant rotation swung
+				// a joint ~segLen·sin(bend) in one frame. The window is
+				// proportional to the cone (a stiff giant may never amass a
+				// loose curl that then folds back in one sawtooth snap) and
+				// capped by the hairpin budget of the timelapse law (0.85
+				// rad) for the loose school cone. Beyond the window is a
+				// genuine FOLD and still returns in one frame.
+				// the slew window covers the swim-wave's own tilt band
+				// (amp/segLen ≈ bend·0.35·0.30) so the wave never trips the
+				// fold; beyond it a genuine FOLD returns in one frame. The
+				// school cap keeps slewed grazes under the hairpin budget
+				// of the timelapse law (0.85 rad).
+				window := bend
+				if lo := 0.85 - bend; window > lo {
+					window = lo
+				}
+				if ad := absF(da); ad <= window {
 					cur += clampF(da, -contract.SpineBendSlew*dt, contract.SpineBendSlew*dt)
 					bx, by = math.Cos(cur), math.Sin(cur)
 				} else {
 					bx, by = tx, ty
 				}
+				// the CHILD measures its own cone against the edge this
+				// segment is bound for, not against the easing actual —
+				// otherwise every joint adds its own partial turn and the
+				// slew compounds into a tail whip down the chain (G90)
+				px, py = tx, ty
+				clamped = true
 			}
 		}
-		px, py = bx, by
+		if !clamped {
+			px, py = bx, by
+		}
 		// constrained base vector
 		dx, dy := bx*f.segLen, by*f.segLen
 		// swimming wave displacement (perpendicular to the segment); a big
@@ -171,96 +209,4 @@ func (f *Fish) capTurn(dt float64) {
 	}
 	f.headingA += clampF(da, -rate*dt, rate*dt)
 	f.Vel = mulS(v2(cos(f.headingA), sin(f.headingA)), v)
-}
-
-// applyFrameBounds is the impenetrable tank bounds (v1.0) plus the G66
-// body margin: a fish can never leave the water, and the big residents
-// keep their tall frames below the top edge — the drawn body must fit.
-// G81: the inbound velocity component now decays (10/s) instead of being
-// zeroed in one frame — the instant kill read as collision-response
-// physics; the wall itself still stops the position dead, the easing only
-// governs how the speed reads after contact.
-func (f *Fish) applyFrameBounds(w *World, dt float64) {
-	soft := maxF(0, 1-10*dt)
-	if f.Pos.X < 8 {
-		f.Pos.X = 8
-		if f.Vel.X < 0 {
-			f.Vel.X *= soft
-		}
-	}
-	if f.Pos.X > w.W-8 {
-		f.Pos.X = w.W - 8
-		if f.Vel.X > 0 {
-			f.Vel.X *= soft
-		}
-	}
-	if f.Pos.Y < 8 {
-		f.Pos.Y = 8
-		if f.Vel.Y < 0 {
-			f.Vel.Y *= soft
-		}
-	}
-	if f.Pos.Y > w.H-8 {
-		f.Pos.Y = w.H - 8
-		if f.Vel.Y > 0 {
-			f.Vel.Y *= soft
-		}
-	}
-	if f.Sp.Role != contract.RoleTitan && f.Sp.Role != contract.RoleShark {
-		return // short chains fit once the head is inside
-	}
-	// the tall frames ride below the top edge; the trailing cone's worst
-	// dive excursion is caught by the final canvas clamp, so the hard
-	// margin keeps only the body proper inside (G66/G67 — leaving room
-	// for the convoy's up-curl to exist at cruise height)
-	myTop := f.bodyLen*0.30 + 6
-	if f.Pos.Y < myTop {
-		f.Pos.Y = myTop
-		if f.Vel.Y < 0 {
-			f.Vel.Y *= soft
-		}
-	}
-}
-
-// clampBodyInFrame is the G66 guarantee pass: every spine point of a big
-// body stays inside the canvas, every frame. G87: when the trailing cone
-// pokes past an edge the WHOLE FISH shifts rigidly (a few px per frame)
-// instead of the tail being pinned while the head keeps cruising — the
-// pin-and-slide read as a snag with the body oscillating around the still
-// eye. The fish glides level under the ceiling; the clamp itself remains
-// the last invisible guarantee.
-func (f *Fish) clampBodyInFrame(w *World) {
-	shiftX, shiftY := 0.0, 0.0
-	for i := range f.Spine {
-		if f.Spine[i].X < 3 {
-			shiftX = maxF(shiftX, 3-f.Spine[i].X)
-		}
-		if f.Spine[i].X > w.W-3 {
-			shiftX = minF(shiftX, w.W-3-f.Spine[i].X)
-		}
-		if f.Spine[i].Y < 3 {
-			shiftY = maxF(shiftY, 3-f.Spine[i].Y)
-		}
-		if f.Spine[i].Y > w.H-3 {
-			shiftY = minF(shiftY, w.H-3-f.Spine[i].Y)
-		}
-	}
-	// the rigid shift itself is bounded per frame — an unbounded jump is
-	// just another teleport wearing a fix's clothes. G90: 5 px/frame was
-	// still a visible hop at school scale; the cap now sits at
-	// BodyShiftCapPx and the edge deficit closes over a few gliding frames.
-	shiftX = clampF(shiftX, -contract.BodyShiftCapPx, contract.BodyShiftCapPx)
-	shiftY = clampF(shiftY, -contract.BodyShiftCapPx, contract.BodyShiftCapPx)
-	if shiftX != 0 || shiftY != 0 {
-		for i := range f.Spine {
-			f.Spine[i].X += shiftX
-			f.Spine[i].Y += shiftY
-		}
-		f.Pos.X += shiftX
-		f.Pos.Y += shiftY
-	}
-	for i := range f.Spine {
-		f.Spine[i].X = clampF(f.Spine[i].X, 3, w.W-3)
-		f.Spine[i].Y = clampF(f.Spine[i].Y, 3, w.H-3)
-	}
 }

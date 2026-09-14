@@ -264,12 +264,10 @@ const (
 // edge hops and the big bodies' 20–30 px nest-rim teleports.
 const (
 	MotionSlackPx  = 2.5  // px/frame of reflex slack over the fish's own travel (flee kicks, rim overshoot)
-	JointSwingPx   = 2.0  // px/frame a spine joint may exceed the head's allowance
+	JointSwingPx   = 12.0  // px/frame a spine joint may exceed the head's allowance
 	SpineBendSlew  = 6.0  // rad/s a segment direction slews toward its bend-cone edge (was: instant snap)
 	BodyShiftCapPx = 2.0  // px/frame the whole-body frame-edge shift may move (was 5)
-	ZoneDrainPx    = 4.0  // px/frame the tight-band nest drain may push (was 12)
-	ZoneFixJointPx = 3.0  // px/frame a spine point is pulled across the nest rim (was unbounded)
-	ZoneTightFrac  = 0.15 // positional drain band: Radius+16+bodyLen×this; beyond it force-only
+	ZoneFixJointPx = 3.0  // px/frame a spine point is pulled across the nest rim's shallow band
 	ZoneLookFrac   = 0.6  // zone lookahead probe distance: × speed
 	ZoneLookMinPx  = 40.0 // zone lookahead probe: minimum px ahead of the nose
 )

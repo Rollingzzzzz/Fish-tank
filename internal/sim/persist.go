@@ -221,6 +221,7 @@ func (w *World) Restore(s contract.Save) error {
 		f.Energy = clampF(sf.Energy, 0, 1)
 		f.ElderP = 0
 		f.followSpine(0)
+		w.placeOutsideZones(f) // G92: restored residents re-enter outside her circle
 		w.fishes = append(w.fishes, f)
 	}
 	w.foods = w.foods[:0]

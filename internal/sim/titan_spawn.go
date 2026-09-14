@@ -66,6 +66,8 @@ func (w *World) spawnPod() {
 			f.Spine[j].X = clampF(f.Spine[j].X, 10, w.W-10)
 			f.Spine[j].Y = clampF(f.Spine[j].Y, 10, w.H-10)
 		}
+		f.followSpine(0)       // G90: born settled onto her own laws
+		w.placeOutsideZones(f) // G92: the procession arrives outside her circle
 		w.fishes = append(w.fishes, f)
 	}
 	w.logf("nature", "the silver elders glide in -- five shadows, one drift")

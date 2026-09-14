@@ -34,5 +34,10 @@ func newFish(sp *contract.Species, seed int64, pos contract.Vec2, ageDays float6
 	for i := range f.Spine {
 		f.Spine[i] = v2(pos.X-float64(i)*f.segLen, pos.Y)
 	}
+	// G90: born SETTLED — the chain is laid through the same pass every
+	// later frame rides, so the first live frame eases the wave in instead
+	// of snapping a flat-laid rope into a swimming body (the same pattern
+	// the save-restore uses).
+	f.followSpine(0)
 	return f
 }
